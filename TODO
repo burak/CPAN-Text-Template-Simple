@@ -1,0 +1,27 @@
+* Improve unit test coverage.
+        o Increase # of tests
+        o Implement placeholder tests
+* Move all croak messages into fatal().
+* Remove code templates from ::Constants (into ::Simple)
+        o Tidy up ::Constants.
+* Implement variable sharing without monolith..?
+        o PROCESS -> no monolith ?
+            - Interpolated includes does not respect monolith though :p
+              This needs fix.
+* Improve error handling. Minimize uncontrolled die()s.
+* Improve safe compartment.
+* Improve cache.
+        o Improve the cache file format.
+* Test -T support.
+* Command line compiler?
+* Re-implement or remove resume interface
+        o Perhaps eval { sub { ... }; 1; } || "ERR: $@"
+*  ***LOW*** Move trim/tilde/quote from tokenizer & into the parser.
+*  ***LOW*** Consider trying PPI.
+*  ***LOW*** Implement TTS plugins for major frameworks.
+*  ***LOW*** Consider building a tiny framework for template plugins.
+        o Or just let the user define subs in ::Dummy.
+*  ***LOW*** Benchmarks?
+*  ***LOW*** XS based tokenizer?
+* Keep the code clean & simple (no hacks?).
+* Check competitors for neat ideas (heh!).
