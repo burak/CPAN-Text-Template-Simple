@@ -6,8 +6,8 @@
         o Tidy up ::Constants.
 * Implement variable sharing without monolith..?
         o PROCESS -> no monolith ?
-            - Interpolated includes does not respect monolith though :p
-              This needs fix.
+            - Interpolated includes do not respect monolith though :p
+            - This needs fix.
 * Improve error handling. Minimize uncontrolled die()s.
 * Improve safe compartment.
 * Improve cache.
