@@ -70,9 +70,15 @@ sub _change_versions {
          $ns  =~ s{ [\\/]     }{::}xmsg;
          $ns  =~ s{ \A lib :: }{}xms;
          $ns  =~ s{ \. pm \z  }{}xms;
-      my $pod = "\nThis document describes version $dver of $ns\n"
-              . "released on $date.\n"
+      my $pod = "\nThis document describes version C<$dver> of C<$ns>\n"
+              . "released on C<$date>.\n"
               ;
+
+      if ( $dver =~ m{[_]}xms ) {
+         $pod .= "\nB<WARNING>: This version of the module is part of a\n"
+              .  "developer (beta) release of the distribution and it is\n"
+              .  "not suitable for production use.\n";
+      }
 
       CHANGE_POD: while ( my $line = readline $RO_FH ) {
          print $W_FH $line;
