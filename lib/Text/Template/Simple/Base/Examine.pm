@@ -19,29 +19,19 @@ sub _examine {
    }
    elsif ( $type eq 'GLOB' ) {
       $rv           = $self->_examine_glob( $thing );
-      $self->[TYPE] = 'GLOB';
+      $self->[TYPE] = $type;
    }
    else {
-      if ( $type eq 'FILE' || $self->io->is_file( $thing ) ) {
-         $rv                = $self->io->slurp(   $thing );
+      if ( my $path = $self->_file_exists( $thing ) ) {
+         $rv                = $self->io->slurp( $path );
          $self->[TYPE]      = 'FILE';
-         $self->[TYPE_FILE] = $thing;
+         $self->[TYPE_FILE] = $path;
       }
       else {
-         # give it a last chance, before falling back to string
-         my $e =  do {
-                     $type eq 'STRING' ? undef
-                                       : $self->_file_exists( $thing );
-                  };
-         if ( $e ) {
-            $rv                = $self->io->slurp( $e );
-            $self->[TYPE]      = 'FILE';
-            $self->[TYPE_FILE] = $e;
-         }
-         else {
-            $rv                = $thing;
-            $self->[TYPE]      = 'STRING';
-         }
+         # just die if file is absent, but user forced the type as FILE
+         $self->io->slurp( $thing ) if $type eq 'FILE';
+         $rv           = $thing;
+         $self->[TYPE] = 'STRING';
       }
    }
 
@@ -69,7 +59,7 @@ sub _examine_type {
    if ( isaref( $TMP ) ) {
       my $ftype  = shift @{ $TMP } || croak "ARRAY does not contain the type";
       my $fthing = shift @{ $TMP } || croak "ARRAY does not contain the data";
-      croak "ARRAY overflowed" if @{ $TMP } > 0;
+      croak "Type array has unknown extra fields" if @{ $TMP } > 0;
       return uc $ftype, $fthing;
    }
 
