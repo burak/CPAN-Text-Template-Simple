@@ -1,7 +1,6 @@
 package Text::Template::Simple::Base::Compiler;
 use strict;
 use vars qw($VERSION);
-use Carp qw( croak );
 use Text::Template::Simple::Util;
 use Text::Template::Simple::Constants;
 
@@ -11,12 +10,12 @@ sub _compiler { shift->[SAFE] ? COMPILER_SAFE : COMPILER }
 
 sub _compile {
    my $self  = shift;
-   my $tmpx  = shift || croak "No template specified";
+   my $tmpx  = shift || fatal('tts.base.compiler._compile.notmp');
    my $param = shift || [];
    my $opt   = shift || {};
 
-   croak "params must be an arrayref!" if not isaref($param);
-   croak "opts must be a hashref!"     if not ishref($opt);
+   fatal('tts.base.compiler._compile.param') if not isaref($param);
+   fatal('tts.base.compiler._compile.opt')   if not ishref($opt  );
 
    # set defaults
    $opt->{id}       ||= ''; # id is AUTO
@@ -118,7 +117,7 @@ sub _call_filters {
 
 sub _wrap_compile {
    my $self   = shift;
-   my $parsed = shift or croak "nothing to compile";
+   my $parsed = shift or fatal('tts.base.compiler._wrap_compile.parsed');
    LOG( CACHE_ID => $self->cache->id ) if $self->[WARN_IDS] && $self->cache->id;
    LOG( COMPILER => $self->[SAFE] ? 'Safe' : 'Normal' ) if DEBUG();
    my($CODE, $error);
@@ -142,12 +141,12 @@ sub _wrap_compile {
 sub _mini_compiler {
    # little dumb compiler for internal templates
    my $self     = shift;
-   my $template = shift || croak "_mini_compiler(): missing the template";
-   my $param    = shift || croak "_mini_compiler(): missing the parameters";
+   my $template = shift || fatal('tts.base.compiler._mini_compiler.notmp');
+   my $param    = shift || fatal('tts.base.compiler._mini_compiler.noparam');
    my $opt      = shift || {};
 
-   croak "_mini_compiler(): options must be a hash"    if ! ishref($opt);
-   croak "_mini_compiler(): parameters must be a HASH" if ! ishref($param);
+   fatal('tts.base.compiler._mini_compiler.opt')   if ! ishref($opt  );
+   fatal('tts.base.compiler._mini_compiler.param') if ! ishref($param);
 
    foreach my $var ( keys %{ $param } ) {
       $template =~ s[<%\Q$var\E%>][$param->{$var}]xmsg;

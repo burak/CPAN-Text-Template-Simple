@@ -1,7 +1,6 @@
 package Text::Template::Simple::Base::Examine;
 use strict;
 use vars qw($VERSION);
-use Carp qw( croak );
 use Text::Template::Simple::Util;
 use Text::Template::Simple::Constants;
 
@@ -43,8 +42,8 @@ sub _examine_glob {
    my $self = shift;
    my $TMP  = shift;
    my $ref  = ref $TMP;
-   croak fatal( 'tts.base.examine.notglob' => $ref ) if $ref ne 'GLOB';
-   croak fatal( 'tts.base.examine.notfh'           ) if not  fileno $TMP;
+   fatal( 'tts.base.examine.notglob' => $ref ) if $ref ne 'GLOB';
+   fatal( 'tts.base.examine.notfh'           ) if not  fileno $TMP;
    return $self->io->slurp( $TMP );
 }
 
@@ -57,13 +56,13 @@ sub _examine_type {
    return GLOB => $TMP if   $ref eq 'GLOB';
 
    if ( isaref( $TMP ) ) {
-      my $ftype  = shift @{ $TMP } || croak "ARRAY does not contain the type";
-      my $fthing = shift @{ $TMP } || croak "ARRAY does not contain the data";
-      croak "Type array has unknown extra fields" if @{ $TMP } > 0;
+      my $ftype  = shift @{ $TMP } || fatal('tts.base.examine._examine_type.ftype');
+      my $fthing = shift @{ $TMP } || fatal('tts.base.examine._examine_type.fthing');
+      fatal('tts.base.examine._examine_type.extra') if @{ $TMP } > 0;
       return uc $ftype, $fthing;
    }
 
-   croak "Unknown first argument of $ref type to compile()";
+   fatal('tts.base.examine._examine_type.unknown', $ref);
 }
 
 1;

@@ -11,16 +11,14 @@ use constant EVALTEXT   => 6;
 use constant IS_REQUIRE => 7;
 use constant HINTS      => 8;
 use constant BITMASK    => 9;
-
-use Text::Template::Simple::Util qw( ishref );
-use Carp qw( croak );
+use Text::Template::Simple::Util qw( ishref fatal );
 
 $VERSION = '0.62_07';
 
 sub stack {
    my $self    = shift;
    my $opt     = shift || {};
-   croak "Parameters to stack() must be a HASH" if ! ishref($opt);
+   fatal('tts.caller.stack.hash') if ! ishref($opt);
    my $frame   = $opt->{frame} || 0;
    my $type    = $opt->{type}  || '';
    my(@callers, $context);
@@ -59,7 +57,7 @@ sub stack {
       return $self->$method( $opt, \@callers );
    }
 
-   croak "Unknown caller stack type: $type";
+   fatal('tts.caller.stack.type', $type);
 }
 
 sub _string {
@@ -142,7 +140,7 @@ sub _text_table {
    my $opt     = shift;
    my $callers = shift;
    eval { require Text::Table; };
-   croak "Caller stack type 'text_table' requires Text::Table" if $@;
+   fatal('tts.caller._text_table.module', $@) if $@;
 
    my $table = Text::Table->new( qw(
                   | CONTEXT    | SUB      | LINE  | FILE    | HASARGS

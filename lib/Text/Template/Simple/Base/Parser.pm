@@ -1,7 +1,6 @@
 package Text::Template::Simple::Base::Parser;
 use strict;
 use vars qw($VERSION);
-use Carp qw( croak );
 use Text::Template::Simple::Util;
 use Text::Template::Simple::Constants;
 
@@ -68,8 +67,8 @@ my %INTERNAL = (
 
 sub _internal {
    my $self = shift;
-   my $id   = shift            || croak "_internal(): id is missing";
-   my $rv   = $INTERNAL{ $id } || croak "_internal(): id is invalid";
+   my $id   = shift            || fatal('tts.base.parser._internal.id');
+   my $rv   = $INTERNAL{ $id } || fatal('tts.base.parser._internal.id');
    return $rv;
 }
 
@@ -176,11 +175,12 @@ sub _parse {
 
    $self->[FILENAME] ||= '<ANON>';
 
-   if ( $inside ) {
-      my $type = $inside > 0 ? 'opening' : 'closing';
-      my $tmpl = "%d unbalanced %s delimiter(s) in template %s";
-      croak sprintf( $tmpl, abs($inside), $type, $self->[FILENAME] );
-   }
+   fatal(
+      'tts.base.parser._parse.unbalanced',
+      abs($inside),
+      ($inside > 0 ? 'opening' : 'closing'),
+      $self->[FILENAME]
+   ) if $inside;
 
    return $self->_wrapper( $code, $cache_id, $faker, $map_keys );
 }
@@ -376,7 +376,8 @@ If the previous or next is not raw, nothing will happen. You need to swap sides
 when handling the chomping. i.e.: left chomping affects the right side of the
 RAW, and right chomping affects the left side of the RAW. _chomp() method in
 the parser swaps sides to handle chomping.
-See Text::Template::Simple::Tokenizer to see how pre-parsing happens.
+See Text::Template::Simple::Tokenizer to have an idea on how pre-parsing
+happens.
 
 =end CHOMPING
 

@@ -9,13 +9,12 @@ use strict;
 use vars qw($VERSION);
 use Text::Template::Simple::Caller;
 use Text::Template::Simple::Util qw();
-use Carp qw( croak );
 
 $VERSION = '0.62_07';
 
 sub stack { # just a wrapper
    my $opt = shift || {};
-   croak "Parameters to stack() must be a HASH"
+   Text::Template::Simple::Util::fatal('tts.caller.stack.hash')
       if ! Text::Template::Simple::Util::ishref($opt);
    $opt->{frame} = 1;
    Text::Template::Simple::Caller->stack( $opt );

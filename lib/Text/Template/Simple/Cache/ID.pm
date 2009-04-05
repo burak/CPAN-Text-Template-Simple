@@ -3,8 +3,7 @@ use strict;
 use vars qw($VERSION);
 use overload q{""} => 'get';
 use Text::Template::Simple::Constants qw( MAX_FL );
-use Text::Template::Simple::Util      qw( DIGEST );
-use Carp qw( croak );
+use Text::Template::Simple::Util      qw( DIGEST fatal );
 
 $VERSION = '0.62_07';
 
@@ -19,7 +18,7 @@ sub set { my $self = shift; $$self = shift if defined $_[0]; return; }
 
 sub generate { # cache id generator
    my $self   = shift;
-   my $data   = shift or croak "Can't generate id without data!";
+   my $data   = shift or fatal('tts.cache.id.generate.data');
    my $custom = shift;
    my $regex  = shift;
    $self->set(
@@ -31,7 +30,7 @@ sub generate { # cache id generator
 
 sub _custom {
    my $self  = shift;
-   my $data  = shift or croak "Can't generate id without data!";
+   my $data  = shift or fatal('tts.cache.id._custom.data');
    my $regex = shift || $RE_INVALID;
       $data  =~ s{$regex}{_}xmsg; # remove bogus characters
    my $len   = length( $data );

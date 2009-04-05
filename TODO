@@ -1,7 +1,6 @@
 * Improve unit test coverage.
         o Increase # of tests
         o Implement placeholder tests
-* Move all croak messages into fatal().
 * Remove code templates from ::Constants (into ::Simple)
         o Tidy up ::Constants.
 * Implement variable sharing without monolith..?

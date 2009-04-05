@@ -4,9 +4,7 @@ use vars qw($VERSION);
 
 $VERSION = '0.62_07';
 
-use Carp qw( croak );
 use File::Spec;
-
 use Text::Template::Simple::Constants;
 use Text::Template::Simple::Dummy;
 use Text::Template::Simple::Compiler;
@@ -62,10 +60,10 @@ sub import {
 
    no strict qw( refs );
    foreach my $name ( @args ) {
-      croak "$name isn't a valid import parameter for $class" if ! $ok{$name};
-      croak "$name is not defined in $class"      if not defined &{ $name   };
+      fatal('tts.main.import.invalid', $name, $class) if ! $ok{$name};
+      fatal('tts.main.import.undef',   $name, $class) if ! defined &{ $name   };
       my $target = $caller . '::' . $name;
-      croak "$name is already defined in $caller" if     defined &{ $target };
+      fatal('tts.main.import.redefine', $name, $caller) if defined &{ $target };
       *{ $target } = \&{ $name }; # install
    }
 
@@ -74,7 +72,7 @@ sub import {
 
 sub tts {
    my @args = @_;
-   croak "Nothing to compile!" if ! @args;
+   fatal('tts.main.tts.args') if ! @args;
    my @new  = ishref($args[0]) ? %{ shift(@args) } : ();
    return __PACKAGE__->new( @new )->compile( @args );
 }
@@ -104,9 +102,8 @@ sub new {
 
 sub connector {
    my $self = shift;
-   my $id   = shift             || croak "connector(): id is missing";
-   my $name = $CONNECTOR{ $id } || croak "connector(): invalid id: $id";
-   return $name;
+   my $id   = shift || fatal('tts.main.connector.args');
+   return $CONNECTOR{ $id } || fatal('tts.main.connector.invalid', $id);
 }
 
 sub cache { shift->[CACHE_OBJECT] }
@@ -130,12 +127,12 @@ sub _init {
    my $bogus_args = $self->[ADD_ARGS] && ! isaref($self->[ADD_ARGS]);
    my $ok_delim   = isaref( $d )      && $#{ $d } == 1;
 
-   croak fatal('tts.main.bogus_args')   if $bogus_args;
-   croak fatal('tts.main.bogus_delims') if not $ok_delim;
-   croak fatal('tts.main.dslen')        if length($d->[DELIM_START]) < 2;
-   croak fatal('tts.main.delen')        if length($d->[DELIM_END])   < 2;
-   croak fatal('tts.main.dsws')         if $d->[DELIM_START] =~ m{\s}xms;
-   croak fatal('tts.main.dews')         if $d->[DELIM_END]   =~ m{\s}xms;
+   fatal('tts.main.bogus_args')   if $bogus_args;
+   fatal('tts.main.bogus_delims') if not $ok_delim;
+   fatal('tts.main.dslen')        if length($d->[DELIM_START]) < 2;
+   fatal('tts.main.delen')        if length($d->[DELIM_END])   < 2;
+   fatal('tts.main.dsws')         if $d->[DELIM_START] =~ m{\s}xms;
+   fatal('tts.main.dews')         if $d->[DELIM_END]   =~ m{\s}xms;
 
    $self->[TYPE]           = '';
    $self->[COUNTER]        = 0;
@@ -146,21 +143,19 @@ sub _init {
    $self->[NEEDS_OBJECT]   =  0; # does the template need $self ?
    $self->[DEEP_RECURSION] =  0; # recursion detector
 
-   if ( $self->[USER_THANDLER] ) {
-      croak "user_thandler parameter must be a CODE reference"
-         if ref($self->[USER_THANDLER]) ne 'CODE';
+   if ( $self->[USER_THANDLER] && ref($self->[USER_THANDLER]) ne 'CODE' ) {
+      fatal('tts.main.init.thandler');
    }
 
-   if ( $self->[INCLUDE_PATHS] ) {
-      croak "include_paths parameter must be a ARRAY reference"
-         if ! isaref($self->[INCLUDE_PATHS]);
+   if ( $self->[INCLUDE_PATHS] && ! isaref($self->[INCLUDE_PATHS]) ) {
+      fatal('tts.main.init.include');
    }
 
    $self->[IO_OBJECT] = $self->connector('IO')->new( $self->[IOLAYER] );
 
    if ( $self->[CACHE_DIR] ) {
       my $cdir = $self->io->validate( dir => $self->[CACHE_DIR] )
-                     or croak fatal( 'tts.main.cdir' => $self->[CACHE_DIR] );
+                     or fatal( 'tts.main.cdir' => $self->[CACHE_DIR] );
       $self->[CACHE_DIR] = $cdir;
    }
 
