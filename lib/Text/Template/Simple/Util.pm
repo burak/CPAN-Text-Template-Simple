@@ -101,18 +101,6 @@ my $lang = {
       'tts.base.parser._parse.unbalanced'        => '%d unbalanced %s delimiter(s) in template %s',
       'tts.cache.id.generate.data'               => "Can't generate id without data!",
       'tts.cache.id._custom.data'                => "Can't generate id without data!",
-      '' => '',
-      '' => '',
-      '' => '',
-      '' => '',
-      '' => '',
-      '' => '',
-      '' => '',
-      '' => '',
-      '' => '',
-      '' => '',
-      '' => '',
-      '' => '',
    },
 };
 
