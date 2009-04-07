@@ -1,8 +1,8 @@
 package Text::Template::Simple::Base::Examine;
 use strict;
 use vars qw($VERSION);
-use Text::Template::Simple::Util;
-use Text::Template::Simple::Constants;
+use Text::Template::Simple::Util qw(:all);
+use Text::Template::Simple::Constants qw(:all);
 
 $VERSION = '0.62_07';
 

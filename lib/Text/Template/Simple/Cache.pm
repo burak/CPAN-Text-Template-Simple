@@ -2,7 +2,7 @@ package Text::Template::Simple::Cache;
 use strict;
 use vars qw($VERSION);
 use constant CACHE_PARENT => 0;
-use Text::Template::Simple::Constants;
+use Text::Template::Simple::Constants qw(:all);
 use Text::Template::Simple::Util qw( DEBUG LOG ishref fatal );
 use Carp qw( croak );
 
@@ -375,7 +375,7 @@ sub _set_meta {
 
 sub DESTROY {
    my $self = shift;
-   LOG( DESTROY => ref $self ) if DEBUG;
+   LOG( DESTROY => ref $self ) if DEBUG();
    $self->[CACHE_PARENT] = undef;
    @{$self} = ();
    return;

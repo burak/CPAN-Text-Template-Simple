@@ -1,7 +1,7 @@
 package Text::Template::Simple::IO;
 use strict;
 use vars qw($VERSION);
-use Text::Template::Simple::Constants;
+use Text::Template::Simple::Constants qw(:all);
 use Text::Template::Simple::Util qw( DEBUG LOG ishref binary_mode fatal );
 
 $VERSION = '0.62_07';
@@ -60,7 +60,7 @@ sub slurp {
    my $self = shift;
    my $file = shift;
    my($fh, $seek);
-   LOG(IO_SLURP => $file) if DEBUG;
+   LOG(IO_SLURP => $file) if DEBUG();
 
    if ( fileno $file ) {
       $fh   = $file;
@@ -95,7 +95,7 @@ sub is_file {
 
 sub DESTROY {
    my $self = shift;
-   LOG( DESTROY => ref $self ) if DEBUG;
+   LOG( DESTROY => ref $self ) if DEBUG();
    $$self = undef;
    return;
 }

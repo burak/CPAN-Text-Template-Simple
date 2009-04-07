@@ -213,10 +213,7 @@ use constant RESUME_ELSE => qr{
 
 use constant RESUME_LOOP => qr{ (?:next|last|continue|redo) }xms;
 
-use Exporter ();
-
 BEGIN {
-
    @ISA         = qw( Exporter );
 
    %EXPORT_TAGS = (
@@ -348,6 +345,8 @@ BEGIN {
    @EXPORT           = @EXPORT_OK;
 
 }
+
+BEGIN { require Exporter; }
 
 1;
 

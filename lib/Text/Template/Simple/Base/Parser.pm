@@ -1,8 +1,8 @@
 package Text::Template::Simple::Base::Parser;
 use strict;
 use vars qw($VERSION);
-use Text::Template::Simple::Util;
-use Text::Template::Simple::Constants;
+use Text::Template::Simple::Util qw(:all);
+use Text::Template::Simple::Constants qw(:all);
 
 $VERSION = '0.62_07';
 
@@ -159,14 +159,14 @@ sub _parse {
 
       else {
          if ( $handler ) {
-            LOG( USER_THANDLER => "$id") if DEBUG;
+            LOG( USER_THANDLER => "$id") if DEBUG();
             $code .= $handler->(
                         $self, $id ,$str, { capture => $w_cap, raw => $w_raw }
                      );
          }
          else {
             LOG( UNKNOWN_TOKEN => "Adding unknown token as RAW: $id($str)")
-               if DEBUG;
+               if DEBUG();
             $code .= $w_raw->($str);
          }
       }
@@ -177,9 +177,9 @@ sub _parse {
 
    fatal(
       'tts.base.parser._parse.unbalanced',
-      abs($inside),
-      ($inside > 0 ? 'opening' : 'closing'),
-      $self->[FILENAME]
+         abs($inside),
+         ($inside > 0 ? 'opening' : 'closing'),
+         $self->[FILENAME]
    ) if $inside;
 
    return $self->_wrapper( $code, $cache_id, $faker, $map_keys );
