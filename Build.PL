@@ -23,9 +23,6 @@ my $mb = $class->new(
     dist_author => $AUTHOR,
 );
 
-$mb->add_to_manifest_skip('monolithic_Version/README');
-$mb->add_to_manifest_skip('monolithic_Version/Text/Template/Simple.pm');
-
 $mb->create_build_script;
 
 sub raw_subclass {
