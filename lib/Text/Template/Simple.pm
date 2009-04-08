@@ -1070,6 +1070,16 @@ Some methods/functionality of the module needs these optional modules:
 L<Apache::SimpleTemplate>, L<Text::Template>, L<Text::ScriptTemplate>,
 L<Safe>, L<Opcode>.
 
+=head2 MONOLITHIC VERSION
+
+C<Text::Template::Simple> consists of C<15+> separate modules. If you are
+after a single C<.pm> file to ease deployment, download the distribution
+from a C<CPAN> mirror near you to get a monolithic C<Text::Template::Simple>.
+It is automatically generated from the separate modules and distributed in
+the C<monolithic_version> directory.
+
+However, be aware that the monolithic version is B<not supported>.
+
 =head1 AUTHOR
 
 Burak GE<252>rsoy, E<lt>burakE<64>cpan.orgE<gt>

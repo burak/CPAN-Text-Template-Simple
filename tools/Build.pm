@@ -105,8 +105,9 @@ sub _build_monolith {
    my $files  = shift;
    my $dir    = File::Spec->catdir( qw( monolithic_version Text Template ) );
    my $mono   = File::Spec->catfile( $dir, 'Simple.pm' );
-   my $copy   = $mono . '.tmp';
    my $buffer = File::Spec->catfile( $dir, 'buffer.txt' );
+   my $readme = File::Spec->catfile( qw( monolithic_version README ) );
+   my $copy   = $mono . '.tmp';
 
    mkpath $dir;
 
@@ -116,10 +117,6 @@ sub _build_monolith {
 
    my %add_pod;
    my $POD = '';
-   my $PRE = '';
-
-   my %curly_top;
-   my %curly_bot;
 
    my @files;
    my $c;
@@ -205,9 +202,9 @@ sub _build_monolith {
    if ( $POD ) {
       open my $MONOX, '>>:raw', $mono or die "Can not open file($mono): $!";
       my $pod = "\nB<WARNING>! This is the monolithic version of Text::Template::Simple\n"
-               ." generated with an automatic build tool. If you experience problems"
-               ." with this version, please install and use the supported and standard"
-               ." version. This version is not supported.\n"
+               ."generated with an automatic build tool. If you experience problems\n"
+               ."with this version, please install and use the supported standard\n"
+               ."version. This version is B<NOT SUPPORTED>.\n"
               ;
       foreach my $line ( split /\n/, $POD ) {
          print $MONOX $line, "\n";
@@ -232,9 +229,16 @@ sub _build_monolith {
       }
    }
 
+   warn "\tADD README\n";
+   open my $README, '>:raw', $readme or die "Can not open file($readme): $!";
+   print $README "This monolithic version is NOT SUPPORTED!\n";
+   close $README;
+
    warn "\tADD TO MANIFEST\n";
-   (my $monof = $mono) =~ s{\\}{/}xmsg;
+   (my $monof   = $mono  ) =~ s{\\}{/}xmsg;
+   (my $readmef = $readme) =~ s{\\}{/}xmsg;
    open my $MANIFEST, '>>:raw', 'MANIFEST' or die "Can not open MANIFEST: $!";
+   print $MANIFEST "$readmef\n";
    print $MANIFEST "$monof\tThe monolithic version of Text::Template::Simple",
                    " to ease dropping into web servers\n";
    close $MANIFEST;
