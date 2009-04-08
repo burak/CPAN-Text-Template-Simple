@@ -205,10 +205,12 @@ sub size {
 
       local $SIG{__DIE__};
       if ( eval { require Devel::Size; 1; } ) {
-         LOG( DEBUG => "Devel::Size v$Devel::Size::VERSION is loaded." )
+         my $dsv = Devel::Size->VERSION;
+         LOG( DEBUG => "Devel::Size v$dsv is loaded." )
             if DEBUG();
+         fatal('tts.cache.develsize.buggy', $dsv) if $dsv < 0.72;
          my $size = eval { Devel::Size::total_size( $CACHE ) };
-         fatal('tts.cache.develsize', $@) if $@;
+         fatal('tts.cache.develsize.total', $@) if $@;
          return $size;
       }
       else {
