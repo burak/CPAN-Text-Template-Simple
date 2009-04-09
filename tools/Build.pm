@@ -216,7 +216,7 @@ sub _build_monolith {
    unlink $buffer or die "Can not delete $buffer $!";
    unlink $copy   or die "Can not delete $copy $!";
    print "\t";
-   system( perl => '-wc', $mono ) && die "$mono does not compile!\n";
+   system( $^X, '-wc', $mono ) && die "$mono does not compile!\n";
 
    PROVE: {
       warn "\tTESTING MONOLITH\n";
