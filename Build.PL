@@ -27,6 +27,10 @@ my $mb = $class->new(
             'tools',
         ]
     },
+    resources => {
+        license    => 'http://dev.perl.org/licenses/',
+        repository => 'http://bitbucket.org/burak/cpan-text-template-simple/',
+    },
 );
 
 $mb->create_build_script;
