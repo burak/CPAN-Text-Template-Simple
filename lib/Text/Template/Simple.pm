@@ -243,23 +243,26 @@ Text::Template::Simple - Simple text template engine
 =head1 SYNOPSIS
 
    use Text::Template::Simple;
-   my $template = Text::Template::Simple->new;
-   my $tmp      = q~
-   <%
-      my %p = @_;
-   %>
-   
-   <%=$p{str}%> : <%=scalar localtime time%>
-   
-   ~;
-   print $template->compile($tmp, [str => 'Time now']);
+   my $tts = Text::Template::Simple->new();
+   print $tts->compile(
+            'hello.tts', # the template file
+            [ name => 'Burak', location => 'Istanbul' ]
+         );
+
+Where C<hello.tts> has this content:
+
+   <% my %p = @_; %>
+   Hello <%= $p{name} %>,
+   I hope it's sunny in <%= $p{location} %>.
+   Local time is <%= scalar localtime time %>
 
 =head1 DESCRIPTION
 
-This is a simple template module. There is no extra template 
+This is a simple template module. There is no extra template/mini 
 language. Instead, it uses Perl as a template language. Templates
 can be cached on disk or inside the memory via internal cache 
-manager.
+manager. It is also possible to use static/dynamic includes,
+pass parameters to includes and allpt filters on them.
 
 =head1 SYNTAX
 
@@ -299,17 +302,16 @@ Blocks with commands: C<< <%| %> >>.
 
 A simple example:
 
-   <%
-      my @foo = qw(bar baz);
-      foreach my $x (@foo) {
-   %>
-   Element is <%= $x %>
+   <% foreach my $x (@foo) { %>
+      Element is <%= $x %>
    <% } %>
 
-Do not directly use print() statements, since they'll break the code.
-Use C<< <%= %> >> blocks. Delimiters can be altered:
+Do not directly use print() statements, since they'll break the template
+compilation. Use the self printing C<< <%= %> >> blocks.
 
-   $template = Text::Template::Simple->new(
+It is also possible to alter the delimiters:
+
+   $tts = Text::Template::Simple->new(
       delimiters => [qw/<?perl ?>/],
    );
 
@@ -325,14 +327,14 @@ then you can use them inside templates:
 If you need to remove a code temporarily without deleting, or need to add
 comments:
 
-    <%#
-    This
-    whole
-    block
-    will
-    be
-    ignored
-    %>
+   <%#
+      This
+      whole
+      block
+      will
+      be
+      ignored
+   %>
 
 If you put a space before the pound sign, the block will be a code block:
 
@@ -440,7 +442,7 @@ Will become:
 Chomping is inspired by Template Toolkit (mostly the same functionality,
 although TT seems to miss collapse/no-chomp per directive option).
 
-=head2 ACCESSING TEMPLATE NAMES
+=head2 Accessing Template Names
 
 You can use C<$0> to get the template path/name inside the template:
 
@@ -471,7 +473,7 @@ Alternatively, you can change the default delimiters to solve this issue.
 See the L</delimiters> option for L</new> for more information on how to
 do this.
 
-=head2 TEMPLATE PARAMETERS
+=head2 Template Parameters
 
 You can fetch parameters (passed to compile) in the usual perl way:
 
@@ -523,9 +525,8 @@ the included file.
 
 A block consists of a header part and the content.
 
-   <%|
-   HEADER;
-   BODY
+   <%| HEADER;
+       BODY
    %>
 
 C<HEADER> includes the commands and terminated with a semicolon. C<BODY> is the
@@ -550,7 +551,7 @@ Creates a new template object and can take several parameters.
 Must be an array ref containing the two delimiter values: 
 the opening delimiter and the closing delimiter:
 
-   $template = Text::Template::Simple->new(
+   $tts = Text::Template::Simple->new(
       delimiters => ['<?perl', '?>'],
    );
 
@@ -627,12 +628,12 @@ This is a string containing global elements (global to this particular
 object) for templates. You can define some generally accessible variables
 with this:
 
-   $template = Text::Template::Simple->new(
+   $tts = Text::Template::Simple->new(
       header => q~ my $foo = "bar"; ~,
    );
 
 and then you can use it (without defining) inside any template that 
-is compiled with C<$template> object:
+is compiled with C<$tts> object:
 
    Foo is <%=$foo%>
 
@@ -640,12 +641,12 @@ is compiled with C<$template> object:
 
 ARRAYref. Can be used to add a global parameter list to the templates.
 
-   $template = Text::Template::Simple->new(
+   $tts = Text::Template::Simple->new(
       add_args => [qw(foo bar baz)],
    );
 
 and then you can fetch them inside any template that is compiled with 
-C<$template> object:
+C<$tts> object:
 
    <%
       my $foo = shift;
@@ -656,25 +657,25 @@ C<$template> object:
 
 But it'll be logical to combine it with C<header> parameter:
 
-   $template = Text::Template::Simple->new(
+   $tts = Text::Template::Simple->new(
       header   => q~my $foo = shift;my $bar = shift;my $baz = shift;~,
       add_args => [qw(foo bar baz)],
    );
 
 and then you can use it inside any template that is compiled with 
-C<$template> object without manually fetching all the time:
+C<$tts> object without manually fetching all the time:
 
    Foo is <%=$foo%>. Bar is <%=$bar%>. Baz is <%=$baz%>
 
 Can be useful, if you want to define a default object:
 
-   $template = Text::Template::Simple->new(
+   $tts = Text::Template::Simple->new(
       header   => q~my $self = shift;~,
       add_args => [$my_default_object],
    );
 
 and then you can use it inside any template that is compiled with 
-C<$template> object without manually fetching:
+C<$tts> object without manually fetching:
 
    Foo is <%= $self->{foo} %>. Test: <%= $self->method('test') %>
 
@@ -700,7 +701,7 @@ for available options.
 It is also possible to send the output to the template output buffer, if you
 append C<:buffer> to the type of the C<stack> option:
 
-   $template = Text::Template::Simple->new(
+   $tts = Text::Template::Simple->new(
       stack => 'string:buffer',
    );
 
@@ -736,7 +737,7 @@ this parameter.
    $pre = CHOMP_NONE; # no chomp
    $pre = CHOMP_ALL;  # remove all whitespace
    $pre = COLLAPSE_ALL; # replace all ws with a single space
-   $template = Text::Template::Simple->new(
+   $tts = Text::Template::Simple->new(
       pre_chomp => $pre,
    );
 
@@ -746,7 +747,7 @@ this parameter.
    $post = CHOMP_NONE; # no chomp
    $post = CHOMP_ALL;  # remove all whitespace
    $post = COLLAPSE_ALL; # replace all ws with a single space
-   $template = Text::Template::Simple->new(
+   $tts = Text::Template::Simple->new(
       post_chomp => $post,
    );
 
@@ -774,13 +775,13 @@ text.
 
 You can pass a file path as the first parameter:
 
-   $text = $template->compile('/my/templates/test.tts');
+   $text = $tts->compile('/my/templates/test.tts');
 
 =head4 Strings
 
 You can pass a string as the first parameter:
 
-   $text = $template->compile(q~
+   $text = $tts->compile(q~
    <%for my $i (0..10) {%>
       counting <%=$i%>...
    <%}%>
@@ -793,22 +794,22 @@ filehandles, be sure to pass it's reference or it'll be treated as a
 file path and your code will probably C<die>:
 
    open MYHANDLE, '/path/to/foo.tts' or die "Error: $!";
-   $text = $template->compile(\*MYHANDLE); # RIGHT.
-   $text = $template->compile( *MYHANDLE); # WRONG. Recognized as a file path
-   $text = $template->compile(  MYHANDLE); # WRONG. Ditto. Dies under strict
+   $text = $tts->compile(\*MYHANDLE); # RIGHT.
+   $text = $tts->compile( *MYHANDLE); # WRONG. Recognized as a file path
+   $text = $tts->compile(  MYHANDLE); # WRONG. Ditto. Dies under strict
 
 or use the standard C<IO::File> module:
 
    use IO::File;
    my $fh = IO::File->new;
    $fh->open('/path/to/foo.tts', 'r') or die "Error: $!";
-   $text = $template->compile($fh);
+   $text = $tts->compile($fh);
 
 or you can use lexicals inside C<open> if you don't care about 
 compatibility with older perl:
 
    open my $fh, '/path/to/foo.tts' or die "Error: $!";
-   $text = $template->compile($fh);
+   $text = $tts->compile($fh);
 
 Filehandles will B<not> be closed.
 
@@ -817,9 +818,9 @@ Filehandles will B<not> be closed.
 Pass an arrayref containing the type and the parameter to disable guessing
 and forcing the type:
 
-   $text = $template->compile( [ FILE   => '/path/to/my.tts'] );
-   $text = $template->compile( [ GLOB   => \*MYHANDLE] );
-   $text = $template->compile( [ STRING => 'I am running under <%= $] %>'] );
+   $text = $tts->compile( [ FILE   => '/path/to/my.tts'] );
+   $text = $tts->compile( [ GLOB   => \*MYHANDLE] );
+   $text = $tts->compile( [ STRING => 'I am running under <%= $] %>'] );
 
 Type can be one of these: C<FILE>, C<GLOB>, C<STRING>.
 
@@ -852,7 +853,7 @@ C<map_keys> also disables usage of perl constructs. Only bare words
 can be used and you don't have to I<fetch> parameters via C<@_> 
 inside the template. Here is an example:
 
-   $text = $template->compile(
+   $text = $tts->compile(
             q~This is "<%foo%>", that is "<%bar%>" 
               and the other is "<%baz%>"~,
             [
@@ -868,7 +869,7 @@ inside the template. Here is an example:
 Can be good (and simple) for compiling i18n texts. If you don't use 
 C<map_keys>, the above code must be written as:
 
-   $text = $template->compile(
+   $text = $tts->compile(
             q~<%my(%l) = @_%>This is "<%=$l{foo}%>", that is "<%=$l{bar}%>" 
               and the other is "<%=$l{baz}%>"~,
             [
