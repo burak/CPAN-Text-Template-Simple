@@ -26,6 +26,7 @@ my $mb = $class->new(
         directory => [
             'monolithic_version',
             'tools',
+            't',
         ]
     },
     meta_merge => {
