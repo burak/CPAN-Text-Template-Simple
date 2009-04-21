@@ -104,8 +104,10 @@ sub _change_versions {
 sub _build_monolith {
    my $self   = shift;
    my $files  = shift;
-   my $dir    = File::Spec->catdir( qw( monolithic_version Text Template ) );
-   my $mono   = File::Spec->catfile( $dir, 'Simple.pm' );
+   my @mono_dir = ( monolithic_version => split /::/, $self->module_name );
+   my $mono_file = pop(@mono_dir) . '.pm';
+   my $dir    = File::Spec->catdir( @mono_dir );
+   my $mono   = File::Spec->catfile( $dir, $mono_file );
    my $buffer = File::Spec->catfile( $dir, 'buffer.txt' );
    my $readme = File::Spec->catfile( qw( monolithic_version README ) );
    my $copy   = $mono . '.tmp';
@@ -135,14 +137,14 @@ sub _build_monolith {
       my(undef, undef, $base) = File::Spec->splitpath($mod);
       warn "\tMERGE $mod\n";
       my $is_eof = 0;
-      my $is_pre = $base eq 'Constants.pm' || $base eq 'Util.pm';
+      my $is_pre = $self->_monolith_add_to_top( $base );
       open my $RO_FH, '<:raw', $mod or die "Can not open file($mod): $!";
       MONO_MERGE: while ( my $line = readline $RO_FH ) {
          #print $MONO "{\n" if ! $curly_top{ $mod }++;
          my $chomped  = $line;
          chomp $chomped;
          $is_eof++ if $chomped eq '1;';
-         my $no_pod   = $is_eof && $base ne 'Simple.pm';
+         my $no_pod   = $is_eof && $base ne $mono_file;
          $no_pod ? last MONO_MERGE
                  : do {
                      warn "\tADD POD FROM $mod\n"
@@ -170,11 +172,11 @@ sub _build_monolith {
                      } @{ $files };
 
       my @packages = map {
-                  my $m = $_;
-                  $m =~ s{ [.]pm \z }{}xms;
-                  $m =~ s{  /       }{::}xmsg;
-                  $m;
-               } @inc_files;
+                        my $m = $_;
+                        $m =~ s{ [.]pm \z }{}xms;
+                        $m =~ s{  /       }{::}xmsg;
+                        $m;
+                     } @inc_files;
 
       open my $W,    '>:raw', $mono   or die "Can not open file($mono): $!";
       open my $TOP,  '<:raw', $buffer or die "Can not open file($buffer): $!";
@@ -217,7 +219,7 @@ sub _build_monolith {
 
    PROVE: {
       warn "\tTESTING MONOLITH\n";
-      local $ENV{TTS_TESTING_MONOLITH_BUILD} = 1;
+      local $ENV{AUTHOR_TESTING_MONOLITH_BUILD} = 1;
       my @output = qx(prove -Isingle);
       print "\t$_" for @output;
       chomp(my $result = pop @output);
@@ -225,19 +227,20 @@ sub _build_monolith {
    }
 
    warn "\tADD README\n";
-   $self->_tts_save('>', $readme, $self->_monolith_readme);
+   $self->_new_file('>', $readme, $self->_monolith_readme);
 
    warn "\tADD TO MANIFEST\n";
    (my $monof   = $mono  ) =~ s{\\}{/}xmsg;
    (my $readmef = $readme) =~ s{\\}{/}xmsg;
-   $self->_tts_save( '>>', 'MANIFEST',
+   my $name = $self->module_name;
+   $self->_new_file( '>>', 'MANIFEST',
       "$readmef\n",
-      "$monof\tThe monolithic version of Text::Template::Simple",
+      "$monof\tThe monolithic version of $name",
       " to ease dropping into web servers. Generated automatically.\n"
    );
 }
 
-sub _tts_save {
+sub _new_file {
    my $self = shift;
    my $mode = shift;
    my $file = shift;
@@ -250,6 +253,12 @@ sub _tts_save {
    close $FH;
 }
 
+sub _monolith_add_to_top {
+   my $self = shift;
+   my $base = shift;
+   return $base eq 'Constants.pm' || $base eq 'Util.pm';
+}
+
 sub _monolith_readme {
    my $self = shift;
    my $pod  = $self->_monolith_pod_warning;
@@ -259,9 +268,10 @@ sub _monolith_readme {
 
 sub _monolith_pod_warning {
    my $self = shift;
+   my $name = $self->module_name;
    return <<'MONOLITH_POD_WARNING';
 
-B<WARNING>! This is the monolithic version of Text::Template::Simple
+B<WARNING>! This is the monolithic version of $name
 generated with an automatic build tool. If you experience problems
 with this version, please install and use the supported standard
 version. This version is B<NOT SUPPORTED>.

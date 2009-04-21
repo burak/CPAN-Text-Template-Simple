@@ -6,6 +6,8 @@ use IO::File;
 
 do 'PREREQ' or die "Can not include PREREQ: $@";
 
+# _monolith_add_to_top
+
 # getting dumb error messages. maybe related to an old version?
 $PREREQ{'Module::Build'} = '0.2808';
 
