@@ -1,8 +1,10 @@
 #!/usr/bin/env perl
 use strict;
 use ExtUtils::MakeMaker;
+use lib qw( builder );
+use Build::Spec;
 
-my %opt  = do 'SPEC' or die "Can not include PREREQ: $@";
+my %opt  = spec;
 my $info = "\nRecommended Modules:\n\n";
 
 foreach my $m ( sort keys %{ $opt{recommends} } ) {
