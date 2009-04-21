@@ -8,7 +8,7 @@ my %spec = mm_spec;
 
 WriteMakefile(
     NAME         => $spec{module_name},
-    VERSION_FROM => $spec{VERSION_FROM}
+    VERSION_FROM => $spec{VERSION_FROM},
     PREREQ_PM    => $spec{PREREQ_PM},
     PL_FILES     => {},
     ($] >= 5.005 ? (
