@@ -13,8 +13,6 @@ lib/Text/Template/Simple/Caller.pm
 lib/Text/Template/Simple/Constants.pm
 lib/Text/Template/Simple/Tokenizer.pm
 lib/Text/Template/Simple/Util.pm
-t/01-pod.t
-t/02-pod-coverage.t
 t/03-simple.t
 t/04-extend.t
 t/05-safe.t
@@ -43,7 +41,6 @@ t/27-include-param.t
 t/28-include-filter.t
 t/29-block-filter.t
 t/30-toke-substr.t
-t/99-all-modules-have-the-same-version.t
 t/data/test.tts
 t/data/dynamic.tts
 t/data/dynamic_delim.tts
