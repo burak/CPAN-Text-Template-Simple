@@ -13,6 +13,6 @@ WriteMakefile(
     PL_FILES     => {},
     ($] >= 5.005 ? (
     AUTHOR       => $spec{dist_author},
-    ABSTRACT     => 'Simple text template engine',
+    ABSTRACT     => $spec{ABSTRACT},
     ) : ()),
 );
