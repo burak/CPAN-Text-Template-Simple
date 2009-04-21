@@ -60,7 +60,6 @@ t/lib/My.pm
 builder/Build.pm
 eg/precompile.pl
 etc/flowchart.txt
-Makefile.PL
 Build.PL
 Changes
 MANIFEST
