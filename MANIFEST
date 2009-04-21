@@ -60,14 +60,14 @@ t/data/path1/test4.tts
 t/data/path2/test2.tts
 t/data/path2/test3.tts
 t/lib/My.pm
-tools/Build.pm
+builder/Build.pm
 eg/precompile.pl
 etc/flowchart.txt
 Makefile.PL
 Build.PL
 Changes
 MANIFEST
-PREREQ
+SPEC
 README
 META.yml
 TODO

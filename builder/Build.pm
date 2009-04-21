@@ -1,9 +1,14 @@
+package Build;
 use strict;
 use vars qw( $VERSION );
 use warnings;
+
+$VERSION = '0.40';
+
 use File::Find;
 use File::Spec;
 use File::Path;
+use base qw( Module::Build );
 use constant RE_VERSION_LINE => qr{
    \A \$VERSION \s+ = \s+ ["'] (.+?) ['"] ; (.+?) \z
 }xms;
@@ -18,7 +23,29 @@ use constant MONTHS => qw(
 use constant MONOLITH_TEST_FAIL =>
    "\nFAILED! Building the monolithic version failed during unit testing\n\n";
 
-$VERSION = '0.40';
+use constant NO_INDEX => qw( monolithic_version builder t );
+use constant DEFAULTS => qw(
+   license          perl
+   create_license   1
+   sign             0
+);
+
+__PACKAGE__->add_property( build_monolith      => 0  );
+__PACKAGE__->add_property( change_versions     => 0  );
+__PACKAGE__->add_property( monolith_add_to_top => [] );
+
+sub new {
+   my $class = shift;
+   my %opt   = @_;
+   my %def   = DEFAULTS;
+   foreach my $key ( keys %def ) {
+      $opt{ $key } = $def{ $key } if ! defined $opt{ $key };
+   }
+   $opt{no_index}            ||= {};
+   $opt{no_index}{directory} ||= [];
+   push @{ $opt{no_index}{directory} }, NO_INDEX;
+   return $class->SUPER::new( %opt );
+}
 
 sub ACTION_dist {
    my $self = shift;
@@ -38,8 +65,8 @@ sub ACTION_dist {
       },
       no_chdir => 1,
    }, "lib";
-   $self->_change_versions( \@modules );
-   $self->_build_monolith(  \@modules );
+   $self->_change_versions( \@modules ) if $self->change_versions;
+   $self->_build_monolith(  \@modules ) if $self->build_monolith;
    $self->SUPER::ACTION_dist( @_ );
 }
 
@@ -256,7 +283,12 @@ sub _new_file {
 sub _monolith_add_to_top {
    my $self = shift;
    my $base = shift;
-   return $base eq 'Constants.pm' || $base eq 'Util.pm';
+   my $list = $self->monolith_add_to_top || die "monolith_add_to_top not set";
+   die "monolith_add_to_top is not an ARRAY" if ref($list) ne 'ARRAY';
+   foreach my $test ( @{ $list } ) {
+      return 1 if $test eq $base;
+   }
+   return 0;
 }
 
 sub _monolith_readme {
@@ -279,3 +311,5 @@ MONOLITH_POD_WARNING
 }
 
 1;
+
+__END__
