@@ -1,16 +1,22 @@
 package Text::Template::Simple::IO;
 use strict;
 use vars qw($VERSION);
+use File::Spec;
 use Text::Template::Simple::Constants qw(:all);
 use Text::Template::Simple::Util qw( DEBUG LOG ishref binary_mode fatal );
+use constant MY_IO_LAYER      => 0;
+use constant MY_INCLUDE_PATHS => 1;
 
 $VERSION = '0.62_07';
 
 sub new {
    my $class = shift;
    my $layer = shift;
-   my $self  = bless do { \my $anon }, $class;
-   $$self    = $layer if defined $layer;
+   my $paths = shift;
+   my $self  = [ undef, undef ];
+   bless $self, $class;
+   $self->[MY_IO_LAYER]      = $layer if defined $layer;
+   $self->[MY_INCLUDE_PATHS] = [ @{ $paths } ] if $paths; # copy
    $self;
 }
 
@@ -49,7 +55,7 @@ sub layer {
    return if ! NEW_PERL;
    my $self   = shift;
    my $fh     = shift || fatal('tts.io.layer.fh');
-   my $layer  = $$self;
+   my $layer  = $self->[MY_IO_LAYER];
    binary_mode( $fh, $layer ) if $layer;
    return;
 }
@@ -93,10 +99,23 @@ sub is_file {
          ;
 }
 
+sub file_exists {
+   my $self = shift;
+   my $file = shift;
+
+   return $file if $self->is_file( $file );
+
+   foreach my $path ( @{ $self->[MY_INCLUDE_PATHS] } ) {
+      my $test = File::Spec->catfile( $path, $file );
+      return $test if $self->is_file( $test );
+   }
+
+   return; # fail!
+}
+
 sub DESTROY {
    my $self = shift;
    LOG( DESTROY => ref $self ) if DEBUG();
-   $$self = undef;
    return;
 }
 

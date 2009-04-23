@@ -2,7 +2,7 @@ package Text::Template::Simple;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '0.62_16';
+$VERSION = '0.62_17';
 
 use File::Spec;
 use Text::Template::Simple::Constants qw(:all);
@@ -148,7 +148,10 @@ sub _init {
    fatal('tts.main.init.include')
       if $self->[INCLUDE_PATHS] && ! isaref($self->[INCLUDE_PATHS]);
 
-   $self->[IO_OBJECT] = $self->connector('IO')->new( $self->[IOLAYER] );
+   $self->[IO_OBJECT] = $self->connector('IO')->new(
+                           $self->[IOLAYER],
+                           $self->[INCLUDE_PATHS]
+                        );
 
    if ( $self->[CACHE_DIR] ) {
       $self->[CACHE_DIR] = $self->io->validate( dir => $self->[CACHE_DIR] )
@@ -172,21 +175,6 @@ sub _output_buffer_var {
    $id  =~ tr/a-zA-Z_0-9//cd;
    $id  =~ s{SCALAR}{SELF}xms if $type eq 'self';
    return '$' . $id;
-}
-
-sub _file_exists {
-   # TODO: pass INCLUDE_PATHS to ::IO to move this there
-   my $self = shift;
-   my $file = shift;
-
-   return $file if $self->io->is_file( $file );
-
-   foreach my $path ( @{ $self->[INCLUDE_PATHS] } ) {
-      my $test = File::Spec->catfile( $path, $file );
-      return $test if $self->io->is_file( $test );
-   }
-
-   return; # fail!
 }
 
 sub _class_id {

@@ -77,7 +77,7 @@ sub _include {
    $file = trim $file;
 
    my $err    = $self->_include_error( $type );
-   my $exists = $self->_file_exists( $file );
+   my $exists = $self->io->file_exists( $file );
    my $interpolate;
 
    if ( $exists ) {
@@ -120,7 +120,7 @@ sub _interpolate {
    # so that, you can pass parameters, apply filters etc.
    my %inc = (INCLUDE => map { trim $_ } split RE_PIPE_SPLIT, $file );
 
-   if ( $self->_file_exists( $inc{INCLUDE} ) ) {
+   if ( $self->io->file_exists( $inc{INCLUDE} ) ) {
       # well... constantly working around :p
       $inc{INCLUDE} = qq{'$inc{INCLUDE}'};
    }

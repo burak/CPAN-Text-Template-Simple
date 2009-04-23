@@ -21,7 +21,7 @@ sub _examine {
       $self->[TYPE] = $type;
    }
    else {
-      if ( my $path = $self->_file_exists( $thing ) ) {
+      if ( my $path = $self->io->file_exists( $thing ) ) {
          $rv                = $self->io->slurp( $path );
          $self->[TYPE]      = 'FILE';
          $self->[TYPE_FILE] = $path;

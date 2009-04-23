@@ -31,7 +31,7 @@ sub _compile {
       # TODO:generate a single error handler for includes, merge with _include()
       # tmpx is a "file" included from an upper level compile()
       my $etitle = $self->_include_error( T_DYNAMIC );
-      my $exists = $self->_file_exists( $tmpx );
+      my $exists = $self->io->file_exists( $tmpx );
       return $etitle . " '$tmpx' is not a file" if not $exists;
       # TODO: remove this second call somehow, reduce  to a single call
       $tmp = $self->_examine( $exists ); # re-examine
