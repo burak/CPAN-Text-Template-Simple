@@ -12,6 +12,7 @@ use constant DELETE_WS        => ++$OID;
 use constant FAKER            => ++$OID;
 use constant FAKER_HASH       => ++$OID;
 use constant FAKER_SELF       => ++$OID;
+use constant FAKER_WARN       => ++$OID;
 use constant MONOLITH         => ++$OID;
 use constant CACHE            => ++$OID;
 use constant CACHE_DIR        => ++$OID;
@@ -21,6 +22,7 @@ use constant STRICT           => ++$OID;
 use constant SAFE             => ++$OID;
 use constant HEADER           => ++$OID;
 use constant ADD_ARGS         => ++$OID;
+use constant CAPTURE_WARNINGS => ++$OID;
 use constant WARN_IDS         => ++$OID;
 use constant TYPE             => ++$OID;
 use constant TYPE_FILE        => ++$OID;
@@ -246,6 +248,7 @@ BEGIN {
                         FAKER
                         FAKER_HASH
                         FAKER_SELF
+                        FAKER_WARN
                         CACHE
                         CACHE_DIR
                         CACHE_OBJECT
@@ -256,6 +259,7 @@ BEGIN {
                         HEADER
                         ADD_ARGS
                         WARN_IDS
+                        CAPTURE_WARNINGS
                         TYPE
                         TYPE_FILE
                         COUNTER
