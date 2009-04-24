@@ -73,8 +73,8 @@ my %INTERNAL = (
    dump_sigwarn => q(
       join("\n",
             map {
-               s{\A\s+}{}xms;
-               s{\s+\z}{}xms;
+               s{ \A \s+    }{}xms;
+               s{    \s+ \z }{}xms;
                "[warning] $_\n"
             } @{ <%BUF%> }
          );
