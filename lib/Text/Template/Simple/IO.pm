@@ -159,6 +159,10 @@ it is valid, C<undef> otherwise.
 
 Test if C<THING> is a file.
 
+=head2 file_exists THING
+
+Test if C<THING> is a file. This method also searches all the C<include paths>.
+
 =head1 AUTHOR
 
 Burak GE<252>rsoy, E<lt>burakE<64>cpan.orgE<gt>
