@@ -302,23 +302,25 @@ sub _parse_mapkeys {
 sub _add_sigwarn {
    my $self = shift;
    $self->[FAKER_WARN] = $self->_output_buffer_var('array');
-   return   $self->_mini_compiler(
+   my $rv = $self->_mini_compiler(
                $self->_internal('add_sigwarn'),
                { BUF     => $self->[FAKER_WARN] },
                { flatten => 1                   }
             );
+   return $rv;
 }
 
 sub _dump_sigwarn {
    my $self = shift;
    my $h    = shift;
-   return   $h->{capture}->(
+   my $rv = $h->{capture}->(
                $self->_mini_compiler(
                   $self->_internal('dump_sigwarn'),
                   { BUF     => $self->[FAKER_WARN] },
                   { flatten => 1                   }
                )
             );
+   return $rv;
 }
 
 sub _add_stack {
