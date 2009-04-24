@@ -63,6 +63,22 @@ my %INTERNAL = (
    map_keys_default => q(
       <%BUF%> .= <%HASH%>->{"<%KEY%>"};
    ),
+
+   add_sigwarn => q(
+      my <%BUF%>;
+      local $SIG{__WARN__} = sub {
+         push @{ <%BUF%> }, $_[0];
+      };
+   ),
+   dump_sigwarn => q(
+      join("\n",
+            map {
+               s{\A\s+}{}xms;
+               s{\s+\z}{}xms;
+               "[warning] $_\n"
+            } @{ <%BUF%> }
+         );
+   ),
 );
 
 sub _internal {
@@ -285,17 +301,24 @@ sub _parse_mapkeys {
 
 sub _add_sigwarn {
    my $self = shift;
-   my $tmp  = 'my <%BUF%>; local $SIG{__WARN__} = sub { push @{<%BUF%>}, $_[0] };';
    $self->[FAKER_WARN] = $self->_output_buffer_var('array');
-   return $self->_mini_compiler( $tmp, { BUF => $self->[FAKER_WARN] } );
+   return   $self->_mini_compiler(
+               $self->_internal('add_sigwarn'),
+               { BUF     => $self->[FAKER_WARN] },
+               { flatten => 1                   }
+            );
 }
 
 sub _dump_sigwarn {
    my $self = shift;
    my $h    = shift;
-   my $tmp  = 'join("\n", map { s{\A\s+}{}xms; s{\s+\z}{}xms; "[warning] $_\n" } @{<%BUF%>});';
-   my $rv   = $self->_mini_compiler( $tmp, { BUF => $self->[FAKER_WARN] } );
-   return $h->{capture}->( $rv );
+   return   $h->{capture}->(
+               $self->_mini_compiler(
+                  $self->_internal('dump_sigwarn'),
+                  { BUF     => $self->[FAKER_WARN] },
+                  { flatten => 1                   }
+               )
+            );
 }
 
 sub _add_stack {
