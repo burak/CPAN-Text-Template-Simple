@@ -92,7 +92,11 @@ sub _include {
 
    if ( DEBUG() ) {
       require Text::Template::Simple::Tokenizer;
-      my $toke = Text::Template::Simple::Tokenizer->new;
+      my $toke =  Text::Template::Simple::Tokenizer->new(
+                     @{ $self->[DELIMITERS] },
+                     $self->[PRE_CHOMP],
+                     $self->[POST_CHOMP]
+                  );
       LOG( INCLUDE => $toke->_visualize_tid($type) . " => '$file'" );
    }
 
