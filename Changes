@@ -5,6 +5,8 @@ Time zone is UTC+2.
 0.62_17 Thu Apr 23 23:09:13 2009
    => Move _file_exists to io->file_exists.
    => New option: capture_warnings.
+   => Verbose error messages are now disabled by default. Set verbose_errors
+      to a true value to enable this.
 
 0.62_16 Thu Apr 23 19:52:29 2009
    => Update builder.
