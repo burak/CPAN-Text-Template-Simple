@@ -528,7 +528,7 @@ prefix:
 
 =head3 INCLUDE PARAMETERS
 
-Just pass the parameters as describe above and fetch them via C<@_> inside
+Just pass the parameters as described above and fetch them via C<@_> inside
 the included file.
 
 =head2 BLOCKS
