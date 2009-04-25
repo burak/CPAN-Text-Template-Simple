@@ -13,6 +13,7 @@ lib/Text/Template/Simple/Caller.pm
 lib/Text/Template/Simple/Constants.pm
 lib/Text/Template/Simple/Tokenizer.pm
 lib/Text/Template/Simple/Util.pm
+lib/Text/Template/Simple/API.pod
 t/003-simple.t
 t/004-extend.t
 t/005-safe.t
