@@ -45,6 +45,7 @@ my %DEFAULT = ( # default object attributes
    user_thandler    => undef, # user token handler callback
    monolith         =>  0,    # use monolithic template & cache ?
    include_paths    => [],    # list of template dirs
+   verbose_errors   =>  0,    # bool
    pre_chomp        => CHOMP_NONE,
    post_chomp       => CHOMP_NONE,
    # TODO: Consider removing this
@@ -721,6 +722,11 @@ includes, then you need to enable this option. However, if you are using the
 cache, then the included templates will not be updated automatically.
 
 C<monolith> is disabled by default.
+
+=head3 verbose_errors
+
+If enabled, you'll get both the parsed structure and a tidied version of it in
+the error messages. Disabled by default.
 
 =head3 include_paths
 

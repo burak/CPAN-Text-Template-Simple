@@ -40,6 +40,7 @@ use constant DEEP_RECURSION   => ++$OID;
 use constant INCLUDE_PATHS    => ++$OID;
 use constant PRE_CHOMP        => ++$OID;
 use constant POST_CHOMP       => ++$OID;
+use constant VERBOSE_ERRORS   => ++$OID;
 use constant MAXOBJFIELD      =>   $OID; # number of the last object field
 
 # token type ids
@@ -276,6 +277,7 @@ BEGIN {
                         INCLUDE_PATHS
                         PRE_CHOMP
                         POST_CHOMP
+                        VERBOSE_ERRORS
                         MAXOBJFIELD
                      )],
       resume    =>   [qw(
