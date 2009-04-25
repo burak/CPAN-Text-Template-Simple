@@ -522,6 +522,10 @@ How to add your own tokens into Text::Template::Simple?
 
 =end EXPERTS
 
+=head1 SEE ALSO
+
+L<Text::Template::Simple>.
+
 =head1 AUTHOR
 
 Burak GE<252>rsoy, E<lt>burakE<64>cpan.orgE<gt>
