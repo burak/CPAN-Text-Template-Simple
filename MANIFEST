@@ -58,6 +58,9 @@ t/data/path1/test1.tts
 t/data/path1/test4.tts
 t/data/path2/test2.tts
 t/data/path2/test3.tts
+t/data/027-dynamic.tts
+t/data/027-dynamic-inc.tts
+t/data/028-dynamic.tts
 t/lib/My.pm
 builder/Build.pm
 eg/precompile.pl

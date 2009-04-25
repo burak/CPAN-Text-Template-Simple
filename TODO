@@ -2,8 +2,6 @@
         o Increase # of tests
         o Implement placeholder tests
             - 022-monolith
-            - 027-include-param.t
-            - 028-include-filter.t
             - 029-block-filter.t
 * Remove code templates from ::Constants (into ::Simple)
         o Tidy up ::Constants.
