@@ -88,7 +88,8 @@ sub _include {
       $interpolate = 1; # just guessing ...
    }
 
-   return "q~$err '" . escape('~' => $file) . "' is a directory~" if -d $file;
+   return "q~$err '" . escape('~' => $file) . "' is a directory~"
+      if $self->io->is_dir( $file );
 
    if ( DEBUG() ) {
       require Text::Template::Simple::Tokenizer;

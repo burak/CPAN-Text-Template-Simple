@@ -90,13 +90,14 @@ sub is_file {
    # safer than a simple "-e"
    my $self = shift;
    my $file = shift || return;
-   return     ref $file               ? 0
-         :        $file =~ RE_NONFILE ? 0
-         : length $file >= 255        ? 0
-         : ! -e   $file               ? 0
-         :   -d _                     ? 0
-         :                              1
-         ;
+   return $self->_looks_like_file( $file ) && ! -d $file;
+}
+
+sub is_dir {
+   # safer than a simple "-d"
+   my $self = shift;
+   my $file = shift || return;
+   return $self->_looks_like_file( $file ) && -d $file;
 }
 
 sub file_exists {
@@ -111,6 +112,17 @@ sub file_exists {
    }
 
    return; # fail!
+}
+
+sub _looks_like_file {
+   my $self = shift;
+   my $file = shift || return;
+   return     ref $file               ? 0
+         :        $file =~ RE_NONFILE ? 0
+         : length $file >= 255        ? 0
+         :     -e $file               ? 1
+         :                              0
+         ;
 }
 
 sub DESTROY {
@@ -154,6 +166,10 @@ Returns the contents of the supplied file as a string.
 
 C<TYPE> can either be C<dir> or C<file>. Returns the corrected path if
 it is valid, C<undef> otherwise.
+
+=head2 is_dir THING
+
+Test if C<THING> is a directory.
 
 =head2 is_file THING
 
