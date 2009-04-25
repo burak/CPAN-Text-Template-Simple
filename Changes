@@ -8,6 +8,7 @@ Time zone is UTC+2.
    => Verbose error messages are now disabled by default. Set verbose_errors
       to a true value to enable this.
    => Move the API reference into Text/Template/Simple/API.pod.
+   => Implemented tests 027 & 028.
 
 0.62_16 Thu Apr 23 19:52:29 2009
    => Update builder.

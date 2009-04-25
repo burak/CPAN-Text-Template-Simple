@@ -550,6 +550,8 @@ Identical to include filters, but works on blocks of text:
       <p>&FooBar=42</p>
    %>
 
+Note that you can not use any variables in these blocks. They are static.
+
 =head1 METHODS & FUNCTIONS
 
 =head2 new

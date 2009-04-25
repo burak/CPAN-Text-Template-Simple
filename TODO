@@ -3,6 +3,7 @@
         o Implement placeholder tests
             - 022-monolith
             - 029-block-filter.t
+* Consider re-implementing BLOCKs with filters. Make them dynamic.
 * Remove code templates from ::Constants (into ::Simple)
         o Tidy up ::Constants.
 * Implement variable sharing without monolith..?
