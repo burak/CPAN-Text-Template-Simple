@@ -2,7 +2,7 @@ package Text::Template::Simple;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '0.62_18';
+$VERSION = '0.70';
 
 use File::Spec;
 use Text::Template::Simple::Constants qw(:all);
@@ -258,6 +258,7 @@ language. Instead, it uses Perl as a template language. Templates
 can be cached on disk or inside the memory via internal cache 
 manager. It is also possible to use static/dynamic includes,
 pass parameters to includes and allpt filters on them.
+Also see L<Text::Template::Simple::API> for the full API definiton.
 
 =head1 SYNTAX
 

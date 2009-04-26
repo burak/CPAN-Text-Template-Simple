@@ -177,7 +177,8 @@ Test if C<THING> is a file.
 
 =head2 file_exists THING
 
-Test if C<THING> is a file. This method also searches all the C<include paths>.
+Test if C<THING> is a file. This method also searches all the C<include paths>
+and returns the full path to the file if it exists.
 
 =head1 AUTHOR
 
