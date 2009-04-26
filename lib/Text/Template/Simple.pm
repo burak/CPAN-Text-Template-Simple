@@ -544,6 +544,9 @@ actual block content.
 
 =head3 BLOCK FILTERS
 
+B<WARNING> Block filters are considered to be experimental. They may be changed
+or completely removed in the future.
+
 Identical to include filters, but works on blocks of text:
 
    <%| FILTER: HTML, OtherFilter;
