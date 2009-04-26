@@ -355,7 +355,12 @@ sub populate {
       my $cid    = $cache_id ? $cache_id : 'N/A';
       my $tidied = $parent->_tidy( $parsed );
       croak $parent->[VERBOSE_ERRORS]
-            ? sprintf(COMPILE_ERROR_TMP, $cid, $error, $parsed, $tidied)
+            ? $parent->_mini_compiler( $parent->_internal('compile_error'), {
+               CID => $cid,
+               ERROR => $error,
+               PARSED => $parsed,
+               TIDIED => $tidied,
+                                                                        } )
             : $error
             ;
    }
