@@ -357,7 +357,7 @@ parsing for the included files, use the dynamic includes:
    <%* my_other.html %>
    <%* my_other.txt  %>
 
-Interpolation is also supported with both kind of includes, so the following
+Interpolation is also supported with both kinds of includes, so the following
 is valid code:
 
    <%+ "/path/to/" . $txt    %>
@@ -643,7 +643,7 @@ Burak GE<252>rsoy, E<lt>burakE<64>cpan.orgE<gt>
 
 =head1 COPYRIGHT
 
-Copyright 2004-2008 Burak GE<252>rsoy. All rights reserved.
+Copyright 2004-2009 Burak GE<252>rsoy. All rights reserved.
 
 =head1 LICENSE
 
