@@ -2,7 +2,7 @@ package Text::Template::Simple::Base::Parser;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '0.62_07';
+$VERSION = '0.70';
 
 use Text::Template::Simple::Util      qw(:all);
 use Text::Template::Simple::Constants qw(:all);
@@ -76,8 +76,7 @@ sub _parse {
       }
 
       elsif ( T_DYNAMIC == $id || T_STATIC == $id ) {
-         $self->[NEEDS_OBJECT]++;
-         $code .= $h->{capture}->( $self->_include($id, $str) );
+         $code .= $h->{capture}->( $self->_needs_object->_include($id, $str) );
       }
 
       elsif ( T_MAPKEY == $id ) {
