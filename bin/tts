@@ -66,16 +66,17 @@ sub run {
         *Text::Template::Simple::Tokenizer::DEBUG_TOKENS = sub { 1 };
     }
 
-    my $TTS_OPTS = {
+    my $TTS = {
         header => {
             charset => '',
+            type    => 'text/html',
         },
     };
 
     $p{new}->{add_args} ||= [];
     $p{new}->{header}   ||= '';
-    unshift @{ $p{new}->{add_args} }, $TTS_OPTS;
-    $p{new}->{header} = q{my $TTS_OPTS = shift;} . $p{new}->{header};
+    unshift @{ $p{new}->{add_args} }, $TTS;
+    $p{new}->{header} = q{my $TTS = shift;} . $p{new}->{header};
 
     my $t  = Text::Template::Simple->new( %{ $p{new} } );
     my $rv;
@@ -87,7 +88,14 @@ sub run {
             );
     };
     my $error = $@;
-    my $head  = $p{'http-header'} ? do { require CGI; CGI::header(-charset => $TTS_OPTS->{header}{charset}); } : '';
+    my $head  = '';
+    if ( $p{'http-header'}  ) {
+        require CGI;
+        $head = CGI::header(
+                    -charset => $TTS->{header}{charset},
+                    -type    => $TTS->{header}{type},
+                );
+    }
     $rv = "Error in template: $error" if $error;
     die $rv if $error && ! $head;
 
