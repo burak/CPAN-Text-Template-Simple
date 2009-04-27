@@ -274,31 +274,31 @@ Template syntax is very simple. There are few kinds of delimiters:
 
 =item *
 
-Code Blocks: C<< <% %> >>
+C<< <% %>  >> Code Blocks
 
 =item *
 
-Self-printing Blocks: C<< <%= %> >>
+C<< <%= %> >> Self-printing Blocks
 
 =item *
 
-Escaped Delimiters: C<< <%! %> >>
+C<< <%! %> >> Escaped Delimiters
 
 =item *
 
-Static Include Directives: C<< <%+ %> >>
+C<< <%+ %> >> Static Include Directives
 
 =item *
 
-Dynamic include directives C<< <%* %> >>
+C<< <%* %> >> Dynamic include directives
 
 =item *
 
-Comment Directives: C<< <%# %> >>
+C<< <%# %> >> Comment Directives
 
 =item *
 
-Blocks with commands: C<< <%| %> >>.
+C<< <%| %> >> Blocks with commands
 
 =back
 
