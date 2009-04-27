@@ -96,6 +96,7 @@ sub run {
                     -type    => $TTS->{header}{type},
                 );
     }
+    binmode STDOUT, ':utf8' if lc $TTS->{header}{charset} eq 'utf8';
     $rv = "Error in template: $error" if $error;
     die $rv if $error && ! $head;
 
