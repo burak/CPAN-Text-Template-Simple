@@ -1,0 +1,189 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use File::Spec;
+use File::Basename;
+use Getopt::Long;
+use Data::Dumper;
+use Text::Template::Simple;
+
+our $VERSION = '0.10';
+
+GetOptions( \my %arg => qw(
+    e=s
+    version
+    http-header
+    help
+
+    debug=i
+    debug-tokens
+
+    new-cache
+    new-capture-warnings
+    new-resume
+    new-safe
+    new-stack
+    new-strict
+    new-verbose_errors
+    new-warn-ids
+    new-monolith
+
+    new-add-args=s@
+    new-cache-dir=s
+    new-delimiters=s@
+    new-header=s
+    new-include-paths=s@
+    new-iolayer=s
+    new-pre-chomp=s
+    new-post-chomp=s
+
+    compile-param=s@
+    compile-id=s
+    compile-map-keys
+    compile-chkmt
+));
+
+$arg{file} = shift;
+
+do { require Pod::Usage; pod2usage(1); } if $arg{help};
+do { die basename($0) . " v$VERSION\n" } if $arg{version};
+
+run( %arg ) unless caller;
+
+sub run {
+    my %opt  = @_;
+    my $file = delete $opt{file};
+    my %p    = parse_arg( %opt );
+    my $cp   = delete($p{compile}->{param}) || [];
+    my $in   = exists $p{e} ? ( $p{e} || die "No code specified for -e" )
+             :                ( $file || die "No input file specified"  )
+             ;
+
+    Text::Template::Simple->DEBUG( $p{debug} ) if $p{debug};
+
+    if ( $p{'debug-tokens'} ) {
+        *Text::Template::Simple::Tokenizer::DEBUG_TOKENS =
+        *Text::Template::Simple::Tokenizer::DEBUG_TOKENS = sub { 1 };
+    }
+
+    my $TTS_OPTS = {
+        header => {
+            charset => '',
+        },
+    };
+
+    $p{new}->{add_args} ||= [];
+    $p{new}->{header}   ||= '';
+    unshift @{ $p{new}->{add_args} }, $TTS_OPTS;
+    $p{new}->{header} = q{my $TTS_OPTS = shift;} . $p{new}->{header};
+
+    my $t  = Text::Template::Simple->new( %{ $p{new} } );
+    my $rv;
+    eval {
+        $rv = $t->compile(
+                exists $p{e} ? [ STRING => $in ] : $in,
+                $cp,
+                %{ $p{compile} }
+            );
+    };
+    my $error = $@;
+    my $head  = $p{'http-header'} ? do { require CGI; CGI::header(-charset => $TTS_OPTS->{header}{charset}); } : '';
+    $rv = "Error in template: $error" if $error;
+    die $rv if $error && ! $head;
+
+    print $head.$rv;
+}
+
+sub parse_arg {
+    my %original = @_;
+    my %param = ( new => {}, compile => {} );
+    foreach my $key ( keys %original ) {
+        if ( $key =~ m{ \A (new|compile) \- (.*) \z }xms ) {
+            my $id = $1;
+            (my $name = $2) =~ s{\-}{_}xmsg;
+            $param{ $id }->{ $name } = delete $original{ $key };
+        }
+    }
+
+    $param{ $_ } = delete $original{ $_ } for keys %original;
+    local_conf( \%param );
+    return %param;
+}
+
+sub local_conf {
+    return; # TODO: set defaults from file
+    my $p = shift;
+    require File::HomeDir;
+    my $CONF = File::Spec->catfile( File::HomeDir->my_home, '.tts' );
+    return if ! -e $CONF;
+
+    open my $FH, '<', $CONF or die "Can not open $CONF: $!";
+    my $raw = do { my $rv; local $/; $rv = <$FH>; $rv };
+    close $FH;
+}
+
+__END__
+
+=head1 NAME
+
+tts - Commandline interface to Text::Template::Simple
+
+=head1 SYNOPSIS
+
+You have to either pass a file name or pass C<-e> with a template string.
+
+    tts -e 'My perl is at <%= $^X %>'
+    tts /home/burak/template.tts
+
+=head1 OPTIONS
+
+    -e                      Template to execute
+    --http-header           Print a HTTP Header?
+    --help                  Display help
+
+    --debug                 Integer. Sets the debuggging level
+    --debug-tokens          Enable token debugging?
+
+    --new-cache             Flag.
+    --new-capture-warnings  Flag.
+    --new-resume            Flag.
+    --new-safe              Flag.
+    --new-stack             Flag.
+    --new-strict            Flag.
+    --new-verbose_errors    Flag.
+    --new-warn-ids          Flag.
+    --new-monolith          Flag.
+
+    --new-add-args          Add global arguments
+    --new-cache-dir         Path to cache directory
+    --new-delimiters        Sets the delimiters
+    --new-header            Injects a default code onto the template
+    --new-include-paths     List of include paths
+    --new-iolayer           Perl I/O layer
+    --new-pre-chomp         Global pre-chomp
+    --new-post-chomp        Global post-chomp
+
+    --compile-param         List of parameters to pass to compiler
+    --compile-id            Set the template cache id manually
+    --compile-map-keys      Flag. Enable map keys interface?
+    --compile-chkmt         Flag. Check modification time of the template?
+
+=head1 DESCRIPTION
+
+This a commandline front end to L<Text::Template::Simple>.
+
+=head1 AUTHOR
+
+Burak GE<252>rsoy, E<lt>burakE<64>cpan.orgE<gt>
+
+=head1 COPYRIGHT
+
+Copyright 2004-2008 Burak GE<252>rsoy. All rights reserved.
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify 
+it under the same terms as Perl itself, either Perl version 5.8.8 or, 
+at your option, any later version of Perl 5 you may have available.
+
+=cut
