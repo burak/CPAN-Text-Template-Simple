@@ -43,9 +43,10 @@ sub _parse {
    my $uthandler = $self->[USER_THANDLER];
 
    my $h = {
-      raw     => sub { ";$faker .= q~$_[0]~;" },
-      capture => sub { ";$faker .= sub {" . $_[0] . "}->();"; },
-      code    => sub { $_[0] . ';' },
+      raw          => sub { ";$faker .= q~$_[0]~;" },
+      capture      => sub { ";$faker .= sub {" . $_[0] . "}->();"; },
+      capture_anon => sub {        " .= sub {" . $_[0] . "}->();"; },
+      code         => sub { $_[0] . ';' },
    };
 
    # little hack to convert delims into escaped delims for static inclusion
@@ -72,7 +73,7 @@ sub _parse {
       elsif ( T_CAPTURE == $id ) {
          $code .= $faker;
          $code .= $resume ? $self->_resume($str, RESUME_NOSTART)
-                :           " .= sub { $str }->();";
+                :           $h->{capture_anon}->( $str );
       }
 
       elsif ( T_DYNAMIC == $id || T_STATIC == $id ) {
@@ -84,21 +85,7 @@ sub _parse {
       }
 
       elsif ( T_COMMAND == $id ) {
-         my($head, $raw_block) = split /;/, $str, 2;
-         my @buf = split RE_PIPE_SPLIT, '|' . trim($head);
-         shift(@buf);
-         my %com = map { trim $_ } @buf;
-
-         if ( $com{FILTER} ) {
-            # embed into the template & NEEDS_OBJECT++ ???
-            local $self->[FILENAME] = '<ANON BLOCK>';
-            $self->_call_filters(
-               \$raw_block,
-               split RE_FILTER_SPLIT, $com{FILTER}
-            );
-         }
-
-         $code .= $h->{raw}->($raw_block);
+         $code .= $h->{raw}->( $self->_parse_command( $str ) );
       }
 
       else {
@@ -125,6 +112,23 @@ sub _parse {
    ) if $inside;
 
    return $self->_wrapper( $code, $cache_id, $faker, $map_keys, $h );
+}
+
+sub _parse_command {
+   my $self = shift;
+   my $str  = shift;
+   my($head, $raw_block) = split /;/, $str, 2;
+   my @buf  = split RE_PIPE_SPLIT, '|' . trim($head);
+   shift(@buf);
+   my %com  = map { trim $_ } @buf;
+
+   if ( $com{FILTER} ) {
+      # embed into the template & NEEDS_OBJECT++ ???
+      local $self->[FILENAME] = '<ANON BLOCK>';
+      $self->_call_filters( \$raw_block, split RE_FILTER_SPLIT, $com{FILTER} );
+   }
+
+   return $raw_block;
 }
 
 sub _chomp {
