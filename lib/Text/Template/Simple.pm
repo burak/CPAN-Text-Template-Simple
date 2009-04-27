@@ -216,6 +216,12 @@ sub _tidy {
    return $buf;
 }
 
+sub _needs_object {
+   my $self = shift;
+   $self->[NEEDS_OBJECT]++;
+   return $self;
+}
+
 sub DESTROY {
    my $self = shift || return;
    LOG( DESTROY => ref $self ) if DEBUG();
