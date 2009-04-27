@@ -4,110 +4,10 @@ use vars qw($VERSION);
 
 $VERSION = '0.62_07';
 
-use Text::Template::Simple::Util qw(:all);
+use Text::Template::Simple::Util      qw(:all);
 use Text::Template::Simple::Constants qw(:all);
 
-# internal code templates
-my %INTERNAL = (
-   # we need string eval in this template to catch syntax errors
-   sub_include => q~
-      <%OBJECT%>->_compile(
-         do {
-            local $@;
-            my $file = eval '<%INCLUDE%>';
-            my $rv;
-            if ( my $e = $@ ) {
-               chomp $e;
-               $file ||= '<%INCLUDE%>';
-               my $m = "The parameter ($file) is not a file. "
-                     . "Error from sub-include ($file): $e";
-               $rv = [ ERROR => '<%ERROR_TITLE%> ' . $m ]
-            }
-            else {
-               $rv = $file;
-            }
-            $rv;
-         },
-         <%PARAMS%>,
-         {
-            _sub_inc => '<%TYPE%>',
-            _filter  => '<%FILTER%>',
-         }
-      )
-   ~,
-   no_monolith => q*
-      <%OBJECT%>->compile(
-         q~<%FILE%>~,
-         undef,
-         {
-            chkmt    => 1,
-            _sub_inc => q~<%TYPE%>~,
-         }
-      );
-   *,
-
-   # see _parse()
-   map_keys_check => q(
-      <%BUF%> .= exists <%HASH%>->{"<%KEY%>"}
-               ? (
-                  defined <%HASH%>->{"<%KEY%>"}
-                  ? <%HASH%>->{"<%KEY%>"}
-                  : "[ERROR] Key not defined: <%KEY%>"
-                  )
-               : "[ERROR] Invalid key: <%KEY%>"
-               ;
-   ),
-
-   map_keys_init => q(
-      <%BUF%> .= <%HASH%>->{"<%KEY%>"} || '';
-   ),
-   map_keys_default => q(
-      <%BUF%> .= <%HASH%>->{"<%KEY%>"};
-   ),
-
-   add_sigwarn => q(
-      my <%BUF%>;
-      local $SIG{__WARN__} = sub {
-         push @{ <%BUF%> }, $_[0];
-      };
-   ),
-   dump_sigwarn => q(
-      join("\n",
-            map {
-               s{ \A \s+    }{}xms;
-               s{    \s+ \z }{}xms;
-               "[warning] $_\n"
-            } @{ <%BUF%> }
-         );
-   ),
-
-   compile_error => <<'TEMPLATE_CONSTANT',
-Error compiling code fragment (cache id: <%CID%>):
-
-<%ERROR%>
--------------------------------
-PARSED CODE (VERBATIM):
--------------------------------
-
-<%PARSED%>
-
--------------------------------
-PARSED CODE    (tidied):
--------------------------------
-
-<%TIDIED%>
-TEMPLATE_CONSTANT
-
-   fragment => <<'TEMPLATE_CONSTANT',
-
-# BEGIN TIDIED FRAGMENT
-
-<%FRAGMENT%>
-
-# END TIDIED FRAGMENT
-TEMPLATE_CONSTANT
-
-);
+my %INTERNAL = __PACKAGE__->_set_internal_templates;
 
 sub _internal {
    my $self = shift;
@@ -125,8 +25,7 @@ sub _parse {
    #$self->[NEEDS_OBJECT] = 0; # reset
 
    my $resume   = $self->[RESUME] || '';
-   my $ds       = $self->[DELIMITERS][DELIM_START];
-   my $de       = $self->[DELIMITERS][DELIM_END  ];
+   my($ds, $de) = @{ $self->[DELIMITERS] };
    my $faker    = $self->[INSIDE_INCLUDE] ? $self->_output_buffer_var
                                           : $self->[FAKER]
                                           ;
@@ -205,12 +104,12 @@ sub _parse {
 
       else {
          if ( $uthandler ) {
-            LOG( USER_THANDLER => "$id") if DEBUG();
+            LOG( USER_THANDLER => "$id") if DEBUG;
             $code .= $uthandler->( $self, $id ,$str, $h );
          }
          else {
             LOG( UNKNOWN_TOKEN => "Adding unknown token as RAW: $id($str)")
-               if DEBUG();
+               if DEBUG;
             $code .= $h->{raw}->($str);
          }
       }
@@ -377,6 +276,107 @@ sub _add_stack {
    }
 
    return "$channel stack( { type => '$type', name => '$cs_name' } );";
+}
+
+sub _set_internal_templates {
+   # we need string eval in this template to catch syntax errors
+   sub_include => q~
+      <%OBJECT%>->_compile(
+         do {
+            local $@;
+            my $file = eval '<%INCLUDE%>';
+            my $rv;
+            if ( my $e = $@ ) {
+               chomp $e;
+               $file ||= '<%INCLUDE%>';
+               my $m = "The parameter ($file) is not a file. "
+                     . "Error from sub-include ($file): $e";
+               $rv = [ ERROR => '<%ERROR_TITLE%> ' . $m ]
+            }
+            else {
+               $rv = $file;
+            }
+            $rv;
+         },
+         <%PARAMS%>,
+         {
+            _sub_inc => '<%TYPE%>',
+            _filter  => '<%FILTER%>',
+         }
+      )
+   ~,
+   no_monolith => q*
+      <%OBJECT%>->compile(
+         q~<%FILE%>~,
+         undef,
+         {
+            chkmt    => 1,
+            _sub_inc => q~<%TYPE%>~,
+         }
+      );
+   *,
+
+   # see _parse()
+   map_keys_check => q(
+      <%BUF%> .= exists <%HASH%>->{"<%KEY%>"}
+               ? (
+                  defined <%HASH%>->{"<%KEY%>"}
+                  ? <%HASH%>->{"<%KEY%>"}
+                  : "[ERROR] Key not defined: <%KEY%>"
+                  )
+               : "[ERROR] Invalid key: <%KEY%>"
+               ;
+   ),
+
+   map_keys_init => q(
+      <%BUF%> .= <%HASH%>->{"<%KEY%>"} || '';
+   ),
+   map_keys_default => q(
+      <%BUF%> .= <%HASH%>->{"<%KEY%>"};
+   ),
+
+   add_sigwarn => q(
+      my <%BUF%>;
+      local $SIG{__WARN__} = sub {
+         push @{ <%BUF%> }, $_[0];
+      };
+   ),
+   dump_sigwarn => q(
+      join("\n",
+            map {
+               s{ \A \s+    }{}xms;
+               s{    \s+ \z }{}xms;
+               "[warning] $_\n"
+            } @{ <%BUF%> }
+         );
+   ),
+
+   compile_error => <<'TEMPLATE_CONSTANT',
+Error compiling code fragment (cache id: <%CID%>):
+
+<%ERROR%>
+-------------------------------
+PARSED CODE (VERBATIM):
+-------------------------------
+
+<%PARSED%>
+
+-------------------------------
+PARSED CODE    (tidied):
+-------------------------------
+
+<%TIDIED%>
+TEMPLATE_CONSTANT
+
+   fragment => <<'TEMPLATE_CONSTANT',
+
+# BEGIN TIDIED FRAGMENT
+
+<%FRAGMENT%>
+
+# END TIDIED FRAGMENT
+TEMPLATE_CONSTANT
+
 }
 
 # TODO: unstable. consider removing this thing (also the constants)
