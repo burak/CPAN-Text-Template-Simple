@@ -39,7 +39,7 @@ sub _parse {
 
    LOG( RAW => $raw ) if ( DEBUG() > 3 );
 
-   my $uthandler = $self->[USER_THANDLER];
+   my $uth = $self->[USER_THANDLER];
 
    my $h = {
       raw     => sub { ";$faker .= q~$_[0]~;" },
@@ -85,15 +85,11 @@ sub _parse {
       }
 
       else {
-         if ( $uthandler ) {
-            LOG( USER_THANDLER => "$id") if DEBUG;
-            $code .= $uthandler->( $self, $id ,$str, $h );
-         }
-         else {
-            LOG( UNKNOWN_TOKEN => "Adding unknown token as RAW: $id($str)")
-               if DEBUG;
-            $code .= $h->{raw}->($str);
-         }
+         LOG(
+            $uth  ? (USER_THANDLER => "$id")
+                  : (UNKNOWN_TOKEN => "Adding unknown token as RAW: $id($str)")
+         ) if DEBUG;
+         $code .= $uth ? $uth->( $self, $id ,$str, $h ) : $h->{raw}->( $str );
       }
 
    }
