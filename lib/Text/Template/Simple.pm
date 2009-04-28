@@ -48,8 +48,6 @@ my %DEFAULT = ( # default object attributes
    verbose_errors   =>  0,    # bool
    pre_chomp        => CHOMP_NONE,
    post_chomp       => CHOMP_NONE,
-   # TODO: Consider removing this
-   resume           =>  0,    # resume on error?
 );
 
 my @EXPORT_OK = qw( tts );

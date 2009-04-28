@@ -165,19 +165,6 @@ C<monolith> is disabled by default.
       post_chomp => $post,
    );
 
-=head3 resume
-
-If has a true value, the C<die()>able code fragments will not terminate
-the compilation of remaining parts, the compiler will simply resume 
-it's job. However, enabling this may result with a performance penalty
-if cache is not enabled. If cache is enabled, the performance penalty
-will show itself after every compilation process (upto C<2x> slower).
-
-This option is currently experimental and uses more resources.
-Only enable it for debugging.
-
-CAVEAT: C<< <% use MODULE %> >> directives won't resume.
-
 =head3 safe
 
 Set this to a true value if you want to execute the template

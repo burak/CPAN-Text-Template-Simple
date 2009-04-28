@@ -30,7 +30,6 @@ can_ok( 'Text::Template::Simple',
             _parse
             _add_stack
             _include
-            _resume
             DESTROY
         /
     );
@@ -67,18 +66,10 @@ can_ok( 'Text::Template::Simple::Constants',
             COUNTER
             CID
             FILENAME
-            RESUME
             IOLAYER
             STACK
             USER_THANDLER
             MAXOBJFIELD
-            RESUME_NOSTART
-            RESUME_MY
-            RESUME_CURLIES
-            RESUME_ELSIF
-            RESUME_ELSE
-            RESUME_LOOP
-            RESUME_TEMPLATE
             DIGEST_MODS
             STAT_MTIME
             RE_DUMP_ERROR

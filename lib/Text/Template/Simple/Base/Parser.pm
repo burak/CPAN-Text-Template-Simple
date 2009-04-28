@@ -24,7 +24,6 @@ sub _parse {
    my $as_is    = shift; # i.e.: do not parse -> static include
    #$self->[NEEDS_OBJECT] = 0; # reset
 
-   my $resume   = $self->[RESUME] || '';
    my($ds, $de) = @{ $self->[DELIMITERS] };
    my $faker    = $self->[INSIDE_INCLUDE] ? $self->_output_buffer_var
                                           : $self->[FAKER]
@@ -67,13 +66,12 @@ sub _parse {
       }
 
       elsif ( T_CODE == $id ) {
-         $code .= $h->{code}->($resume ? $self->_resume($str, 0, 1) : $str);
+         $code .= $h->{code}->($str);
       }
 
       elsif ( T_CAPTURE == $id ) {
          $code .= $faker;
-         $code .= $resume ? $self->_resume($str, RESUME_NOSTART)
-                :           $h->{capture_anon}->( $str );
+         $code .= $h->{capture_anon}->( $str );
       }
 
       elsif ( T_DYNAMIC == $id || T_STATIC == $id ) {
@@ -387,43 +385,6 @@ TEMPLATE_CONSTANT
 # Any changes you make here will be lost.
 #
 TEMPLATE_CONSTANT
-}
-
-# TODO: unstable. consider removing this thing (also the constants)
-sub _resume {
-   my $self    = shift;
-   my $token   = shift           || return;
-   my $nostart = shift           || 0;
-   my $is_code = shift           || 0;
-   my $resume  = $self->[RESUME] || '';
-   my $start   = $nostart ? '' : $self->[FAKER];
-   my $void    = $nostart ? 0  : 1; # not a self-printing block
-
-   if ( $token && $resume && $token !~ RESUME_MY ) {
-      if (
-            $token !~ RESUME_CURLIES &&
-            $token !~ RESUME_ELSIF   &&
-            $token !~ RESUME_ELSE    &&
-            $token !~ RESUME_LOOP
-      ) {
-         LOG( RESUME_OK => $token ) if DEBUG() > 2;
-         my $rvar        = $self->_output_buffer_var('array');
-         my $resume_code = RESUME_TEMPLATE;
-         foreach my $replace (
-            [ RVAR  => $rvar             ],
-            [ TOKEN => $token            ],
-            [ PID   => $self->_class_id  ],
-            [ VOID  => $void             ],
-         ) {
-            $resume_code =~ s{ <% $replace->[0] %> }{$replace->[1]}xmsg;
-         }
-         return $start . $resume_code;
-      }
-   }
-
-   LOG( RESUME_NOT => $token ) if DEBUG() > 2;
-
-   return $is_code ? $token : "$start .= $token;"
 }
 
 1;

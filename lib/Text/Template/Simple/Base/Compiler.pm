@@ -126,12 +126,6 @@ sub _wrap_compile {
 
    if( $error = $@ ) {
       my $error2;
-      if ( $self->[RESUME] ) {
-         $CODE =  sub {
-                     sprintf("[%s Fatal Error] %s", $self->_class_id, $error )
-                  };
-         $error2 = $@;
-      }
       $error .= $error2 if $error2;
    }
 

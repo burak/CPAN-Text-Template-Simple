@@ -21,7 +21,7 @@ sub _output_buffer_var {
    my $self = shift;
    my $type = shift || 'scalar';
    return  $type eq 'hash'  ? '$OUT_HASH'  # map_keys buffer
-         : $type eq 'array' ? '$OUT_ARRAY' # resume   buffer
+         : $type eq 'array' ? '$OUT_ARRAY' # list     buffer
          :                    '$OUT'       # output   buffer
          ;
 }

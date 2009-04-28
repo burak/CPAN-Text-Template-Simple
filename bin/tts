@@ -20,7 +20,6 @@ GetOptions( \our %ARG => qw(
 
     new-cache
     new-capture-warnings
-    new-resume
     new-safe
     new-stack
     new-strict
@@ -168,7 +167,6 @@ You have to either pass a file name or pass C<-e> with a template string.
 
     --new-cache             Flag.
     --new-capture-warnings  Flag.
-    --new-resume            Flag.
     --new-safe              Flag.
     --new-stack             Flag.
     --new-strict            Flag.

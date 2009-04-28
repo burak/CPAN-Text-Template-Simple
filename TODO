@@ -18,10 +18,8 @@
         o Improve the cache file format.
 * Test -T support.
 * Command line compiler?
-* Re-implement or remove resume interface
-        o Perhaps eval { sub { ... }; 1; } || "ERR: $@"
 *  ***LOW*** Move trim/tilde/quote from tokenizer & into the parser.
-*  ***LOW*** Consider trying PPI.
+*  ***LOW*** Consider trying PPI. Resume?
 *  ***LOW*** Implement TTS plugins for major frameworks.
 *  ***LOW*** Consider building a tiny framework for template plugins.
         o Or just let the user define subs in ::Dummy.
