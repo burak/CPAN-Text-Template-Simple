@@ -266,6 +266,12 @@ sub hit {
             %meta = $self->_get_meta( $1 );
             fatal('tts.cache.hit.meta', $@) if $@;
          }
+         if ( ! $meta{VERSION} || $meta{VERSION} + 0 < PARENT->VERSION ) {
+            my $id = $parent->[FILENAME] || $cache_id;
+            warn "(This messeage will only appear once) $id was compiled with"
+                ." an old version of " . PARENT . ". Resetting cache.";
+            return;
+         }
          if ( my $mtime = $meta{CHKMT} ) {
             if ( $mtime != $chkmt ) {
                LOG( MTIME_DIFF => "\tOLD: $mtime\n\t\tNEW: $chkmt")
@@ -319,6 +325,7 @@ sub populate {
             CHKMT        => $chkmt,
             NEEDS_OBJECT => $parent->[NEEDS_OBJECT],
             FAKER_SELF   => $parent->[FAKER_SELF],
+            VERSION      => PARENT->VERSION,
          );
 
          my $cache = File::Spec->catfile( $cdir, $cache_id . CACHE_EXT);
@@ -326,10 +333,14 @@ sub populate {
          $fh->open($cache, '>') or fatal('tts.cache.populate.write', $cache, $!);
          flock $fh, Fcntl::LOCK_EX() if IS_FLOCK;
          $parent->io->layer($fh);
-         print $fh '#META:' . $self->_set_meta(\%meta) . "\n",
-                   sprintf( DISK_CACHE_COMMENT,
-                            PARENT->_class_id, scalar localtime time),
-                   $parsed; 
+         my $warn =  $parent->_mini_compiler(
+                        $parent->_internal('disk_cache_comment'),
+                        {
+                           NAME => PARENT->_class_id,
+                           DATE => scalar localtime time,
+                        }
+                     );
+         print $fh '#META:' . $self->_set_meta(\%meta) . "\n", $warn, $parsed; 
          flock $fh, Fcntl::LOCK_UN() if IS_FLOCK;
          close $fh;
 

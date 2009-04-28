@@ -7,9 +7,9 @@ use Getopt::Long;
 use Data::Dumper;
 use Text::Template::Simple;
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
-GetOptions( \my %arg => qw(
+GetOptions( \our %ARG => qw(
     e=s
     version
     http-header
@@ -43,15 +43,16 @@ GetOptions( \my %arg => qw(
     compile-chkmt
 ));
 
-$arg{file} = shift;
+$ARG{file} = shift;
 
-do { require Pod::Usage; pod2usage(1); } if $arg{help};
-do { die basename($0) . " v$VERSION\n" } if $arg{version};
-
-run( %arg ) unless caller;
+run( %ARG ) if not caller;
 
 sub run {
     my %opt  = @_;
+
+    do { require Pod::Usage; pod2usage(1); } if $opt{help};
+    do { die basename($0) . " v$VERSION\n" } if $opt{version};
+
     my $file = delete $opt{file};
     my %p    = parse_arg( %opt );
     my $cp   = delete($p{compile}->{param}) || [];
@@ -79,6 +80,15 @@ sub run {
     $p{new}->{header} = q{my $TTS = shift;} . $p{new}->{header};
 
     my $t  = Text::Template::Simple->new( %{ $p{new} } );
+    if ( my $path = $t->io->file_exists( $file ) ) {
+        my $dir  = dirname $path;
+        my $file = basename $path;
+        my $controller = File::Spec->catfile( $dir, $file . '.cgi' );
+        if ( -e $controller )  {
+            require $controller;
+        }
+        die Dumper [ $dir, $file ];
+    }
     my $rv;
     eval {
         $rv = $t->compile(
@@ -101,6 +111,7 @@ sub run {
     die $rv if $error && ! $head;
 
     print $head.$rv;
+    return 1;
 }
 
 sub parse_arg {
@@ -130,6 +141,8 @@ sub local_conf {
     my $raw = do { my $rv; local $/; $rv = <$FH>; $rv };
     close $FH;
 }
+
+1;
 
 __END__
 

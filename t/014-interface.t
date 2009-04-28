@@ -45,7 +45,6 @@ can_ok( 'Text::Template::Simple::Constants',
             MAX_FL
             CACHE_EXT
             PARENT
-            DISK_CACHE_COMMENT
             DISK_CACHE_MARKER
             DELIM_START
             DELIM_END
