@@ -42,10 +42,9 @@ sub _parse {
    my $uthandler = $self->[USER_THANDLER];
 
    my $h = {
-      raw          => sub { ";$faker .= q~$_[0]~;" },
-      capture      => sub { ";$faker .= sub {" . $_[0] . "}->();"; },
-      capture_anon => sub {        " .= sub {" . $_[0] . "}->();"; },
-      code         => sub { $_[0] . ';' },
+      raw     => sub { ";$faker .= q~$_[0]~;" },
+      capture => sub { ";$faker .= sub {" . $_[0] . "}->();"; },
+      code    => sub { $_[0] . ';' },
    };
 
    # little hack to convert delims into escaped delims for static inclusion
@@ -70,8 +69,7 @@ sub _parse {
       }
 
       elsif ( T_CAPTURE == $id ) {
-         $code .= $faker;
-         $code .= $h->{capture_anon}->( $str );
+         $code .= $h->{capture}->( $str );
       }
 
       elsif ( T_DYNAMIC == $id || T_STATIC == $id ) {
