@@ -84,20 +84,20 @@ sub slurp {
    seek  $fh, 0, Fcntl::SEEK_SET() if IS_FLOCK && $seek;
    $self->layer( $fh ) if ! $seek; # apply the layer only if we opened this
 
-   if ( $self->_handle_looks_safe( $fh) ) {
+   if ( $self->_handle_looks_safe( $fh ) ) {
       require IO::Handle;
       my $rv = IO::Handle::untaint( $fh );
       fatal('tts.io.slurp.taint') if $rv != 0;
    }
 
-   my $tmp = do { local $/; <$fh> };
+   my $tmp = do { local $/; my $rv = <$fh>; $rv };
    flock $fh, Fcntl::LOCK_UN() if IS_FLOCK;
    close $fh if ! $seek; # close only if we opened this
    return $tmp;
 }
 
 sub _handle_looks_safe {
-   # Cargo Culting: taken from "The Camel"
+   # Cargo Culting: original code was taken from "The Camel"
    my $self = shift;
    my $fh   = shift;
    fatal('tts.io.hls.invalid') if ! $fh || ! fileno $fh;
@@ -115,6 +115,7 @@ sub _handle_looks_safe {
    # Check whether group or other can write file.
    # Read check is disabled by default
    # Mode always 0666 on Windows, so all tests below are disabled on Windows
+   # unless you force them to run
    LOG( FILE_MODE => sprintf "%04o", $i->mode & 07777) if DEBUG;
 
    my $bypass   = IS_WINDOWS && ! ( $tmode & TAINT_CHECK_WINDOWS ) ? 1 : 0;
