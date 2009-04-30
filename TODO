@@ -14,7 +14,6 @@
             - monolith seems to be buggy
 * Improve error handling. Minimize uncontrolled die()s.
 * Improve safe compartment.
-* Test -T support.
 * Command line compiler?
 *  ***LOW*** Move trim/tilde/quote from tokenizer & into the parser.
 *  ***LOW*** Consider trying PPI. Resume?
