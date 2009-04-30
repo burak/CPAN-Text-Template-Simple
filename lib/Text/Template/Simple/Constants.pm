@@ -291,7 +291,7 @@ Burak GE<252>rsoy, E<lt>burakE<64>cpan.orgE<gt>
 
 =head1 COPYRIGHT
 
-Copyright 2004-2008 Burak GE<252>rsoy. All rights reserved.
+Copyright 2004-2009 Burak GE<252>rsoy. All rights reserved.
 
 =head1 LICENSE
 
