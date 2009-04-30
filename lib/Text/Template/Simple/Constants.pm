@@ -40,6 +40,7 @@ use constant INCLUDE_PATHS    => ++$OID;
 use constant PRE_CHOMP        => ++$OID;
 use constant POST_CHOMP       => ++$OID;
 use constant VERBOSE_ERRORS   => ++$OID;
+use constant TAINT_MODE       => ++$OID;
 use constant MAXOBJFIELD      =>   $OID; # number of the last object field
 
 # token type ids
@@ -85,6 +86,11 @@ use constant CHOMP_RIGHT      => 0x000008;
 use constant COLLAPSE_LEFT    => 0x000010;
 use constant COLLAPSE_RIGHT   => 0x000020;
 use constant COLLAPSE_ALL     => 0x000040;
+
+use constant TAINT_CHECK_NORMAL  => 0x000000;
+use constant TAINT_CHECK_ALL     => 0x000002;
+use constant TAINT_CHECK_WINDOWS => 0x000004;
+use constant TAINT_CHECK_FH_READ => 0x000008;
 
 # first level directives
 use constant DIR_CAPTURE      => '=';
@@ -189,6 +195,7 @@ BEGIN {
                         PRE_CHOMP
                         POST_CHOMP
                         VERBOSE_ERRORS
+                        TAINT_MODE
                         MAXOBJFIELD
                      )],
       chomp     =>   [qw(
@@ -236,6 +243,12 @@ BEGIN {
                         T_COMMAND
                         T_MAXID
                       )],
+      taint     =>   [qw(
+                        TAINT_CHECK_NORMAL
+                        TAINT_CHECK_ALL
+                        TAINT_CHECK_WINDOWS
+                        TAINT_CHECK_FH_READ
+                     )],
       etc       =>   [qw(
                         DIGEST_MODS
                         STAT_MTIME

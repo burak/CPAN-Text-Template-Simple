@@ -48,8 +48,8 @@ sub reset {
       my $file;
 
       while ( defined( $file = readdir CDIRH ) ) {
-         next if $file !~ m{ $ext \z}xmsi;
-         $file = File::Spec->catfile( $parent->[CACHE_DIR], $file );
+         next if $file !~ m{ ( .* $ext) \z}xmsi;
+         $file = File::Spec->catfile( $parent->[CACHE_DIR], $1 );
          LOG( UNLINK => $file ) if DEBUG();
          unlink $file;
       }

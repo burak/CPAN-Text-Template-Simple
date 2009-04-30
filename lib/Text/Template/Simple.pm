@@ -48,6 +48,7 @@ my %DEFAULT = ( # default object attributes
    verbose_errors   =>  0,    # bool
    pre_chomp        => CHOMP_NONE,
    post_chomp       => CHOMP_NONE,
+   taint_mode       => TAINT_CHECK_NORMAL,
 );
 
 my @EXPORT_OK = qw( tts );
@@ -153,7 +154,8 @@ sub _init {
 
    $self->[IO_OBJECT] = $self->connector('IO')->new(
                            $self->[IOLAYER],
-                           $self->[INCLUDE_PATHS]
+                           $self->[INCLUDE_PATHS],
+                           $self->[TAINT_MODE],
                         );
 
    if ( $self->[CACHE_DIR] ) {

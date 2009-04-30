@@ -6,6 +6,7 @@ use Text::Template::Simple::Constants qw(:all);
 use Text::Template::Simple::Util qw( DEBUG LOG ishref binary_mode fatal );
 use constant MY_IO_LAYER      => 0;
 use constant MY_INCLUDE_PATHS => 1;
+use constant MY_TAINT_MODE    => 2;
 
 $VERSION = '0.62_07';
 
@@ -13,10 +14,12 @@ sub new {
    my $class = shift;
    my $layer = shift;
    my $paths = shift;
-   my $self  = [ undef, undef ];
+   my $tmode = shift;
+   my $self  = [ undef, undef, undef ];
    bless $self, $class;
    $self->[MY_IO_LAYER]      = $layer if defined $layer;
    $self->[MY_INCLUDE_PATHS] = [ @{ $paths } ] if $paths; # copy
+   $self->[MY_TAINT_MODE]    = $tmode;
    $self;
 }
 
@@ -80,10 +83,51 @@ sub slurp {
    flock $fh,    Fcntl::LOCK_SH()  if IS_FLOCK;
    seek  $fh, 0, Fcntl::SEEK_SET() if IS_FLOCK && $seek;
    $self->layer( $fh ) if ! $seek; # apply the layer only if we opened this
+
+   if ( $self->_handle_looks_safe( $fh) ) {
+      require IO::Handle;
+      my $rv = IO::Handle::untaint( $fh );
+      die "Can't untaint FH" if $rv != 0;
+   }
+
    my $tmp = do { local $/; <$fh> };
    flock $fh, Fcntl::LOCK_UN() if IS_FLOCK;
    close $fh if ! $seek; # close only if we opened this
    return $tmp;
+}
+
+sub _handle_looks_safe {
+   # Cargo Culting: taken from "The Camel"
+   my $self = shift;
+   my $fh   = shift;
+   die "FH is either absent or invalid" if ! $fh || ! fileno $fh;
+
+   require File::stat;
+   my $i = File::stat::stat( $fh );
+   return if ! $i;
+
+   my $tmode = $self->[MY_TAINT_MODE];
+
+   # owner neither superuser nor "me", whose
+   # real uid is in the $< variable
+   return if $i->uid != 0 && $i->uid != $<;
+
+   # Check whether group or other can write file.
+   # Read check is disabled by default
+   # Mode always 0666 on Windows, so all tests below are disabled on Windows
+   LOG( FILE_MODE => sprintf "%04o", $i->mode & 07777) if DEBUG;
+
+   my $bypass   = IS_WINDOWS && ! ( $tmode & TAINT_CHECK_WINDOWS ) ? 1 : 0;
+   my $go_write = $bypass ? 0 : $i->mode & 022;
+   my $go_read  = ! $bypass && ( $tmode & TAINT_CHECK_FH_READ )
+                ? $i->mode & 066
+                : 0;
+
+   LOG( TAINT => "tmode:$tmode; bypass:$bypass; "
+                ."go_write:$go_write; go_read:$go_read") if DEBUG;
+
+   return if $go_write || $go_read;
+   return 1;
 }
 
 sub is_file {
