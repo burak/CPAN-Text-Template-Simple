@@ -87,7 +87,7 @@ sub slurp {
    if ( $self->_handle_looks_safe( $fh) ) {
       require IO::Handle;
       my $rv = IO::Handle::untaint( $fh );
-      die "Can't untaint FH" if $rv != 0;
+      fatal('tts.io.slurp.taint') if $rv != 0;
    }
 
    my $tmp = do { local $/; <$fh> };
@@ -100,7 +100,7 @@ sub _handle_looks_safe {
    # Cargo Culting: taken from "The Camel"
    my $self = shift;
    my $fh   = shift;
-   die "FH is either absent or invalid" if ! $fh || ! fileno $fh;
+   fatal('tts.io.hls.invalid') if ! $fh || ! fileno $fh;
 
    require File::stat;
    my $i = File::stat::stat( $fh );
