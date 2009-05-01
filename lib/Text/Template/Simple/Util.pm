@@ -87,6 +87,7 @@ my $lang = {
       'tts.cache.hit.meta'                       => 'Can not get meta data: %s',
       'tts.cache.hit.cache'                      => 'Error loading from disk cache: %s',
       'tts.cache.populate.write'                 => 'Error writing disk-cache %s : %s',
+      'tts.cache.populate.chmod'                 => 'Can not change file mode',
       'tts.base.compiler._compile.notmp'         => 'No template specified',
       'tts.base.compiler._compile.param'         => 'params must be an arrayref!',
       'tts.base.compiler._compile.opt'           => 'opts must be a hashref!',

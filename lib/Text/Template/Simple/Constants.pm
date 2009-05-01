@@ -116,6 +116,8 @@ use constant TOKEN_CHOMP_PREV =>  1; # sub-key for TOKEN_CHOMP
 use constant LAST_TOKEN       => -1;
 use constant PREVIOUS_TOKEN   => -2;
 
+use constant CACHE_FMODE      => 0600;
+
 # SHA seems to be more accurate, so we'll try them first.
 # Pure-Perl ones are slower, but they are fail-safes.
 # However, Digest::SHA::PurePerl does not work under $perl < 5.6.
@@ -258,6 +260,7 @@ BEGIN {
                         RE_NONFILE
                         STAT_SIZE
                         MAX_RECURSION
+                        CACHE_FMODE
                      )],
    );
 

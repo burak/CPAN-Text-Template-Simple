@@ -356,6 +356,7 @@ sub populate {
          print $fh '#META:' . $self->_set_meta(\%meta) . "\n", $warn, $parsed; 
          flock $fh, Fcntl::LOCK_UN() if IS_FLOCK;
          close $fh;
+         chmod(CACHE_FMODE, $cache) || fatal('tts.cache.populate.chmod');
 
          ($CODE, $error) = $parent->_wrap_compile($parsed);
          LOG( DISK_POPUL => $cache_id ) if DEBUG() > 2;
