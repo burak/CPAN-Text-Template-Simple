@@ -247,6 +247,19 @@ sub has {
    }
 }
 
+sub _is_meta_version_old {
+   my $self = shift;
+   my $v    = shift;
+   return 1 if ! $v; # no version? archaic then
+   my $pv = PARENT->VERSION;
+   foreach my $i ( $v, $pv ) {
+      $i  =~ tr/_//d; # underscore versions cause warnings
+      $i +=  0;       # force number
+   }
+   return 1 if $v < $pv;
+   return;
+}
+
 sub hit {
    # TODO: return $CODE, $META;
    my $self     = shift;
@@ -266,7 +279,7 @@ sub hit {
             %meta = $self->_get_meta( $1 );
             fatal('tts.cache.hit.meta', $@) if $@;
          }
-         if ( ! $meta{VERSION} || $meta{VERSION} + 0 < PARENT->VERSION ) {
+         if ( $self->_is_meta_version_old( $meta{VERSION} ) ) {
             my $id = $parent->[FILENAME] || $cache_id;
             warn "(This messeage will only appear once) $id was compiled with"
                 ." an old version of " . PARENT . ". Resetting cache.";
