@@ -10,13 +10,6 @@
             - This needs fix.
             - Add SHARE: command?
             - monolith seems to be buggy
-* Improve safe compartment.
-*  ***LOW*** Move trim/tilde/quote from tokenizer & into the parser.
 *  ***LOW*** Consider trying PPI. Resume?
 *  ***LOW*** Implement TTS plugins for major frameworks.
-*  ***LOW*** Consider building a tiny framework for template plugins.
-        o Or just let the user define subs in ::Dummy.
 *  ***LOW*** Benchmarks?
-*  ***LOW*** XS based tokenizer?
-* Keep the code clean & simple (no hacks?).
-* Check competitors for neat ideas (heh!).
