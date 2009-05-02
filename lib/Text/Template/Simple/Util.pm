@@ -207,11 +207,12 @@ sub LOG {
 }
 
 sub _is_parent_object {
-   return 0 if not defined $_[0];
-   return 1 if         ref $_[0];
-   return 1 if             $_[0] eq __PACKAGE__;
-   return 1 if             $_[0] eq PARENT;
-   return 0;
+   return ! defined $_[0]       ? 0
+         : ref $_[0]            ? 1
+         : $_[0] eq __PACKAGE__ ? 1
+         : $_[0] eq PARENT      ? 1
+         :                        0
+         ;
 }
 
 1;
