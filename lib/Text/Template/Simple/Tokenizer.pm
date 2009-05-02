@@ -14,7 +14,7 @@ use constant ID_POST_CHOMP        =>  3;
 use constant SUBSTR_OFFSET_FIRST  =>  0;
 use constant SUBSTR_OFFSET_SECOND =>  1;
 use constant SUBSTR_LENGTH        =>  1;
-use Text::Template::Simple::Util      qw( LOG fatal );
+use Text::Template::Simple::Util      qw( LOG DEBUG fatal );
 use Text::Template::Simple::Constants qw( :chomp :directive :token );
 
 my @COMMANDS = ( # default command list
@@ -311,6 +311,12 @@ sub _visualize_tid {
                );
    my $rv = $ids[$id] || ( defined $id ? $id : 'undef' );
    return $rv;
+}
+
+sub DESTROY {
+   my $self = shift || return;
+   LOG( DESTROY => ref $self ) if DEBUG();
+   return;
 }
 
 1;

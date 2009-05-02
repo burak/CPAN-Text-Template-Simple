@@ -3,14 +3,16 @@ use strict;
 use vars qw($VERSION);
 use overload q{""} => 'get';
 use Text::Template::Simple::Constants qw( MAX_FL );
-use Text::Template::Simple::Util      qw( DIGEST fatal );
+use Text::Template::Simple::Util      qw( DEBUG DIGEST fatal );
 
 $VERSION = '0.62_07';
 
 my $RE_INVALID = qr{[^A-Za-z_0-9]};
 
 sub new {
-   bless do { \my $anon }, shift;
+   my $class = shift;
+   my $self  = bless do { \my $anon }, $class;
+   return $self;
 }
 
 sub get { my $self = shift; $$self }
@@ -38,6 +40,12 @@ sub _custom {
       $data = substr $data, $len - MAX_FL, MAX_FL;
    }
    return $data;
+}
+
+sub DESTROY {
+   my $self = shift || return;
+   LOG( DESTROY => ref $self ) if DEBUG();
+   return;
 }
 
 1;

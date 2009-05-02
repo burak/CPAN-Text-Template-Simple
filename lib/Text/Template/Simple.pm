@@ -224,10 +224,10 @@ sub _needs_object {
 
 sub DESTROY {
    my $self = shift || return;
-   LOG( DESTROY => ref $self ) if DEBUG();
    undef $self->[CACHE_OBJECT];
    undef $self->[IO_OBJECT];
    @{ $self } = ();
+   LOG( DESTROY => ref $self ) if DEBUG();
    return;
 }
 
