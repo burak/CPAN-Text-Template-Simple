@@ -191,7 +191,7 @@ sub DIGEST {
       fatal( 'tts.util.digest' => join(', ', @report), $last, $@ );
    }
 
-   LOG( DIGESTER => $DIGEST ) if DEBUG();
+   LOG( DIGESTER => $DIGEST . ' v' . $DIGEST->VERSION ) if DEBUG();
    return $DIGEST->new;
 }
 
