@@ -3,7 +3,6 @@
         o Implement placeholder tests
             - 022-monolith
             - 029-block-filter.t
-* Consider re-implementing BLOCKs with filters. Make them dynamic.
 * Implement variable sharing without monolith..?
         o PROCESS -> no monolith ?
             - Interpolated includes do not respect monolith though :p
