@@ -290,18 +290,4 @@ then all calls to C<LOG> will be redirected to this sub. If you want to
 save the debugging messages to a file or to a database, you must define
 the C<MYLOG> sub.
 
-=head1 AUTHOR
-
-Burak GE<252>rsoy, E<lt>burakE<64>cpan.orgE<gt>
-
-=head1 COPYRIGHT
-
-Copyright 2004-2008 Burak GE<252>rsoy. All rights reserved.
-
-=head1 LICENSE
-
-This library is free software; you can redistribute it and/or modify 
-it under the same terms as Perl itself, either Perl version 5.8.8 or, 
-at your option, any later version of Perl 5 you may have available.
-
 =cut

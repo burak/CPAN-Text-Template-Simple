@@ -225,18 +225,4 @@ Test if C<THING> is a file.
 Test if C<THING> is a file. This method also searches all the C<include paths>
 and returns the full path to the file if it exists.
 
-=head1 AUTHOR
-
-Burak GE<252>rsoy, E<lt>burakE<64>cpan.orgE<gt>
-
-=head1 COPYRIGHT
-
-Copyright 2008 Burak GE<252>rsoy. All rights reserved.
-
-=head1 LICENSE
-
-This library is free software; you can redistribute it and/or modify 
-it under the same terms as Perl itself, either Perl version 5.8.8 or, 
-at your option, any later version of Perl 5 you may have available.
-
 =cut
