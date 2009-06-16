@@ -31,7 +31,7 @@ BEGIN {
    %EXPORT_TAGS = (
       macro => [qw( isaref      ishref iscref                  )],
       util  => [qw( binary_mode DIGEST trim rtrim ltrim escape )],
-      debug => [qw( fatal       DEBUG  LOG                     )],
+      debug => [qw( fatal       DEBUG  LOG  L                  )],
    );
    @EXPORT_OK        = map { @{ $EXPORT_TAGS{$_} } } keys %EXPORT_TAGS;
    $EXPORT_TAGS{all} = \@EXPORT_OK;
@@ -65,7 +65,6 @@ my $lang = {
       'tts.main.init.thandler'                   => 'user_thandler parameter must be a CODE reference',
       'tts.main.init.include'                    => 'include_paths parameter must be a ARRAY reference',
       'tts.util.escape'                          => 'Missing the character to escape',
-      'tts.util.fatal'                           => '%s is not defined as an error',
       'tts.tokenizer.new.ds'                     => 'Start delimiter is missing',
       'tts.tokenizer.new.de'                     => 'End delimiter is missing',
       'tts.tokenizer.tokenize.tmp'               => 'Template string is missing',
@@ -107,21 +106,28 @@ my $lang = {
       'tts.cache.id.generate.data'               => "Can't generate id without data!",
       'tts.cache.id._custom.data'                => "Can't generate id without data!",
    },
+   warning => {
+      'tts.base.include.dynamic.recursion'       => qq{%s Deep recursion (>=%d) detected in the included file: %s},
+   }
 };
 
-my $DEBUG = 0;  # Disabled by default
-my $DIGEST;     # Will hold digester class name.
+my $DEBUG = 0; # Disabled by default
+my $DIGEST;    # Will hold digester class name.
 
 sub isaref { $_[0] && ref($_[0]) && ref($_[0]) eq 'ARRAY' };
 sub ishref { $_[0] && ref($_[0]) && ref($_[0]) eq 'HASH'  };
 sub iscref { $_[0] && ref($_[0]) && ref($_[0]) eq 'CODE'  };
 
-sub fatal  {
-   my $ID  = shift;
-   my $str = $lang->{error}{$ID}
-             || croak sprintf( $lang->{error}{'tts.util.fatal'}, $ID );
-   croak @_ ? sprintf($str, @_) : $str;
+sub L {
+   my $type  = shift || croak "Type parameter to L() is missing";
+   my $id    = shift || croak "ID parameter ro L() is missing";
+   my @param = @_;
+   my $root  = $lang->{ $type } || croak "$type is not a valid L() type";
+   my $value = $root->{ $id }   || croak "$id is not a valid L() ID";
+   return @param ? sprintf($value, @param) : $value;
 }
+
+sub fatal { croak L( error => @_ ) }
 
 sub escape {
    my $c = shift || fatal('tts.util.escape');
@@ -243,7 +249,11 @@ Returns the digester object.
 
 =head2 binary_mode FH, LAYER
 
-Sets the I/O layer of FH in moern perls, only sets binmode on FH otherwise.
+Sets the I/O layer of FH in modern perls, only sets binmode on FH otherwise.
+
+=head2 L TYPE, ID [, PARAMS]
+
+Internal method.
 
 =head2 fatal ID [, PARAMS]
 

@@ -43,13 +43,11 @@ sub _include_dynamic {
 
    if ( ++$self->[COUNTER_INCLUDE]{ $file } >= MAX_RECURSION ) {
       # failsafe
-      my $max   = MAX_RECURSION;
-      my $error = qq{$err Deep recursion (>=$max) detected in }
-                . qq{the included file: $file};
-      LOG( DEEP_RECURSION => $file ) if DEBUG();
-      $error = escape( '~' => $error );
       $self->[DEEP_RECURSION] = 1;
-      $rv .= "q~$error~";
+      LOG( DEEP_RECURSION => $file ) if DEBUG;
+      my $w = L( warning => 'tts.base.include.dynamic.recursion',
+                            $err, MAX_RECURSION, $file );
+      $rv .= sprintf "q~%s~", escape( '~' => $w );
    }
    else {
       # local stuff is for file name access through $0 in templates

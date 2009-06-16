@@ -2,7 +2,7 @@ package Text::Template::Simple;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '0.79_04';
+$VERSION = '0.79_05';
 
 use File::Spec;
 use Text::Template::Simple::Constants qw(:all);
