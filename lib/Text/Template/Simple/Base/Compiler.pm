@@ -39,17 +39,15 @@ sub _compile {
    }
 
    if ( $opt->{chkmt} ) {
-      if ( $self->[TYPE] eq 'FILE' ) {
-         $opt->{chkmt} = (stat $tmpx)[STAT_MTIME];
-      }
-      else {
-         LOG( DISABLE_MT => "Disabling chkmt. Template is not a file" )
-            if DEBUG();
-         $opt->{chkmt} = 0;
-      }
+      $opt->{chkmt} = $self->[TYPE] eq 'FILE' ? (stat $tmpx)[STAT_MTIME]
+                    : do {
+                        DEBUG && LOG(DISABLE_MT =>
+                                     "Disabling chkmt. Template is not a file");
+                        0;
+                     }
    }
 
-   LOG( COMPILE => $opt->{id} ) if defined $opt->{id} && DEBUG();
+   LOG( COMPILE => $opt->{id} ) if DEBUG && defined $opt->{id};
 
    my($CODE, $ok);
    my $cache_id = '';
@@ -89,9 +87,8 @@ sub _compile {
    push @args, @{ $param };
    my $out = $CODE->( @args );
 
-   if ( $opt->{_filter} ) {
-      $self->_call_filters( \$out, split RE_FILTER_SPLIT, $opt->{_filter} );
-   }
+   $self->_call_filters( \$out, split RE_FILTER_SPLIT, $opt->{_filter} )
+      if $opt->{_filter};
 
    return $out;
 }
@@ -101,12 +98,12 @@ sub _call_filters {
    my $oref    = shift;
    my @filters = @_;
    my $fname   = $self->[FILENAME];
-   my $fbase   = 'Text::Template::Simple::Dummy';
 
    APPLY_FILTERS: foreach my $filter ( @filters ) {
-      my $fref = $fbase->can( "filter_" . $filter );
+      my $fref = DUMMY_CLASS->can( "filter_" . $filter );
       if ( ! $fref ) {
-         $$oref .= "\n[ filter warning ] Can not apply undefined filter $filter to $fname\n";
+         $$oref .= "\n[ filter warning ] Can not apply undefined filter"
+                .  " $filter to $fname\n";
          next;
       }
       $fref->( $self, $oref );
