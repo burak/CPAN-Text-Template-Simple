@@ -61,7 +61,7 @@ use constant T_MAXID          =>   $DID;
 
 # settings
 use constant MAX_RECURSION    => 50; # recursion limit for dynamic includes
-use constant PARENT           => 'Text::Template::Simple';
+use constant PARENT           => ( __PACKAGE__ =~ m{ (.+?) ::Constants }xms );
 use constant IS_WINDOWS       => $^O eq 'MSWin32' || $^O eq 'MSWin64';
 use constant DELIM_START      => 0; # field id
 use constant DELIM_END        => 1; # field id
