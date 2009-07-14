@@ -143,7 +143,7 @@ sub _init {
    $self->[FAKER_HASH]     = $self->_output_buffer_var('hash');
    $self->[FAKER_SELF]     = $self->_output_buffer_var('self');
    $self->[INSIDE_INCLUDE] = -1; # must be -1 not 0
-   $self->[NEEDS_OBJECT]   =  0; # does the template need $self ?
+   $self->[NEEDS_OBJECT]   =  0; # the template needs $self ?
    $self->[DEEP_RECURSION] =  0; # recursion detector
 
    fatal('tts.main.init.thandler')
