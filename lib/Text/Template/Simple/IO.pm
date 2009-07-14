@@ -97,7 +97,7 @@ sub slurp {
 }
 
 sub _handle_looks_safe {
-   # Cargo Culting: original code was taken from "The Camel"
+   # Cargo Culting: original taint checking code was taken from "The Camel"
    my $self = shift;
    my $fh   = shift;
    fatal('tts.io.hls.invalid') if ! $fh || ! fileno $fh;
