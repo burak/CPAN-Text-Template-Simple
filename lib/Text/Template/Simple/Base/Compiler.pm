@@ -4,7 +4,7 @@ use vars qw($VERSION);
 use Text::Template::Simple::Util qw(:all);
 use Text::Template::Simple::Constants qw(:all);
 
-$VERSION = '0.62_07';
+$VERSION = '0.80';
 
 sub _compiler { shift->[SAFE] ? COMPILER_SAFE : COMPILER }
 

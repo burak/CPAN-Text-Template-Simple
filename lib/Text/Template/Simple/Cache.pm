@@ -6,7 +6,7 @@ use Text::Template::Simple::Constants qw(:all);
 use Text::Template::Simple::Util qw( DEBUG LOG ishref fatal );
 use Carp qw( croak );
 
-$VERSION = '0.62_07';
+$VERSION = '0.80';
 
 my $CACHE = {}; # in-memory template cache
 

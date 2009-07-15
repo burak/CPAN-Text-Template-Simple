@@ -2,12 +2,10 @@ package Text::Template::Simple::Cache::ID;
 use strict;
 use vars qw($VERSION);
 use overload q{""} => 'get';
-use Text::Template::Simple::Constants qw( MAX_FL );
+use Text::Template::Simple::Constants qw( MAX_FL RE_INVALID_CID );
 use Text::Template::Simple::Util      qw( DEBUG DIGEST fatal );
 
-$VERSION = '0.62_07';
-
-my $RE_INVALID = qr{[^A-Za-z_0-9]};
+$VERSION = '0.80';
 
 sub new {
    my $class = shift;
@@ -33,12 +31,11 @@ sub generate { # cache id generator
 sub _custom {
    my $self  = shift;
    my $data  = shift or fatal('tts.cache.id._custom.data');
-   my $regex = shift || $RE_INVALID;
+   my $regex = shift || RE_INVALID_CID;
       $data  =~ s{$regex}{_}xmsg; # remove bogus characters
-   my $len   = length( $data );
-   if ( $len > MAX_FL ) { # limit file name length
-      $data = substr $data, $len - MAX_FL, MAX_FL;
-   }
+   my $len   = length $data;
+   # limit file name length
+   $data = substr $data, $len - MAX_FL, MAX_FL if $len > MAX_FL;
    return $data;
 }
 

@@ -13,7 +13,7 @@ use constant HINTS      => 8;
 use constant BITMASK    => 9;
 use Text::Template::Simple::Util qw( ishref fatal );
 
-$VERSION = '0.62_07';
+$VERSION = '0.80';
 
 sub stack {
    my $self    = shift;

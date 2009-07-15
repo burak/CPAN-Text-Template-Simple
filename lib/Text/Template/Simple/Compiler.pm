@@ -4,7 +4,7 @@ use strict;
 use vars qw($VERSION);
 use Text::Template::Simple::Dummy;
 
-$VERSION = '0.62_07';
+$VERSION = '0.80';
 
 sub _compile { shift; return eval shift }
 

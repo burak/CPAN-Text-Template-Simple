@@ -8,7 +8,7 @@ use constant MY_IO_LAYER      => 0;
 use constant MY_INCLUDE_PATHS => 1;
 use constant MY_TAINT_MODE    => 2;
 
-$VERSION = '0.62_07';
+$VERSION = '0.80';
 
 sub new {
    my $class = shift;
@@ -114,7 +114,7 @@ sub _handle_looks_safe {
 
    # Check whether group or other can write file.
    # Read check is disabled by default
-   # Mode always 0666 on Windows, so all tests below are disabled on Windows
+   # Mode is always 0666 on Windows, so all tests below are disabled on Windows
    # unless you force them to run
    LOG( FILE_MODE => sprintf "%04o", $i->mode & 07777) if DEBUG;
 
