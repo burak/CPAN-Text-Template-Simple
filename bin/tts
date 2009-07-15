@@ -50,7 +50,7 @@ sub run {
     my %opt  = @_;
 
     do { require Pod::Usage; pod2usage(1); } if $opt{help};
-    do { die basename($0) . " v$VERSION\n" } if $opt{version};
+    usage() if $opt{version};
 
     my $file = delete $opt{file};
     my %p    = parse_arg( %opt );
@@ -139,6 +139,14 @@ sub local_conf {
     open my $FH, '<', $CONF or die "Can not open $CONF: $!";
     my $raw = do { my $rv; local $/; $rv = <$FH>; $rv };
     close $FH;
+}
+
+sub usage {
+    require Config;
+    my $os = $Config::Config{archname} || $^O;
+    die sprintf <<'USAGE', basename($0), $VERSION, $os, $];
+Hello there. I am %s v%s running under %s with perl %s
+USAGE
 }
 
 1;

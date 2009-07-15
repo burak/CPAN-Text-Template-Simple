@@ -90,7 +90,7 @@ sub new {
    my($fid, $fval);
    INITIALIZE: foreach my $field ( keys %DEFAULT ) {
       $fid = uc $field;
-      next INITIALIZE if ! $class->can($fid);
+      next INITIALIZE if ! $class->can( $fid );
       $fid  = $class->$fid();
       $fval = delete $param{$field};
       $self->[$fid] = defined $fval ? $fval : $DEFAULT{$field};
