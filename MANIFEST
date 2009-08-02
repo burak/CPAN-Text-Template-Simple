@@ -43,6 +43,7 @@ t/028-include-filter.t
 t/029-block-filter.t
 t/030-toke-substr.t
 t/031-capture-warnings.t
+t/032-empty-includes.t
 t/data/test.tts
 t/data/dynamic.tts
 t/data/dynamic_delim.tts

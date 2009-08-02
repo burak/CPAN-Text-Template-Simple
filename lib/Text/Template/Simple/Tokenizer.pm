@@ -40,9 +40,10 @@ sub new {
 
 sub tokenize {
    # compile the template into a tree and optimize
-   my $self       = shift;
-   my $tmp        = shift || fatal('tts.tokenizer.tokenize.tmp');
-   my $map_keys   = shift;
+   my($self, $tmp, $map_keys) = @_;
+
+   return $self->_empty_token( $tmp ) if ! $tmp;
+   
    my($ds, $de)   = ($self->[ID_DS], $self->[ID_DE]);
    my($qds, $qde) = map { quotemeta $_ } $ds, $de;
 
@@ -80,41 +81,26 @@ sub tokenize {
 sub tilde { shift; Text::Template::Simple::Util::escape( '~' => @_ ) }
 sub quote { shift; Text::Template::Simple::Util::escape( '"' => @_ ) }
 
-sub _debug_tokens {
-   my $self   = shift;
-   my $tokens = shift;
-   # TODO: heredocs look ugly
-   my $buf = <<'HEAD';
+sub _empty_token {
+   my $self = shift;
+   my $tmp  = shift;
+   fatal('tts.tokenizer.tokenize.tmp') if ! defined $tmp;
+   # empty string or zero
+   return [
+         [ $self->[ID_DS], T_DELIMSTART, [], undef ],
+         [ $tmp          , T_RAW       , [], undef ],
+         [ $self->[ID_DE], T_DELIMEND  , [], undef ],
+   ]
+}
 
----------------------------
-       TOKEN DUMP
----------------------------
-HEAD
-
-   my $tmp = <<'DUMP';
-ID        : %s
-STRING    : %s
-CHOMP_NEXT: %s
-CHOMP_PREV: %s
-TRIGGER   : %s
----------------------------
-DUMP
-
-   foreach my $t ( @{ $tokens } ) {
-      my $s = $t->[TOKEN_STR];
-      $s =~ s{\r}{\\r}xmsg;
-      $s =~ s{\n}{\\n}xmsg;
-      $s =~ s{\f}{\\f}xmsg;
-      $s =~ s{\s}{\\s}xmsg;
-      my @v = (
-         scalar $self->_visualize_chomp( $t->[TOKEN_CHOMP][TOKEN_CHOMP_NEXT] ),
-         scalar $self->_visualize_chomp( $t->[TOKEN_CHOMP][TOKEN_CHOMP_PREV] ),
-         scalar $self->_visualize_chomp( $t->[TOKEN_TRIGGER]                 )
-      );
-      @v = map { $_ eq 'undef' ? '' : $_ } @v;
-      $buf .= sprintf $tmp, $self->_visualize_tid( $t->[TOKEN_ID] ), $s, @v;
-   }
-   Text::Template::Simple::Util::LOG( DEBUG => $buf );
+sub _get_command_chars {
+   my($self, $str) = @_;
+   my($first, $second, $last) = ('') x 3;
+   # $first is the left-cmd, $last is the right-cmd. $second is the extra
+   $first  = substr $str, SUBSTR_OFFSET_FIRST , SUBSTR_LENGTH if $str ne '';
+   $second = substr $str, SUBSTR_OFFSET_SECOND, SUBSTR_LENGTH if $str ne '';
+   $last   = substr $str, length($str) - 1    , SUBSTR_LENGTH if $str ne '';
+   return $first, $second, $last;
 }
 
 sub _user_commands {
@@ -167,16 +153,6 @@ sub _token_for_code {
                [ CHOMP_NONE, CHOMP_NONE ],
                $needs_chomp ? $ctoken : undef # trigger
             ];
-}
-
-sub _get_command_chars {
-   my($self, $str) = @_;
-   my($first, $second, $last) = ('') x 3;
-   # $first is the left-cmd, $last is the right-cmd. $second is the extra
-   $first  = substr $str, SUBSTR_OFFSET_FIRST , SUBSTR_LENGTH if $str ne '';
-   $second = substr $str, SUBSTR_OFFSET_SECOND, SUBSTR_LENGTH if $str ne '';
-   $last   = substr $str, length($str) - 1    , SUBSTR_LENGTH if $str ne '';
-   return $first, $second, $last;
 }
 
 sub _token_code {
@@ -311,6 +287,43 @@ sub _visualize_tid {
                );
    my $rv = $ids[$id] || ( defined $id ? $id : 'undef' );
    return $rv;
+}
+
+sub _debug_tokens {
+   my $self   = shift;
+   my $tokens = shift;
+   # TODO: heredocs look ugly
+   my $buf = <<'HEAD';
+
+---------------------------
+       TOKEN DUMP
+---------------------------
+HEAD
+
+   my $tmp = <<'DUMP';
+ID        : %s
+STRING    : %s
+CHOMP_NEXT: %s
+CHOMP_PREV: %s
+TRIGGER   : %s
+---------------------------
+DUMP
+
+   foreach my $t ( @{ $tokens } ) {
+      my $s = $t->[TOKEN_STR];
+      $s =~ s{\r}{\\r}xmsg;
+      $s =~ s{\n}{\\n}xmsg;
+      $s =~ s{\f}{\\f}xmsg;
+      $s =~ s{\s}{\\s}xmsg;
+      my @v = (
+         scalar $self->_visualize_chomp( $t->[TOKEN_CHOMP][TOKEN_CHOMP_NEXT] ),
+         scalar $self->_visualize_chomp( $t->[TOKEN_CHOMP][TOKEN_CHOMP_PREV] ),
+         scalar $self->_visualize_chomp( $t->[TOKEN_TRIGGER]                 )
+      );
+      @v = map { $_ eq 'undef' ? '' : $_ } @v;
+      $buf .= sprintf $tmp, $self->_visualize_tid( $t->[TOKEN_ID] ), $s, @v;
+   }
+   Text::Template::Simple::Util::LOG( DEBUG => $buf );
 }
 
 sub DESTROY {
