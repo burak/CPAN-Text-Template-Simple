@@ -6,5 +6,5 @@ use Text::Template::Simple;
 my $t = Text::Template::Simple->new();
 
 TODO: {
-   todo_skip("test empty dynamic and static includes here");
+   todo_skip("test shared variables without monolith");
 }

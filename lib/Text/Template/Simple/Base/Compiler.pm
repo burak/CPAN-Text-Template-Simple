@@ -53,6 +53,10 @@ sub _compile {
    my $cache_id = '';
 
    my $as_is = $opt->{_sub_inc} && $opt->{_sub_inc} == T_STATIC;
+   # first element is the shared names. if it's not defined, then there
+   # are no shared variables from top level
+   delete $opt->{_share}
+      if isaref($opt->{_share}) && ! defined $opt->{_share}[0];
 
    if ( $self->[CACHE] ) {
       my $method = $opt->{id};
@@ -74,15 +78,35 @@ sub _compile {
    $self->cache->id( $cache_id ); # if $cache_id;
    $self->[FILENAME] = $self->[TYPE] eq 'FILE' ? $tmpx : $self->cache->id;
 
+   my($shead, @sparam) = $opt->{_share} ? @{$opt->{_share}} : ();
+
+   LOG(
+      SHARED_VARS => "Adding shared variables ($shead) from a dynamic include"
+   ) if DEBUG && $shead;
+
    if ( not $ok ) {
       # we have a cache miss; parse and compile
       LOG( CACHE_MISS => $cache_id ) if DEBUG();
-      my $parsed = $self->_parse( $tmp, $opt->{map_keys}, $cache_id, $as_is  );
+
+      my $shared;
+      if ( $shead ) {
+         my $param = join ',', ('shift') x @sparam;
+         $shared = sprintf qq~my(%s) = (%s);~, $shead, $param;
+      }
+
+      local $self->[HEADER] = do {
+         my $old = $self->[HEADER] || '';
+         $shared . ';' . $old
+      } if $shared;
+
+      my %popt   = ( %{ $opt }, cache_id => $cache_id, as_is => $as_is );
+      my $parsed = $self->_parse( $tmp, \%popt );
       $CODE      = $self->cache->populate( $cache_id, $parsed, $opt->{chkmt} );
    }
 
-   my   @args;
-   push @args, $self if $self->[NEEDS_OBJECT];
+   my @args;
+   push @args, $self   if $self->[NEEDS_OBJECT]; # must be the first
+   push @args, @sparam if @sparam;
    push @args, @{ $self->[ADD_ARGS] } if $self->[ADD_ARGS];
    push @args, @{ $param };
    my $out = $CODE->( @args );

@@ -100,6 +100,10 @@ my $lang = {
       'tts.base.examine._examine_type.extra'     => 'Type array has unknown extra fields',
       'tts.base.examine._examine_type.unknown'   => 'Unknown first argument of %s type to compile()',
       'tts.base.include._include.unknown'        => 'Unknown include type: %s',
+      'tts.base.include._interpolate.bogus_share' => 'Only SCALARs can be shared. You have tried to share a variable '
+                                                    .'type of %s named "%s". Consider converting it to a SCALAR or try '
+                                                    .'the monolith option to enable automatic variable sharing. '
+                                                    .'But please read the fine manual first',
       'tts.base.parser._internal.id'             => '_internal(): id is missing',
       'tts.base.parser._internal.rv'             => '_internal(): id is invalid',
       'tts.base.parser._parse.unbalanced'        => '%d unbalanced %s delimiter(s) in template %s',

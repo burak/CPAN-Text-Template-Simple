@@ -503,13 +503,19 @@ PARAM
 
 FILTER
 
+=item *
+
+SHARE
+
 =back
 
    <%+ /path/to/static.tts  | FILTER: MyFilter %>
    <%* /path/to/dynamic.tts | FILTER: MyFilter | PARAM: test => 123 %>
 
-C<FILTER:> defines the list of filters to apply to the output of the include.
 C<PARAM:> defines the parameter list to pass to the included file.
+C<FILTER:> defines the list of filters to apply to the output of the include.
+C<SHARE:> used to list the variables to share with the included template when
+the monolith option is disabled.
 
 =head3 INCLUDE FILTERS
 
@@ -548,6 +554,37 @@ A block consists of a header part and the content.
 
 C<HEADER> includes the commands and terminated with a semicolon. C<BODY> is the
 actual block content.
+
+=head3 SHARED VARIABLES
+
+C<Text::Template::Simple> compiles every template individually with separate
+scopes. A variable defined in the master template is not accessible from a
+dynamic include. The exception to this rule is the C<monolith> option to C<new>.
+If it is enabled; the master template and any includes it has will be compiled
+into a single document, thus making every variable defined at the top available
+to the includes below. But this method has a drawback, it disables cache check
+for the sub files (includes). You'll need to edit the master template to force
+a cache reload.
+
+If you don't use C<monolith> (disabled by default), then you'll need to share
+the variables somehow to don't repeat yourself. Variable sharing is demonstrated
+in the below template:
+
+   <%
+      my $foo = 42;
+      my $bar = 23;
+   %>
+   <%* dyna.inc | SHARE: $foo, $bar %>
+
+And then you can access C<$foo> and C<$bar> inside C<dyna.inc>. There is one
+drawback by shared variables: only SCALARs can be shared. You can not share
+anything else. If you want to share an array, use an array reference instead:
+
+   <%
+      my @foo = (1..10);
+      my $fooref = \@foo;
+   %>
+   <%* dyna.inc | SHARE: $fooref %>
 
 =head3 BLOCK FILTERS
 

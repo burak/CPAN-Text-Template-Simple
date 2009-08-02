@@ -8,14 +8,14 @@ $VERSION = '0.80';
 
 sub _include_no_monolith {
    # no monolith eh?
-   my $self = shift;
-   my $type = shift;
-   my $file = shift;
+   my($self, $type, $file, $opt) = @_;
+
    my $rv   =  $self->_mini_compiler(
                   $self->_internal('no_monolith') => {
                      OBJECT => $self->[FAKER_SELF],
                      FILE   => escape('~' => $file),
                      TYPE   => escape('~' => $type),
+                     SHARE  => ( $opt->{_share} ? $opt->{_share} : 'undef' ),
                   } => {
                      flatten => 1,
                   }
@@ -25,15 +25,15 @@ sub _include_no_monolith {
 }
 
 sub _include_static {
-   my($self, $file, $text, $err) = @_;
+   my($self, $file, $text, $err, $opt) = @_;
    return $self->[MONOLITH]
         ? 'q~' . escape('~' => $text) . '~;'
-        : $self->_include_no_monolith( T_STATIC, $file )
+        : $self->_include_no_monolith( T_STATIC, $file, $opt )
         ;
 }
 
 sub _include_dynamic {
-   my($self, $file, $text, $err) = @_;
+   my($self, $file, $text, $err, $opt) = @_;
    my $rv   = '';
 
    ++$self->[INSIDE_INCLUDE];
@@ -53,7 +53,7 @@ sub _include_dynamic {
       # local stuff is for file name access through $0 in templates
       $rv .= $self->[MONOLITH]
            ? do { local $self->[FILENAME] = $file; $self->_parse( $text ) }
-           : $self->_include_no_monolith( T_DYNAMIC, $file )
+           : $self->_include_no_monolith( T_DYNAMIC, $file, $opt )
            ;
    }
 
@@ -66,6 +66,7 @@ sub _include {
    my $self       = shift;
    my $type       = shift || 0;
    my $file       = shift;
+   my $opt        = shift;
    my $is_static  = T_STATIC  == $type ? 1 : 0;
    my $is_dynamic = T_DYNAMIC == $type ? 1 : 0;
    my $known      = $is_static || $is_dynamic;
@@ -111,7 +112,7 @@ sub _include {
    return "q~$err $@~" if $@;
 
    my $meth = '_include_' . ($is_dynamic ? 'dynamic' : 'static');
-   return $self->$meth( $file, $text, $err);
+   return $self->$meth( $file, $text, $err, $opt );
 }
 
 sub _interpolate {
@@ -133,6 +134,27 @@ sub _interpolate {
 
    my $filter = $inc{FILTER} ? escape( q{'} => $inc{FILTER} ) : '';
 
+   if ( $inc{SHARE} ) {
+      my @vars = map { trim $_ } split RE_FILTER_SPLIT, $inc{SHARE};
+      my %type = qw(
+                     @   ARRAY
+                     %   HASH
+                     *   GLOB
+                     \   REFERENCE
+                  );
+      my @buf;
+      foreach my $var ( @vars ) {
+         if ( $var !~ m{ \A \$ }xms ) {
+            my($char) = $var =~ m{ \A (.) }xms;
+            my $type  = $type{ $char } || '<UNKNOWN>';
+            fatal('tts.base.include._interpolate.bogus_share', $type, $var);
+         }
+         $var =~ tr/;//d;
+         push @buf, $var;
+      }
+      $inc{SHARE} = join ',', @buf;
+   }
+
    my $rv = $self->_mini_compiler(
                $self->_internal('sub_include') => {
                   OBJECT      => $self->[FAKER_SELF],
@@ -141,10 +163,12 @@ sub _interpolate {
                   TYPE        => $type,
                   PARAMS      => $inc{PARAM} ? qq{[$inc{PARAM}]} : 'undef',
                   FILTER      => $filter,
+                  SHARE       => ( $inc{SHARE} ? sprintf(qq{'%s', %s}, ($inc{SHARE}) x 2) : 'undef' ),
                } => {
                   flatten => 1,
                }
             );
+
    return $rv;
 }
 
