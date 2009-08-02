@@ -3,7 +3,7 @@ use strict;
 use vars qw($VERSION);
 use overload q{""} => 'get';
 use Text::Template::Simple::Constants qw( MAX_FL RE_INVALID_CID );
-use Text::Template::Simple::Util      qw( DEBUG DIGEST fatal );
+use Text::Template::Simple::Util      qw( LOG DEBUG DIGEST fatal );
 
 $VERSION = '0.80';
 
@@ -17,10 +17,13 @@ sub get { my $self = shift; $$self }
 sub set { my $self = shift; $$self = shift if defined $_[0]; return; }
 
 sub generate { # cache id generator
-   my $self   = shift;
-   my $data   = shift or fatal('tts.cache.id.generate.data');
-   my $custom = shift;
-   my $regex  = shift;
+   my($self, $data, $custom, $regex) = @_;
+
+   if ( ! $data ) {
+      fatal('tts.cache.id.generate.data') if ! defined $data;
+      LOG( IDGEN => "Generating ID from empty data" ) if DEBUG;
+   }
+
    $self->set(
       $custom ? $self->_custom( $data, $regex )
               : $self->DIGEST->add( $data )->hexdigest
