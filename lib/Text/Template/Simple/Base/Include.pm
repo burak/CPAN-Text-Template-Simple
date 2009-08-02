@@ -154,6 +154,7 @@ sub _interpolate {
       $inc{SHARE} = join ',', @buf;
    }
 
+   my $share = $inc{SHARE} ? sprintf(qq{'%s', %s}, ($inc{SHARE}) x 2) : 'undef';
    my $rv = $self->_mini_compiler(
                $self->_internal('sub_include') => {
                   OBJECT      => $self->[FAKER_SELF],
@@ -162,7 +163,7 @@ sub _interpolate {
                   TYPE        => $type,
                   PARAMS      => $inc{PARAM} ? qq{[$inc{PARAM}]} : 'undef',
                   FILTER      => $filter,
-                  SHARE       => ( $inc{SHARE} ? sprintf(qq{'%s', %s}, ($inc{SHARE}) x 2) : 'undef' ),
+                  SHARE       => $share,
                } => {
                   flatten => 1,
                }
