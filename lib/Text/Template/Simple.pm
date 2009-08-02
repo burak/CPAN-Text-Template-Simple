@@ -2,7 +2,7 @@ package Text::Template::Simple;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '0.79_05';
+$VERSION = '0.79_06';
 
 use File::Spec;
 use Text::Template::Simple::Constants qw(:all);
@@ -544,17 +544,6 @@ prefix:
 Just pass the parameters as described above and fetch them via C<@_> inside
 the included file.
 
-=head2 BLOCKS
-
-A block consists of a header part and the content.
-
-   <%| HEADER;
-       BODY
-   %>
-
-C<HEADER> includes the commands and terminated with a semicolon. C<BODY> is the
-actual block content.
-
 =head3 SHARED VARIABLES
 
 C<Text::Template::Simple> compiles every template individually with separate
@@ -585,6 +574,17 @@ anything else. If you want to share an array, use an array reference instead:
       my $fooref = \@foo;
    %>
    <%* dyna.inc | SHARE: $fooref %>
+
+=head2 BLOCKS
+
+A block consists of a header part and the content.
+
+   <%| HEADER;
+       BODY
+   %>
+
+C<HEADER> includes the commands and terminated with a semicolon. C<BODY> is the
+actual block content.
 
 =head3 BLOCK FILTERS
 

@@ -53,6 +53,7 @@ sub _compile {
    my $cache_id = '';
 
    my $as_is = $opt->{_sub_inc} && $opt->{_sub_inc} == T_STATIC;
+
    # first element is the shared names. if it's not defined, then there
    # are no shared variables from top level
    delete $opt->{_share}
