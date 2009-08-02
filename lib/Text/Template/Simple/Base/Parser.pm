@@ -310,7 +310,6 @@ sub _set_internal_templates {
          {
             chkmt    => 1,
             _sub_inc => q~<%TYPE%>~,
-            _share   => [<%SHARE%>],
          }
       );
    *,

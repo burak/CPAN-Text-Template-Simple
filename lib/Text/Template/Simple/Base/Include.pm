@@ -15,7 +15,6 @@ sub _include_no_monolith {
                      OBJECT => $self->[FAKER_SELF],
                      FILE   => escape('~' => $file),
                      TYPE   => escape('~' => $type),
-                     SHARE  => ( $opt->{_share} ? $opt->{_share} : 'undef' ),
                   } => {
                      flatten => 1,
                   }
