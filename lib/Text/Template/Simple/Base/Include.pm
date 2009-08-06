@@ -105,7 +105,6 @@ sub _include {
 
    if ( $interpolate ) {
       my $rv = $self->_interpolate( $file, $type );
-      use Data::Dumper; warn Dumper [ $file, $type, $rv];
       $self->[NEEDS_OBJECT]++;
       LOG(INTERPOLATE_INC => "TYPE: $type; DATA: $file; RV: $rv") if DEBUG();
       return $rv;
