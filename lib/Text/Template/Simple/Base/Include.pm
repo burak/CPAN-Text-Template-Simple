@@ -84,6 +84,10 @@ sub _include {
    }
    else {
       $interpolate = 1; # just guessing ...
+      return "qq~$err Interpolated includes don't work under monolith option. "
+            ."Please disable monolith and use the 'SHARE' directive in the"
+            ." include command: $file~"
+         if $self->[MONOLITH];
    }
 
    return "q~$err '" . escape('~' => $file) . "' is a directory~"
@@ -101,6 +105,7 @@ sub _include {
 
    if ( $interpolate ) {
       my $rv = $self->_interpolate( $file, $type );
+      use Data::Dumper; warn Dumper [ $file, $type, $rv];
       $self->[NEEDS_OBJECT]++;
       LOG(INTERPOLATE_INC => "TYPE: $type; DATA: $file; RV: $rv") if DEBUG();
       return $rv;

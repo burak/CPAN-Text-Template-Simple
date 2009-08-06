@@ -49,7 +49,10 @@ run( %ARG ) if not caller;
 sub run {
     my %opt  = @_;
 
-    do { require Pod::Usage; pod2usage(1); } if $opt{help};
+    if ( $opt{help} ) {
+        require Pod::Usage;
+        Pod::Usage::pod2usage(1);
+    };
     usage() if $opt{version};
 
     my $file = delete $opt{file};
@@ -152,6 +155,8 @@ USAGE
 1;
 
 __END__
+
+=pod
 
 =head1 NAME
 
