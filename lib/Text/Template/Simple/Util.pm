@@ -68,6 +68,7 @@ my $lang = {
       'tts.tokenizer.new.ds'                     => 'Start delimiter is missing',
       'tts.tokenizer.new.de'                     => 'End delimiter is missing',
       'tts.tokenizer.tokenize.tmp'               => 'Template string is missing',
+      'tts.tokenizer._get_symbols.regex'         => 'Regex is missing',
       'tts.io.validate.type'                     => 'No type specified',
       'tts.io.validate.path'                     => 'No path specified',
       'tts.io.validate.file'                     => 'validate(file) is not yet implemented',

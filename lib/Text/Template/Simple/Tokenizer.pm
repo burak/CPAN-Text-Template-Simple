@@ -226,7 +226,7 @@ sub _chomp_prev {
 sub _get_symbols {
    # fetch the related constants
    my $self  = shift;
-   my $regex = shift || die "regex is missing";
+   my $regex = shift || fatal('tts.tokenizer._get_symbols.regex');
    no strict qw( refs );
    return grep { $_ =~ $regex } keys %{ ref($self) . '::' };
 }
