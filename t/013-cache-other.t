@@ -5,18 +5,28 @@ use File::Temp qw( tempdir );
 
 use Text::Template::Simple;
 
-my $TEMPDIR = tempdir( CLEANUP => 1 );
+SKIP: {
 
-my $tm = Text::Template::Simple->new(
-           cache => 1,
-        );
+    if ( $] <= 5.006002 && __PACKAGE__->can('TAINTMODE') && $^O eq 'freebsd' ) {
+        skip "This version of perl in this platform seems to have a bug in "
+            ."it that causes failures under taint mode. See this bug report "
+            ."for the details on this issue: "
+            ."http://rt.cpan.org/Public/Bug/Display.html?id=45885";
+    }
 
-my $td = Text::Template::Simple->new(
-           cache     => 1,
-           cache_dir => $TEMPDIR,
-        );
+    my $TEMPDIR = tempdir( CLEANUP => 1 );
 
-run( $_ ) for $tm, $td;
+    my $tm = Text::Template::Simple->new(
+               cache => 1,
+            );
+
+    my $td = Text::Template::Simple->new(
+               cache     => 1,
+               cache_dir => $TEMPDIR,
+            );
+
+    run( $_ ) for $tm, $td;
+}
 
 sub run {
     my $t      = shift;

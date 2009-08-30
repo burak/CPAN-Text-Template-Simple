@@ -2,6 +2,10 @@ Revision history for Perl extension Text::Template::Simple.
 
 Time zone is UTC+2.
 
+0.81 Sun Aug 30 22:14:28 2009
+   => Skip disk cache tests under taint mode if perl is <= 5.6.2 and OS is freebsd.
+      Ref: http://rt.cpan.org/Public/Bug/Display.html?id=45885
+
 0.80 Sat Aug  8 02:37:32 2009
    => New stable version. Highlights:
       o "resume" option went to oblivion.
