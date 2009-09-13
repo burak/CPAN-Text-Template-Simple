@@ -71,7 +71,8 @@ sub slurp {
    my($fh, $seek);
    LOG(IO_SLURP => $file) if DEBUG();
 
-   if ( fileno $file ) {
+   # perl 5.5.3 compat: we need to check if it's a ref first
+   if ( ref $file && fileno $file ) {
       $fh   = $file;
       $seek = 1;
    }
