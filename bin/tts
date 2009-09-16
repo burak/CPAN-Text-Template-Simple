@@ -5,44 +5,61 @@ use File::Spec;
 use File::Basename;
 use Getopt::Long;
 use Data::Dumper;
-use Text::Template::Simple;
+use Scalar::Util qw( blessed );
 
 our $VERSION = '0.11';
+our %ARG;
 
-GetOptions( \our %ARG => qw(
-    e=s
-    version
-    http-header
-    help
+BEGIN {
+    $| = 1;
+    GetOptions( \%ARG => qw(
+        e=s
+        version
+        http-header
+        help
 
-    debug=i
-    debug-tokens
+        debug=i
+        debug-tokens
 
-    new-cache
-    new-capture-warnings
-    new-safe
-    new-stack
-    new-strict
-    new-verbose_errors
-    new-warn-ids
-    new-monolith
+        new-cache
+        new-capture-warnings
+        new-safe
+        new-stack
+        new-strict
+        new-verbose_errors
+        new-warn-ids
+        new-monolith
 
-    new-add-args=s@
-    new-cache-dir=s
-    new-delimiters=s@
-    new-header=s
-    new-include-paths=s@
-    new-iolayer=s
-    new-pre-chomp=s
-    new-post-chomp=s
+        new-add-args=s@
+        new-cache-dir=s
+        new-delimiters=s@
+        new-header=s
+        new-include-paths=s@
+        new-iolayer=s
+        new-pre-chomp=s
+        new-post-chomp=s
 
-    compile-param=s@
-    compile-id=s
-    compile-map-keys
-    compile-chkmt
-));
+        compile-param=s@
+        compile-id=s
+        compile-map-keys
+        compile-chkmt
+    ));
 
-$ARG{file} = shift;
+    $ARG{file} = shift;
+
+    if ( $ARG{'debug-tokens'} ) {
+        *Text::Template::Simple::Tokenizer::DEBUG_TOKENS =
+        *Text::Template::Simple::Tokenizer::DEBUG_TOKENS = sub { 1 };
+    }
+}
+
+use Text::Template::Simple;
+
+BEGIN {
+    Text::Template::Simple->DEBUG( $ARG{debug} ) if $ARG{debug};
+}
+
+my %CONTROLLER; # registry
 
 run( %ARG ) if not caller;
 
@@ -62,13 +79,6 @@ sub run {
              :                ( $file || die "No input file specified"  )
              ;
 
-    Text::Template::Simple->DEBUG( $p{debug} ) if $p{debug};
-
-    if ( $p{'debug-tokens'} ) {
-        *Text::Template::Simple::Tokenizer::DEBUG_TOKENS =
-        *Text::Template::Simple::Tokenizer::DEBUG_TOKENS = sub { 1 };
-    }
-
     my $TTS = {
         header => {
             charset => '',
@@ -80,17 +90,46 @@ sub run {
     $p{new}->{header}   ||= '';
     unshift @{ $p{new}->{add_args} }, $TTS;
     $p{new}->{header} = q{my $TTS = shift;} . $p{new}->{header};
+    my $global = Text::Template::Simple->new( %{ $p{new} } );
 
-    my $t  = Text::Template::Simple->new( %{ $p{new} } );
-    if ( my $path = $t->io->file_exists( $file ) ) {
+    my $t;
+    if ( my $path = $global->io->file_exists( $file ) ) {
         my $dir  = dirname $path;
         my $file = basename $path;
-        my $controller = File::Spec->catfile( $dir, $file . '.cgi' );
-        if ( -e $controller )  {
-            require $controller;
+        my $controller = File::Spec->catfile( $dir, $file . '.pl' );
+        #die Dumper [ $dir, $file ];
+
+        if ( exists $CONTROLLER{ $controller } ) {
+            $t = $CONTROLLER{ $controller }->{handler};
         }
-        die Dumper [ $dir, $file ];
+        else {
+            if ( -e $controller )  {
+                my $f = $controller;
+                (my $pkg = 'TTS'.$controller) =~ s{[^a-zA-Z0-9_]}{_}xmsg;
+                (my $file = $controller) =~ s{"}{\\"}xmsg;
+                my $h = eval qq{
+                    package $pkg;
+                    require "$controller";
+                };
+                die "Error compiling controller: $@" if $@;
+                my $cref = $pkg->can('tts_controller');
+                die "Controller present but does not implement a tts_controller() function" if ! $cref;
+                my $o = $cref->( %{ $p{new} } );
+                die "Controller returned non-object"                          if ! ref     $o;
+                die "Controller returned a non-blessed reference"             if ! blessed $o;
+                die "Controller returned a non-Text::Template::Simple object" if ! $o->isa('Text::Template::Simple');
+                $CONTROLLER{ $controller } = {
+                    handler => $o,
+                    package => $pkg,
+                    date    => time,
+                };
+                $t = $CONTROLLER{ $controller }->{handler};
+            }
+        }
     }
+
+    $t = $global if ! $t;
+
     my $rv;
     eval {
         $rv = $t->compile(
