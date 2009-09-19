@@ -34,15 +34,15 @@ my %CONNECTOR = ( # Default classes list
 my %DEFAULT = ( # default object attributes
    delimiters       => [ DELIMS ], # default delimiters
    cache            =>  0,    # use cache or not
-   cache_dir        => '',    # will use hdd intead of memory for caching...
+   cache_dir        => EMPTY_STRING,    # will use hdd intead of memory for caching...
    strict           =>  1,    # set to false for toleration to un-declared vars
    safe             =>  0,    # use safe compartment?
    header           =>  0,    # template header. i.e. global codes.
-   add_args         => '',    # will unshift template argument list. ARRAYref.
+   add_args         => EMPTY_STRING,    # will unshift template argument list. ARRAYref.
    warn_ids         =>  0,    # warn template ids?
    capture_warnings =>  0,    # bool
-   iolayer          => '',    # I/O layer for filehandles
-   stack            => '',    # dump caller stack?
+   iolayer          => EMPTY_STRING,    # I/O layer for filehandles
+   stack            => EMPTY_STRING,    # dump caller stack?
    user_thandler    => undef, # user token handler callback
    monolith         =>  0,    # use monolithic template & cache ?
    include_paths    => [],    # list of template dirs
@@ -64,7 +64,7 @@ sub import {
    foreach my $name ( @args ) {
       fatal('tts.main.import.invalid', $name, $class) if ! $ok{$name};
       fatal('tts.main.import.undef',   $name, $class) if ! defined &{ $name   };
-      my $target = $caller . '::' . $name;
+      my $target = $caller . q{::} . $name;
       fatal('tts.main.import.redefine', $name, $caller) if defined &{ $target };
       *{ $target } = \&{ $name }; # install
    }
@@ -75,7 +75,7 @@ sub import {
 sub tts {
    my @args = @_;
    fatal('tts.main.tts.args') if ! @args;
-   my @new  = ishref($args[0]) ? %{ shift(@args) } : ();
+   my @new  = ishref($args[0]) ? %{ shift @args } : ();
    return __PACKAGE__->new( @new )->compile( @args );
 }
 
@@ -85,7 +85,7 @@ sub new {
    my $self  = [ map { undef } 0 .. MAXOBJFIELD ];
    bless $self, $class;
 
-   LOG( CONSTRUCT => $self->_class_id . " @ ".(scalar localtime time) )
+   LOG( CONSTRUCT => $self->class_id . q{ @ } . (scalar localtime time) )
       if DEBUG();
 
    my($fid, $fval);
@@ -98,7 +98,7 @@ sub new {
    }
 
    foreach my $bogus ( keys %param ) {
-      warn "'$bogus' is not a known parameter. Did you make a typo?";
+      warn "'$bogus' is not a known parameter. Did you make a typo?\n";
    }
 
    $self->_init;
@@ -138,12 +138,12 @@ sub _init {
    fatal('tts.main.dsws')         if $d->[DELIM_START] =~ m{\s}xms;
    fatal('tts.main.dews')         if $d->[DELIM_END]   =~ m{\s}xms;
 
-   $self->[TYPE]           = '';
+   $self->[TYPE]           = EMPTY_STRING;
    $self->[COUNTER]        = 0;
    $self->[FAKER]          = $self->_output_buffer_var;
    $self->[FAKER_HASH]     = $self->_output_buffer_var('hash');
    $self->[FAKER_SELF]     = $self->_output_buffer_var('self');
-   $self->[INSIDE_INCLUDE] = -1; # must be -1 not 0
+   $self->[INSIDE_INCLUDE] = MINUS_ONE; # must be -1 not 0
    $self->[NEEDS_OBJECT]   =  0; # the template needs $self ?
    $self->[DEEP_RECURSION] =  0; # recursion detector
 
@@ -177,16 +177,16 @@ sub _output_buffer_var {
             :                    \my $fake
             ;
    $id  = "$id";
-   $id .= int( rand($$) ); # . rand() . time;
+   $id .= int rand $$; # . rand() . time;
    $id  =~ tr/a-zA-Z_0-9//cd;
    $id  =~ s{SCALAR}{SELF}xms if $type eq 'self';
-   return '$' . $id;
+   return q{$} . $id;
 }
 
-sub _class_id {
+sub class_id {
    my $self = shift;
    my $class = ref($self) || $self;
-   return sprintf( "%s v%s", $class, $self->VERSION() );
+   return sprintf q{%s v%s}, $class, $self->VERSION;
 }
 
 sub _tidy {
@@ -195,8 +195,8 @@ sub _tidy {
 
    TEST_TIDY: {
       local($@, $SIG{__DIE__});
-      eval { require Perl::Tidy; };
-      if ( $@ ) { # :(
+      my $ok = eval { require Perl::Tidy; 1; };
+      if ( ! $ok ) { # :(
          $code =~ s{;}{;\n}xmsgo; # new lines makes it easy to debug
          return $code;
       }
@@ -606,6 +606,8 @@ Note that you can not use any variables in these blocks. They are static.
 =head2 new
 
 =head2 cache
+
+=head2 class_id
 
 =head2 compile
 

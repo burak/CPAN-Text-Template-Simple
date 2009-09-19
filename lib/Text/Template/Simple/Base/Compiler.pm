@@ -19,11 +19,11 @@ sub _compile {
    fatal('tts.base.compiler._compile.opt')   if not ishref($opt  );
 
    # set defaults
-   $opt->{id}       ||= ''; # id is AUTO
+   $opt->{id}       ||= EMPTY_STRING; # id is AUTO
    $opt->{map_keys} ||= 0;  # use normal behavior
    $opt->{chkmt}    ||= 0;  # check mtime of file template?
    $opt->{_sub_inc} ||= 0;  # are we called from a dynamic include op?
-   $opt->{_filter}  ||= ''; # any filters?
+   $opt->{_filter}  ||= EMPTY_STRING; # any filters?
 
    my $tmp = $self->_examine( $tmpx );
    return $tmp if $self->[TYPE] eq 'ERROR';
@@ -43,7 +43,7 @@ sub _compile {
       $opt->{chkmt} = $self->[TYPE] eq 'FILE' ? (stat $tmpx)[STAT_MTIME]
                     : do {
                         DEBUG && LOG(DISABLE_MT =>
-                                     "Disabling chkmt. Template is not a file");
+                                     'Disabling chkmt. Template is not a file');
                         0;
                      }
    }
@@ -51,7 +51,7 @@ sub _compile {
    LOG( COMPILE => $opt->{id} ) if DEBUG && defined $opt->{id};
 
    my($CODE, $ok);
-   my $cache_id = '';
+   my $cache_id = EMPTY_STRING;
 
    my $as_is = $opt->{_sub_inc} && $opt->{_sub_inc} == T_STATIC;
 
@@ -92,14 +92,12 @@ sub _compile {
 
       my $shared;
       if ( $shead ) {
-         my $param = join ',', ('shift') x @sparam;
-         $shared = sprintf qq~my(%s) = (%s);~, $shead, $param;
+         my $param_x = join q{,}, ('shift') x @sparam;
+         $shared = sprintf q~my(%s) = (%s);~, $shead, $param_x;
       }
 
-      local $self->[HEADER] = do {
-         my $old = $self->[HEADER] || '';
-         $shared . ';' . $old
-      } if $shared;
+      local $self->[HEADER] = $shared . q{;} . ( $self->[HEADER] || EMPTY_STRING )
+         if $shared;
 
       my %popt   = ( %{ $opt }, cache_id => $cache_id, as_is => $as_is );
       my $parsed = $self->_parse( $tmp, \%popt );
@@ -124,9 +122,9 @@ sub _call_filters {
    my $fname = $self->[FILENAME];
 
    APPLY_FILTERS: foreach my $filter ( @filters ) {
-      my $fref = DUMMY_CLASS->can( "filter_" . $filter );
+      my $fref = DUMMY_CLASS->can( 'filter_' . $filter );
       if ( ! $fref ) {
-         $$oref .= "\n[ filter warning ] Can not apply undefined filter"
+         ${$oref} .= "\n[ filter warning ] Can not apply undefined filter"
                 .  " $filter to $fname\n";
          next;
       }
@@ -164,7 +162,8 @@ sub _mini_compiler {
    fatal('tts.base.compiler._mini_compiler.param') if ! ishref($param);
 
    foreach my $var ( keys %{ $param } ) {
-      $template =~ s[<%\Q$var\E%>][$param->{$var}]xmsg;
+      my $str = $param->{$var};
+      $template =~ s{<%\Q$var\E%>}{$str}xmsg;
    }
 
    $template =~ s{\s+}{ }xmsg if $opt->{flatten}; # remove extra spaces

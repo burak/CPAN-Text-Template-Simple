@@ -35,7 +35,7 @@ sub _examine {
       }
    }
 
-   LOG( EXAMINE => $self->[TYPE]."; LENGTH: ".length($rv) ) if DEBUG();
+   LOG( EXAMINE => sprintf q{%s; LENGTH: %s}, $self->[TYPE], length $rv ) if DEBUG();
    return $rv;
 }
 
@@ -53,8 +53,8 @@ sub _examine_type {
    my $TMP  = shift;
    my $ref  = ref $TMP;
 
-   return ''   => $TMP if ! $ref;
-   return GLOB => $TMP if   $ref eq 'GLOB';
+   return EMPTY_STRING ,  $TMP if ! $ref;
+   return GLOB         => $TMP if   $ref eq 'GLOB';
 
    if ( isaref( $TMP ) ) {
       my $ftype  = shift @{ $TMP } || fatal('tts.base.examine._examine_type.ftype');

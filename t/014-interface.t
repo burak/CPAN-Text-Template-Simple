@@ -22,7 +22,7 @@ can_ok( 'Text::Template::Simple',
             compile
             connector
             _init
-            _class_id
+            class_id
             _output_buffer_var
             _examine
             _compiler

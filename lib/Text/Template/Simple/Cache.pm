@@ -49,10 +49,11 @@ sub reset {
       my $file;
 
       while ( defined( $file = readdir CDIRH ) ) {
-         next if $file !~ m{ ( .* $ext) \z}xmsi;
-         $file = File::Spec->catfile( $parent->[CACHE_DIR], $1 );
-         LOG( UNLINK => $file ) if DEBUG();
-         unlink $file;
+         if ( $file =~ m{ ( .* $ext) \z}xmsi ) {
+            $file = File::Spec->catfile( $parent->[CACHE_DIR], $1 );
+            LOG( UNLINK => $file ) if DEBUG();
+            unlink $file;
+         }
       }
 
       closedir CDIRH;
@@ -75,7 +76,7 @@ sub _dump_ids {
    my $self   = shift;
    my $parent = $self->[CACHE_PARENT];
    my $p      = shift;
-   my $VAR    = $p->{varname} || '$CACHE_IDS';
+   my $VAR    = $p->{varname} || q{$} . q{CACHE_IDS};
    my @rv;
 
    if ( $parent->[CACHE_DIR] ) {
@@ -86,10 +87,11 @@ sub _dump_ids {
       my($id, @list);
 
       my $wanted = sub {
-         return if $_ !~ m{ (.+?) $ext \z }xms;
-         $id      = $1;
-         $id      =~ s{.*[\\/]}{};
-         push @list, $id;
+         if ( $_ =~ m{ (.+?) $ext \z }xms ) {
+            $id = $1;
+            $id =~ s{.*[\\/]}{}xms;
+            push @list, $id;
+         }
       };
 
       File::Find::find({wanted => $wanted, no_chdir => 1}, $parent->[CACHE_DIR]);
@@ -110,7 +112,7 @@ sub _dump_structure {
    my $self    = shift;
    my $parent  = $self->[CACHE_PARENT];
    my $p       = shift;
-   my $VAR     = $p->{varname} || '$CACHE';
+   my $VAR     = $p->{varname} || q{$} . q{CACHE};
    my $deparse = $p->{no_deparse} ? 0 : 1;
    require Data::Dumper;
    my $d;
@@ -126,8 +128,7 @@ sub _dump_structure {
       }
    }
 
-   my $str;
-   eval { $str = $d->Dump; };
+   my $str = eval { $d->Dump; };
 
    if ( my $error = $@ ) {
       if ( $deparse && $error =~ RE_DUMP_ERROR ) {
@@ -154,17 +155,16 @@ sub _dump_disk_cache {
    my $parent  = $self->[CACHE_PARENT];
    my $ext     = quotemeta CACHE_EXT;
    my $pattern = quotemeta DISK_CACHE_MARKER;
-   my(%disk_cache, $id, $content, $ok, $_temp);
+   my(%disk_cache);
 
-   my $wanted = sub {
-      return if $_ !~ m{(.+?) $ext \z}xms;
-      $id      = $1;
-      $id      =~ s{.*[\\/]}{};
-      $content = $parent->io->slurp( File::Spec->canonpath($_) );
-      $ok      = 0;  # reset
-      $_temp   = ''; # reset
+   my $process = sub {
+      my($file, $id) = @_;
+      $id =~ s{.*[\\/]}{}xms;
+      my $content = $parent->io->slurp( File::Spec->canonpath($file) );
+      my $ok      = 0;  # reset
+      my $_temp   = EMPTY_STRING; # reset
 
-      foreach my $line ( split /\n/, $content ) {
+      foreach my $line ( split m{\n}xms, $content ) {
          if ( $line =~ m{$pattern}xmso ) {
             $ok = 1;
             next;
@@ -174,11 +174,17 @@ sub _dump_disk_cache {
       }
 
       $disk_cache{ $id } = {
-         MTIME => (stat $_)[STAT_MTIME],
+         MTIME => (stat $file)[STAT_MTIME],
          CODE  => $_temp,
       };
    };
- 
+
+   my $wanted = sub {
+      if ( $_ =~ m{(.+?) $ext \z}xms ) {
+         $process->( $_, $1 );
+      }
+   };
+
    File::Find::find({ wanted => $wanted, no_chdir => 1 }, $parent->[CACHE_DIR]);
    return \%disk_cache;
 }
@@ -210,13 +216,13 @@ sub size {
          my $dsv = Devel::Size->VERSION;
          LOG( DEBUG => "Devel::Size v$dsv is loaded." )
             if DEBUG();
-         fatal('tts.cache.develsize.buggy', $dsv) if $dsv < 0.72;
+         fatal('tts.cache.develsize.buggy', $dsv) if $dsv < DEVEL_SIZE_VERSION;
          my $size = eval { Devel::Size::total_size( $CACHE ) };
          fatal('tts.cache.develsize.total', $@) if $@;
          return $size;
       }
       else {
-         warn "Failed to load Devel::Size: $@";
+         warn "Failed to load Devel::Size: $@\n";
          return 0;
       }
 
@@ -230,7 +236,7 @@ sub has {
    my $parent = $self->[CACHE_PARENT];
 
    if ( not $parent->[CACHE] ) {
-      LOG( DEBUG => "Cache is disabled!") if DEBUG();
+      LOG( DEBUG => 'Cache is disabled!') if DEBUG();
       return;
    }
 
@@ -284,7 +290,7 @@ sub hit {
          if ( $self->_is_meta_version_old( $meta{VERSION} ) ) {
             my $id = $parent->[FILENAME] || $cache_id;
             warn "(This messeage will only appear once) $id was compiled with"
-                ." an old version of " . PARENT . ". Resetting cache.";
+                .' an old version of ' . PARENT . ". Resetting cache.\n";
             return;
          }
          if ( my $mtime = $meta{CHKMT} ) {
@@ -300,7 +306,7 @@ sub hit {
          $parent->[FAKER_SELF]   = $meta{FAKER_SELF}   if $meta{FAKER_SELF};
 
          fatal('tts.cache.hit.cache', $error) if $error;
-         LOG( FILE_CACHE => '' ) if DEBUG();
+         LOG( FILE_CACHE => EMPTY_STRING ) if DEBUG();
          #$parent->[COUNTER]++;
          return $CODE;
       }
@@ -316,7 +322,7 @@ sub hit {
          }
 
       }
-      LOG( MEM_CACHE => '' ) if DEBUG();
+      LOG( MEM_CACHE => EMPTY_STRING ) if DEBUG();
       return $CACHE->{$cache_id}->{CODE};
    }
    return;
@@ -351,18 +357,18 @@ sub populate {
          my $warn =  $parent->_mini_compiler(
                         $parent->_internal('disk_cache_comment'),
                         {
-                           NAME => PARENT->_class_id,
+                           NAME => PARENT->class_id,
                            DATE => scalar localtime time,
                         }
                      );
-         print $fh '#META:' . $self->_set_meta(\%meta) . "\n", $warn, $parsed; 
+         my $ok = print { $fh } '#META:' . $self->_set_meta(\%meta) . "\n", $warn, $parsed;
          flock $fh, Fcntl::LOCK_UN() if IS_FLOCK;
-         close $fh;
+         close $fh or croak "Unable to close filehandle: $!";
          chmod(CACHE_FMODE, $cache) || fatal('tts.cache.populate.chmod');
 
          ($CODE, $error) = $parent->_wrap_compile($parsed);
          LOG( DISK_POPUL => $cache_id ) if DEBUG() > 2;
-      } 
+      }
       else {
          $CACHE->{ $cache_id } = {}; # init
          ($CODE, $error)                       = $parent->_wrap_compile($parsed);
@@ -382,12 +388,15 @@ sub populate {
       my $cid    = $cache_id ? $cache_id : 'N/A';
       my $tidied = $parent->_tidy( $parsed );
       croak $parent->[VERBOSE_ERRORS]
-            ? $parent->_mini_compiler( $parent->_internal('compile_error'), {
-               CID => $cid,
-               ERROR => $error,
-               PARSED => $parsed,
-               TIDIED => $tidied,
-                                                                        } )
+            ?  $parent->_mini_compiler(
+                  $parent->_internal('compile_error'),
+                  {
+                     CID    => $cid,
+                     ERROR  => $error,
+                     PARSED => $parsed,
+                     TIDIED => $tidied,
+                  }
+               )
             : $error
             ;
    }
@@ -399,14 +408,14 @@ sub populate {
 sub _get_meta {
    my $self = shift;
    my $raw  = shift;
-   my %meta = map { split /:/, $_ } split /\|/, $raw;
+   my %meta = map { split m{:}xms, $_ } split m{\|}xms, $raw;
    return %meta;
 }
 
 sub _set_meta {
    my $self = shift;
    my $meta = shift;
-   my $rv   = join '|', map { $_ . ':' . $meta->{ $_ } } keys %{ $meta };
+   my $rv   = join q{|}, map { $_ . q{:} . $meta->{ $_ } } keys %{ $meta };
    return $rv;
 }
 

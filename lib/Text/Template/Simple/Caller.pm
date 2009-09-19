@@ -12,7 +12,8 @@ use constant EVALTEXT   => 6;
 use constant IS_REQUIRE => 7;
 use constant HINTS      => 8;
 use constant BITMASK    => 9;
-use Text::Template::Simple::Util qw( ishref fatal );
+use Text::Template::Simple::Util      qw( ishref fatal );
+use Text::Template::Simple::Constants qw( EMPTY_STRING );
 
 $VERSION = '0.80';
 
@@ -21,14 +22,14 @@ sub stack {
    my $opt     = shift || {};
    fatal('tts.caller.stack.hash') if ! ishref($opt);
    my $frame   = $opt->{frame} || 0;
-   my $type    = $opt->{type}  || '';
+   my $type    = $opt->{type}  || EMPTY_STRING;
    my(@callers, $context);
 
    TRACE: while ( my @c = caller ++$frame ) {
 
       INITIALIZE: foreach my $id ( 0 .. $#c ) {
          next INITIALIZE if $id == WANTARRAY; # can be undef
-         $c[$id] ||= '';
+         $c[$id] ||= EMPTY_STRING;
       }
 
       $context = defined $c[WANTARRAY] ?  ( $c[WANTARRAY] ? 'LIST' : 'SCALAR' )
@@ -58,7 +59,7 @@ sub stack {
       return $self->$method( $opt, \@callers );
    }
 
-   fatal('tts.caller.stack.type', $type);
+   return fatal('tts.caller.stack.type', $type);
 }
 
 sub _string {
@@ -67,7 +68,7 @@ sub _string {
    my $callers = shift;
    my $is_html = shift;
 
-   my $name = $opt->{name} ? "FOR $opt->{name} " : "";
+   my $name = $opt->{name} ? "FOR $opt->{name} " : EMPTY_STRING;
    my $rv   = qq{[ DUMPING CALLER STACK $name]\n\n};
 
    foreach my $c ( reverse @{$callers} ) {
@@ -83,7 +84,8 @@ sub _string {
 }
 
 sub _html_comment {
-   shift->_string( @_, 'add html comment' );
+   my($self, @args) = @_;
+   return $self->_string( @args, 'add html comment' );
 }
 
 sub _html_table {
@@ -130,50 +132,52 @@ sub _html_table_blank_check {
    my $self   = shift;
    my $struct = shift;
    foreach my $id ( keys %{ $struct }) {
-      if ( not defined $struct->{ $id } or $struct->{ $id } eq '' ) {
+      if ( not defined $struct->{ $id } or $struct->{ $id } eq EMPTY_STRING ) {
          $struct->{ $id } = '&#160;';
       }
    }
+   return;
 }
 
 sub _text_table {
    my $self    = shift;
    my $opt     = shift;
    my $callers = shift;
-   eval { require Text::Table; };
-   fatal('tts.caller._text_table.module', $@) if $@;
+   my $ok      = eval { require Text::Table; 1; };
+   fatal('tts.caller._text_table.module', $@) if ! $ok;
 
    my $table = Text::Table->new( qw(
                   | CONTEXT    | SUB      | LINE  | FILE    | HASARGS
                   | IS_REQUIRE | EVALTEXT | HINTS | BITMASK |
                ));
 
+   my $pipe = q{|};
    foreach my $c ( reverse @{$callers} ) {
       $table->load(
          [
-           '|', $c->{context},
-           '|', $c->{sub},
-           '|', $c->{line},
-           '|', $c->{file},
-           '|', $c->{hasargs},
-           '|', $c->{isreq},
-           '|', $c->{evaltext},
-           '|', $c->{hints},
-           '|', $c->{bitmask},
-           '|'
+           $pipe, $c->{context},
+           $pipe, $c->{sub},
+           $pipe, $c->{line},
+           $pipe, $c->{file},
+           $pipe, $c->{hasargs},
+           $pipe, $c->{isreq},
+           $pipe, $c->{evaltext},
+           $pipe, $c->{hints},
+           $pipe, $c->{bitmask},
+           $pipe
          ],
       );
    }
 
-   my $name = $opt->{name} ? "FOR $opt->{name} " : "";
+   my $name = $opt->{name} ? "FOR $opt->{name} " : EMPTY_STRING;
    my $top  = qq{| DUMPING CALLER STACK $name |\n};
 
-   my $rv   = "\n" . ( '-' x (length($top) - 1) ) . "\n" . $top
-            . $table->rule( '-', '+')
+   my $rv   = qq{\n} . ( q{-} x (length($top) - 1) ) . qq{\n} . $top
+            . $table->rule( qw( - + ) )
             . $table->title
-            . $table->rule( '-', '+')
+            . $table->rule( qw( - + ) )
             . $table->body
-            . $table->rule( '-', '+')
+            . $table->rule( qw( - + ) )
             ;
 
    return $rv;

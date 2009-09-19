@@ -35,19 +35,19 @@ sub _parse {
    my $toke     = $self->connector('Tokenizer')->new(
                      $ds, $de, $self->[PRE_CHOMP], $self->[POST_CHOMP]
                   );
-   my $code     = '';
+   my $code     = EMPTY_STRING;
    my $inside   = 0;
 
    my($mko, $mkc) = $self->_parse_mapkeys( $opt->{map_keys}, $faker, $buf_hash );
 
-   LOG( RAW => $raw ) if ( DEBUG() > 3 );
+   LOG( RAW => $raw ) if DEBUG() > 3;
 
    my $uth = $self->[USER_THANDLER];
 
    my $h = {
       raw     => sub { ";$faker .= q~$_[0]~;" },
-      capture => sub { ";$faker .= sub {" . $_[0] . "}->();"; },
-      code    => sub { $_[0] . ';' },
+      capture => sub { ";$faker .= sub {" . $_[0] . '}->();'; },
+      code    => sub { $_[0] . q{;} },
    };
 
    # little hack to convert delims into escaped delims for static inclusion
@@ -111,9 +111,9 @@ sub _parse {
 sub _parse_command {
    my $self = shift;
    my $str  = shift;
-   my($head, $raw_block) = split /;/, $str, 2;
-   my @buf  = split RE_PIPE_SPLIT, '|' . trim($head);
-   shift(@buf);
+   my($head, $raw_block) = split m{;}xms, $str, 2;
+   my @buf  = split RE_PIPE_SPLIT, q{|} . trim($head);
+   shift @buf;
    my %com  = map { trim $_ } @buf;
 
    if ( $com{FILTER} ) {
@@ -141,12 +141,12 @@ sub _chomp {
    my $right_collapse = ( $prev & COLLAPSE_ALL ) || ( $prev & COLLAPSE_LEFT );
    my $right_chomp    = ( $prev & CHOMP_ALL    ) || ( $prev & CHOMP_LEFT    );
 
-   $str = $left_collapse  ? ltrim($str, ' ')
+   $str = $left_collapse  ? ltrim($str, q{ })
         : $left_chomp     ? ltrim($str)
         :                   $str
         ;
 
-   $str = $right_collapse ? rtrim($str, ' ')
+   $str = $right_collapse ? rtrim($str, q{ })
         : $right_chomp    ? rtrim($str)
         :                   $str
         ;
@@ -164,13 +164,13 @@ sub _wrapper {
    my $h        = shift;
    my $buf_hash = $self->[FAKER_HASH];
 
-   my $wrapper    = '';
-   my $inside_inc = $self->[INSIDE_INCLUDE] != -1 ? 1 : 0;
+   my $wrapper    = EMPTY_STRING;
+   my $inside_inc = $self->[INSIDE_INCLUDE] != MINUS_ONE ? 1 : 0;
 
    # build the anonymous sub
    if ( ! $inside_inc ) {
       # don't duplicate these if we're including something
-      $wrapper .= "package " . DUMMY_CLASS . ";";
+      $wrapper .= 'package ' . DUMMY_CLASS . q{;};
       $wrapper .= 'use strict;' if $self->[STRICT];
    }
    $wrapper .= 'sub { ';
@@ -179,13 +179,13 @@ sub _wrapper {
       --$self->[NEEDS_OBJECT];
       $wrapper .= 'my ' . $self->[FAKER_SELF] . ' = shift;';
    }
-   $wrapper .= $self->[HEADER].';'             if $self->[HEADER];
+   $wrapper .= $self->[HEADER].q{;}            if $self->[HEADER];
    $wrapper .= "my $faker = '';";
    $wrapper .= $self->_add_stack( $cache_id )  if $self->[STACK];
    $wrapper .= "my $buf_hash = {\@_};"         if $map_keys;
    $wrapper .= $self->_add_sigwarn if $self->[CAPTURE_WARNINGS];
    $wrapper .= "\n#line 1 " .  $self->[FILENAME] . "\n";
-   $wrapper .= $code . ";";
+   $wrapper .= $code . q{;};
    $wrapper .= $self->_dump_sigwarn($h) if $self->[CAPTURE_WARNINGS];
    $wrapper .= "return $faker;";
    $wrapper .= '}';
@@ -252,7 +252,7 @@ sub _dump_sigwarn {
 sub _add_stack {
    my $self    = shift;
    my $cs_name = shift || '<ANON TEMPLATE>';
-   my $stack   = $self->[STACK] || '';
+   my $stack   = $self->[STACK] || EMPTY_STRING;
 
    return if lc($stack) eq 'off';
 
@@ -261,7 +261,7 @@ sub _add_stack {
                : $stack
                ;
 
-   my($type, $channel) = split /:/, $check;
+   my($type, $channel) = split m{:}xms, $check;
    $channel = ! $channel             ? 'warn'
             :   $channel eq 'buffer' ? $self->[FAKER] . ' .= '
             :                          'warn'

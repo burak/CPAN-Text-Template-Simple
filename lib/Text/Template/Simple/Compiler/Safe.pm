@@ -13,11 +13,11 @@ sub _object {
    my $class = shift;
    if ( $class->can('object') ) {
       my $safe = $class->object;
-      if ( $safe && ref($safe) ) {
+      if ( $safe && ref $safe ) {
          return $safe if eval { $safe->isa('Safe'); 'Safe-is-OK' };
       }
-      my $end = $@ ? ': '.$@ : '.';
-      warn "Safe object failed. Falling back to default" . $end;
+      my $end = $@ ? q{: }.$@ : q{.};
+      warn 'Safe object failed. Falling back to default' . $end . "\n";
    }
    require Safe;
    my $safe = Safe->new('Text::Template::Simple::Dummy');

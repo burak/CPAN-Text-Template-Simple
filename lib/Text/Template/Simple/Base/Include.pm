@@ -14,8 +14,8 @@ sub _include_no_monolith {
    my $rv   =  $self->_mini_compiler(
                   $self->_internal('no_monolith') => {
                      OBJECT => $self->[FAKER_SELF],
-                     FILE   => escape('~' => $file),
-                     TYPE   => escape('~' => $type),
+                     FILE   => escape(q{~} => $file),
+                     TYPE   => escape(q{~} => $type),
                   } => {
                      flatten => 1,
                   }
@@ -27,14 +27,14 @@ sub _include_no_monolith {
 sub _include_static {
    my($self, $file, $text, $err, $opt) = @_;
    return $self->[MONOLITH]
-        ? 'q~' . escape('~' => $text) . '~;'
+        ? 'q~' . escape(q{~} => $text) . q{~;}
         : $self->_include_no_monolith( T_STATIC, $file, $opt )
         ;
 }
 
 sub _include_dynamic {
    my($self, $file, $text, $err, $opt) = @_;
-   my $rv   = '';
+   my $rv   = EMPTY_STRING;
 
    ++$self->[INSIDE_INCLUDE];
    $self->[COUNTER_INCLUDE] ||= {};
@@ -47,7 +47,7 @@ sub _include_dynamic {
       LOG( DEEP_RECURSION => $file ) if DEBUG;
       my $w = L( warning => 'tts.base.include.dynamic.recursion',
                             $err, MAX_RECURSION, $file );
-      $rv .= sprintf "q~%s~", escape( '~' => $w );
+      $rv .= sprintf 'q~%s~', escape( q{~} => $w );
    }
    else {
       # local stuff is for file name access through $0 in templates
@@ -86,12 +86,12 @@ sub _include {
    else {
       $interpolate = 1; # just guessing ...
       return "qq~$err Interpolated includes don't work under monolith option. "
-            ."Please disable monolith and use the 'SHARE' directive in the"
+            .q{Please disable monolith and use the 'SHARE' directive in the}
             ." include command: $file~"
          if $self->[MONOLITH];
    }
 
-   return "q~$err '" . escape('~' => $file) . "' is a directory~"
+   return "q~$err '" . escape(q{~} => $file) . q{' is a directory~}
       if $self->io->is_dir( $file );
 
    if ( DEBUG() ) {
@@ -111,8 +111,7 @@ sub _include {
       return $rv;
    }
 
-   my $text;
-   eval { $text = $self->io->slurp($file); };
+   my $text = eval { $self->io->slurp($file); };
    return "q~$err $@~" if $@;
 
    my $meth = '_include_' . ($is_dynamic ? 'dynamic' : 'static');
@@ -136,7 +135,7 @@ sub _interpolate {
    # die "You can not pass parameters to static includes"
    #    if $inc{PARAM} && T_STATIC  == $type;
 
-   my $filter = $inc{FILTER} ? escape( q{'} => $inc{FILTER} ) : '';
+   my $filter = $inc{FILTER} ? escape( q{'} => $inc{FILTER} ) : EMPTY_STRING;
 
    if ( $inc{SHARE} ) {
       my @vars = map { trim $_ } split RE_FILTER_SPLIT, $inc{SHARE};
@@ -150,16 +149,16 @@ sub _interpolate {
       foreach my $var ( @vars ) {
          if ( $var !~ m{ \A \$ }xms ) {
             my($char) = $var =~ m{ \A (.) }xms;
-            my $type  = $type{ $char } || '<UNKNOWN>';
-            fatal('tts.base.include._interpolate.bogus_share', $type, $var);
+            my $type_name  = $type{ $char } || '<UNKNOWN>';
+            fatal('tts.base.include._interpolate.bogus_share', $type_name, $var);
          }
          $var =~ tr/;//d;
          push @buf, $var;
       }
-      $inc{SHARE} = join ',', @buf;
+      $inc{SHARE} = join q{,}, @buf;
    }
 
-   my $share = $inc{SHARE} ? sprintf(qq{'%s', %s}, ($inc{SHARE}) x 2) : 'undef';
+   my $share = $inc{SHARE} ? sprintf(q{'%s', %s}, ($inc{SHARE}) x 2) : 'undef';
    my $rv = $self->_mini_compiler(
                $self->_internal('sub_include') => {
                   OBJECT      => $self->[FAKER_SELF],

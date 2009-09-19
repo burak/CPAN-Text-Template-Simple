@@ -16,13 +16,13 @@ sub new {
 
 sub get {
    my $self = shift;
-   return $$self;
+   return ${$self};
 }
 
 sub set {
    my $self = shift;
    my $val  = shift;
-   $$self   = $val if defined $val;
+   ${$self} = $val if defined $val;
    return;
 }
 
@@ -31,7 +31,7 @@ sub generate { # cache id generator
 
    if ( ! $data ) {
       fatal('tts.cache.id.generate.data') if ! defined $data;
-      LOG( IDGEN => "Generating ID from empty data" ) if DEBUG;
+      LOG( IDGEN => 'Generating ID from empty data' ) if DEBUG;
    }
 
    $self->set(
