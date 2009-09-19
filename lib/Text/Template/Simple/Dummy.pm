@@ -6,6 +6,7 @@ package Text::Template::Simple::Dummy;
 # and share package variables under strict (safe mode can
 # have problems though). See the Pod for more info.
 use strict;
+use warnings;
 use vars qw($VERSION);
 use Text::Template::Simple::Caller;
 use Text::Template::Simple::Util qw();

@@ -1,5 +1,6 @@
 package Text::Template::Simple::Cache;
 use strict;
+use warnings;
 use vars qw($VERSION);
 use constant CACHE_PARENT => 0;
 use Text::Template::Simple::Constants qw(:all);

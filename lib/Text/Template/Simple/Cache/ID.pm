@@ -1,5 +1,6 @@
 package Text::Template::Simple::Cache::ID;
 use strict;
+use warnings;
 use vars qw($VERSION);
 use overload q{""} => 'get';
 use Text::Template::Simple::Constants qw( MAX_FL RE_INVALID_CID );

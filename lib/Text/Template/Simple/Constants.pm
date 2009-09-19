@@ -1,5 +1,6 @@
 package Text::Template::Simple::Constants;
 use strict;
+use warnings;
 use vars qw($VERSION $OID $DID @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 $VERSION = '0.80';

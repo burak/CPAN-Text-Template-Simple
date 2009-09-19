@@ -1,6 +1,7 @@
 package Text::Template::Simple::Compiler;
 # the "normal" compiler
 use strict;
+use warnings;
 use vars qw($VERSION);
 use Text::Template::Simple::Dummy;
 

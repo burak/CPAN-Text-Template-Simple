@@ -1,5 +1,6 @@
 package Text::Template::Simple::Base::Parser;
 use strict;
+use warnings;
 use vars qw($VERSION);
 
 $VERSION = '0.80';

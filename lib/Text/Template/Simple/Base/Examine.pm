@@ -1,5 +1,6 @@
 package Text::Template::Simple::Base::Examine;
 use strict;
+use warnings;
 use vars qw($VERSION);
 use Text::Template::Simple::Util qw(:all);
 use Text::Template::Simple::Constants qw(:all);

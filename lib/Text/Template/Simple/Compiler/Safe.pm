@@ -1,6 +1,7 @@
 package Text::Template::Simple::Compiler::Safe;
 # Safe compiler. Totally experimental
 use strict;
+use warnings;
 use vars qw($VERSION);
 use Text::Template::Simple::Dummy;
 

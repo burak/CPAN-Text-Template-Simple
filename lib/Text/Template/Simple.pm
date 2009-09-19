@@ -1,8 +1,9 @@
 package Text::Template::Simple;
 use strict;
-use vars qw($VERSION);
+use warnings;
+use vars qw( $VERSION );
 
-$VERSION = '0.81';
+$VERSION = '0.82';
 
 use File::Spec;
 use Text::Template::Simple::Constants qw(:all);

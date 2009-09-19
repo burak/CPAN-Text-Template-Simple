@@ -1,5 +1,6 @@
 package Text::Template::Simple::Util;
 use strict;
+use warnings;
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 use Text::Template::Simple::Constants qw( :info DIGEST_MODS );
 use Carp qw( croak );

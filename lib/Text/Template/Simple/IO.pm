@@ -1,5 +1,6 @@
 package Text::Template::Simple::IO;
 use strict;
+use warnings;
 use vars qw($VERSION);
 use File::Spec;
 use Text::Template::Simple::Constants qw(:all);

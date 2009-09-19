@@ -1,5 +1,6 @@
 package Text::Template::Simple::Tokenizer;
 use strict;
+use warnings;
 use vars qw($VERSION);
 
 $VERSION = '0.80';

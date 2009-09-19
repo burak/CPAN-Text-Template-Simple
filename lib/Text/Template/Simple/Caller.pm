@@ -1,5 +1,6 @@
 package Text::Template::Simple::Caller;
 use strict;
+use warnings;
 use vars qw($VERSION);
 use constant PACKAGE    => 0;
 use constant FILENAME   => 1;
