@@ -37,7 +37,7 @@ sub new {
    $self->[ID_DE]         = shift || fatal('tts.tokenizer.new.de');
    $self->[ID_PRE_CHOMP]  = shift || CHOMP_NONE;
    $self->[ID_POST_CHOMP] = shift || CHOMP_NONE;
-   $self;
+   return $self;
 }
 
 sub tokenize {
@@ -80,8 +80,15 @@ sub tokenize {
    return \@tokens;
 }
 
-sub tilde { shift; Text::Template::Simple::Util::escape( '~' => @_ ) }
-sub quote { shift; Text::Template::Simple::Util::escape( '"' => @_ ) }
+sub tilde {
+   my(undef, @args) = @_;
+   return Text::Template::Simple::Util::escape( '~' => @args );
+}
+
+sub quote {
+   my(undef, @args) = @_;
+   return Text::Template::Simple::Util::escape( '"' => @args )
+}
 
 sub _empty_token {
    my $self = shift;
@@ -302,8 +309,7 @@ HEAD
 }
 
 sub _debug_tokens_row {
-   my $self = shift;
-   my @params = @_;
+   my($self, @params) = @_;
    return sprintf <<'DUMP', @params;
 ID        : %s
 STRING    : %s

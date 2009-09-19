@@ -63,7 +63,7 @@ sub _examine_type {
       return uc $ftype, $fthing;
    }
 
-   fatal('tts.base.examine._examine_type.unknown', $ref);
+   return fatal('tts.base.examine._examine_type.unknown', $ref);
 }
 
 1;

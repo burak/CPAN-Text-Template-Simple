@@ -7,7 +7,7 @@ use Text::Template::Simple::Constants qw(:all);
 
 $VERSION = '0.80';
 
-sub _compiler { shift->[SAFE] ? COMPILER_SAFE : COMPILER }
+sub _compiler { return shift->[SAFE] ? COMPILER_SAFE : COMPILER }
 
 sub _compile {
    my $self  = shift;
@@ -120,10 +120,8 @@ sub _compile {
 }
 
 sub _call_filters {
-   my $self    = shift;
-   my $oref    = shift;
-   my @filters = @_;
-   my $fname   = $self->[FILENAME];
+   my($self, $oref, @filters) = @_;
+   my $fname = $self->[FILENAME];
 
    APPLY_FILTERS: foreach my $filter ( @filters ) {
       my $fref = DUMMY_CLASS->can( "filter_" . $filter );

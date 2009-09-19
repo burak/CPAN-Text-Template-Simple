@@ -117,6 +117,7 @@ use constant TOKEN_CHOMP_PREV =>  1; # sub-key for TOKEN_CHOMP
 use constant LAST_TOKEN       => -1;
 use constant PREVIOUS_TOKEN   => -2;
 
+use constant CACHE_PARENT     => 0; # object id
 use constant CACHE_FMODE      => 0600;
 
 # SHA seems to be more accurate, so we'll try them first.
@@ -264,6 +265,7 @@ BEGIN {
                         STAT_SIZE
                         MAX_RECURSION
                         CACHE_FMODE
+                        CACHE_PARENT
                      )],
    );
 

@@ -16,14 +16,10 @@ BEGIN {
    # create a wrapper for binmode() 
    if ( NEW_PERL ) {
       # older perl binmode() does not accept a second param
-      eval q/
-         sub binary_mode {
-            my($fh, $layer) = @_;
-            binmode $fh, ':' . $layer;
-         }
-      /;
-      # should never happen
-      die "Error compiling binary_mode(): $@" if $@;
+      *binary_mode = sub {
+         my($fh, $layer) = @_;
+         binmode $fh, ':' . $layer;
+      };
    }
    else {
       *binary_mode = sub { binmode $_[0] };
@@ -125,23 +121,26 @@ sub ishref { $_[0] && ref($_[0]) && ref($_[0]) eq 'HASH'  };
 sub iscref { $_[0] && ref($_[0]) && ref($_[0]) eq 'CODE'  };
 
 sub L {
-   my $type  = shift || croak "Type parameter to L() is missing";
-   my $id    = shift || croak "ID parameter ro L() is missing";
-   my @param = @_;
+   my($type, $id, @param) = @_;
+   croak "Type parameter to L() is missing" if ! $type;
+   croak "ID parameter ro L() is missing"   if ! $id;
    my $root  = $lang->{ $type } || croak "$type is not a valid L() type";
    my $value = $root->{ $id }   || croak "$id is not a valid L() ID";
    return @param ? sprintf($value, @param) : $value;
 }
 
-sub fatal { croak L( error => @_ ) }
+sub fatal {
+   my @args = @_;
+   return croak L( error => @args );
+}
 
 sub escape {
-   my $c = shift || fatal('tts.util.escape');
-   my $s = shift;
+   my($c, $s) = @_;
+   fatal('tts.util.escape') if ! $c;
    return $s if ! $s; # false or undef
    my $e = quotemeta $c;
-      $s =~ s{$e}{\\$c}xmsg;
-      $s;
+   $s =~ s{$e}{\\$c}xmsg;
+   return $s;
 }
 
 sub trim {
@@ -176,7 +175,7 @@ sub DEBUG {
    $thing = shift if _is_parent_object( $thing );
 
    $DEBUG = $thing+0 if defined $thing; # must be numeric
-   $DEBUG;
+   return $DEBUG;
 }
 
 sub DIGEST {
@@ -219,10 +218,11 @@ sub LOG {
 }
 
 sub _is_parent_object {
-   return ! defined $_[0]       ? 0
-         : ref $_[0]            ? 1
-         : $_[0] eq __PACKAGE__ ? 1
-         : $_[0] eq PARENT      ? 1
+   my $test = shift;
+   return ! defined $test       ? 0
+         : ref $test            ? 1
+         : $test eq __PACKAGE__ ? 1
+         : $test eq PARENT      ? 1
          :                        0
          ;
 }

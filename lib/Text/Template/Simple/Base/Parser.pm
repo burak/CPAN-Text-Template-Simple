@@ -127,8 +127,7 @@ sub _parse_command {
 
 sub _chomp {
    # remove the unnecessary white space
-   my $self = shift;
-   my($str, $chomp) = @_;
+   my($self, $str, $chomp) = @_;
 
    # NEXT: discard: left;  right -> left
    # PREV: discard: right; left  -> right
@@ -206,7 +205,7 @@ sub _wrapper {
 
 sub _parse_mapkeys {
    my($self, $map_keys, $faker, $buf_hash) = @_;
-   return undef, undef if ! $map_keys;
+   return( undef, undef ) if ! $map_keys;
 
    my $mkc = $map_keys eq 'check';
    my $mki = $map_keys eq 'init';
@@ -276,6 +275,7 @@ sub _add_stack {
 }
 
 sub _set_internal_templates {
+   return
    # we need string eval in this template to catch syntax errors
    sub_include => q~
       <%OBJECT%>->_compile(

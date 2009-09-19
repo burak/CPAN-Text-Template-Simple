@@ -18,7 +18,7 @@ sub stack { # just a wrapper
    Text::Template::Simple::Util::fatal('tts.caller.stack.hash')
       if ! Text::Template::Simple::Util::ishref($opt);
    $opt->{frame} = 1;
-   Text::Template::Simple::Caller->stack( $opt );
+   return Text::Template::Simple::Caller->stack( $opt );
 }
 
 1;

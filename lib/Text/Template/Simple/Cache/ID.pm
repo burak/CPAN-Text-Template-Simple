@@ -14,8 +14,17 @@ sub new {
    return $self;
 }
 
-sub get { my $self = shift; $$self }
-sub set { my $self = shift; $$self = shift if defined $_[0]; return; }
+sub get {
+   my $self = shift;
+   return $$self;
+}
+
+sub set {
+   my $self = shift;
+   my $val  = shift;
+   $$self   = $val if defined $val;
+   return;
+}
 
 sub generate { # cache id generator
    my($self, $data, $custom, $regex) = @_;
@@ -29,7 +38,7 @@ sub generate { # cache id generator
       $custom ? $self->_custom( $data, $regex )
               : $self->DIGEST->add( $data )->hexdigest
    );
-   $self->get;
+   return $self->get;
 }
 
 sub _custom {

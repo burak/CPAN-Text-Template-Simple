@@ -2,9 +2,8 @@ package Text::Template::Simple::Cache;
 use strict;
 use warnings;
 use vars qw($VERSION);
-use constant CACHE_PARENT => 0;
 use Text::Template::Simple::Constants qw(:all);
-use Text::Template::Simple::Util qw( DEBUG LOG ishref fatal );
+use Text::Template::Simple::Util      qw( DEBUG LOG ishref fatal );
 use Carp qw( croak );
 
 $VERSION = '0.80';
@@ -17,13 +16,14 @@ sub new {
    my $self   = [undef];
    bless $self, $class;
    $self->[CACHE_PARENT] = $parent;
-   $self;
+   return $self;
 }
 
 sub id {
    my $self = shift;
-   $self->[CACHE_PARENT][CID] = shift if @_;
-   $self->[CACHE_PARENT][CID];
+   my $val  = shift;
+   $self->[CACHE_PARENT][CID] = $val if $val;
+   return $self->[CACHE_PARENT][CID];
 }
 
 sub type {
@@ -57,6 +57,7 @@ sub reset {
 
       closedir CDIRH;
    }
+   return;
 }
 
 sub dumper {
@@ -64,7 +65,7 @@ sub dumper {
    my $type  = shift || 'structure';
    my $param = shift || {};
    fatal('tts.cache.dumper.hash')        if not ishref $param;
-   my %valid = map { $_, $_ } qw( ids structure );
+   my %valid = map { ($_, $_) } qw( ids structure );
    fatal('tts.cache.dumper.type', $type) if not $valid{ $type };
    my $method = '_dump_' . $type;
    return $self->$method( $param ); # TODO: modify the methods to accept HASH
@@ -153,7 +154,7 @@ sub _dump_disk_cache {
    my $parent  = $self->[CACHE_PARENT];
    my $ext     = quotemeta CACHE_EXT;
    my $pattern = quotemeta DISK_CACHE_MARKER;
-   my(%disk_cache, $id, $content, $ok, $_temp, $line);
+   my(%disk_cache, $id, $content, $ok, $_temp);
 
    my $wanted = sub {
       return if $_ !~ m{(.+?) $ext \z}xms;
@@ -163,7 +164,7 @@ sub _dump_disk_cache {
       $ok      = 0;  # reset
       $_temp   = ''; # reset
 
-      foreach $line ( split /\n/, $content ) {
+      foreach my $line ( split /\n/, $content ) {
          if ( $line =~ m{$pattern}xmso ) {
             $ok = 1;
             next;
@@ -223,7 +224,9 @@ sub size {
 }
 
 sub has {
-   my $self   = shift;
+   my($self, @args ) = @_;
+   fatal('tts.cache.pformat') if @args % 2;
+   my %opt    = @args;
    my $parent = $self->[CACHE_PARENT];
 
    if ( not $parent->[CACHE] ) {
@@ -231,9 +234,7 @@ sub has {
       return;
    }
 
-   fatal('tts.cache.pformat') if @_ % 2;
 
-   my %opt = @_;
    my $id  = $parent->connector('Cache::ID')->new;
    my $cid = $opt{id}   ? $id->generate($opt{id}  , 'custom')
            : $opt{data} ? $id->generate($opt{data}          )
@@ -273,7 +274,7 @@ sub hit {
       require File::Spec;
       my $cache = File::Spec->catfile( $cdir, $cache_id . CACHE_EXT );
 
-      if ( -e $cache && not -d _ && -f _ ) {
+      if ( -e $cache && ! -d _ && -f _ ) {
          my $disk_cache = $parent->io->slurp($cache);
          my %meta;
          if ( $disk_cache =~ m{ \A \#META: (.+?) \n }xms ) {

@@ -21,7 +21,7 @@ sub new {
    $self->[MY_IO_LAYER]      = $layer if defined $layer;
    $self->[MY_INCLUDE_PATHS] = [ @{ $paths } ] if $paths; # copy
    $self->[MY_TAINT_MODE]    = $tmode;
-   $self;
+   return $self;
 }
 
 sub validate {
@@ -52,7 +52,7 @@ sub validate {
       return $path;
    }
 
-   fatal('tts.io.validate.file');
+   return fatal('tts.io.validate.file');
 }
 
 sub layer {

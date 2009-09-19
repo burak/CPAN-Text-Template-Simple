@@ -55,10 +55,10 @@ my %DEFAULT = ( # default object attributes
 my @EXPORT_OK = qw( tts );
 
 sub import {
-   my $class = shift;
+   my($class, @args) = @_;
+   return if ! @args;
    my $caller = caller;
-   my @args   = @_ or return;
-   my %ok     = map { $_, $_ } @EXPORT_OK;
+   my %ok     = map { ($_, $_) } @EXPORT_OK;
 
    no strict qw( refs );
    foreach my $name ( @args ) {
@@ -80,8 +80,8 @@ sub tts {
 }
 
 sub new {
-   my $class = shift;
-   my %param = scalar(@_) % 2 ? () : (@_);
+   my($class, @args) = @_;
+   my %param = @args % 2 ? () : (@args);
    my $self  = [ map { undef } 0 .. MAXOBJFIELD ];
    bless $self, $class;
 
@@ -111,12 +111,12 @@ sub connector {
    return $CONNECTOR{ $id } || fatal('tts.main.connector.invalid', $id);
 }
 
-sub cache { shift->[CACHE_OBJECT] }
-sub io    { shift->[IO_OBJECT]    }
+sub cache { return shift->[CACHE_OBJECT] }
+sub io    { return shift->[IO_OBJECT]    }
 
 sub compile {
-   my $self  = shift;
-   my $rv    = $self->_compile( @_ );
+   my($self, @args) = @_;
+   my $rv    = $self->_compile( @args );
    # we need to reset this to prevent false positives
    # the trick is: this is set in _compile() and sub includes call _compile()
    # instead of compile(), so it will only be reset here
