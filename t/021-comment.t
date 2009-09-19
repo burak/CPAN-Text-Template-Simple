@@ -1,8 +1,10 @@
 #!/usr/bin/env perl -w
 use strict;
+use warnings;
 use Test::More qw( no_plan );
 use Text::Template::Simple;
-use constant TEMPLATE => q{No comment<%#
+
+my $TEMPLATE = q{No comment<%#
 This
 is
 a
@@ -16,4 +18,4 @@ ignored
 
 my $t = Text::Template::Simple->new();
 
-ok( $t->compile( TEMPLATE ) eq 'No comment', "Comment removed successfully");
+is( $t->compile( $TEMPLATE ), 'No comment', "Comment removed successfully");

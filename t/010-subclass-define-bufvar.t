@@ -1,6 +1,7 @@
 #!/usr/bin/env perl -w
 # Subclassing to define the buffer variables
 use strict;
+use warnings;
 use Test::More qw( no_plan );
 
 my $t = MyTTS->new;
@@ -12,7 +13,8 @@ exit;
 
 package MyTTS;
 use base qw(Text::Template::Simple);
-Text::Template::Simple->DEBUG(0);
+
+__PACKAGE__->DEBUG(0);
 
 # if you relied on the old interface or relied on the buffer var being $OUT,
 # then you have to subclass the module to restore that behaviour.

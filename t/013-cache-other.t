@@ -1,5 +1,6 @@
 #!/usr/bin/env perl -w
 use strict;
+use warnings;
 use Test::More qw( no_plan );
 use File::Temp qw( tempdir );
 use Data::Dumper;
@@ -7,7 +8,6 @@ use constant PERL_55     =>              $] < 5.006;
 use constant PERL_56     => ! PERL_55 && $] < 5.007;
 use constant PERL_LEGACY => PERL_55 || PERL_56;
 use constant IS_TAINT    => __PACKAGE__->can('TAINTMODE');
-use constant DEPARSE_OK  => Data::Dumper->can('Deparse');
 use Text::Template::Simple;
 
 # ref: http://rt.cpan.org/Public/Bug/Display.html?id=45885
@@ -22,7 +22,7 @@ SKIP: {
          "Skipping dumper tests that need Deparse(). "
         ."You need to upgrade Data::Dumper to run these",
         15
-    ) if ! DEPARSE_OK;
+    ) if ! Data::Dumper->can('Deparse');
 
     #if ( PERL_LEGACY && IS_TAINT && $^O eq 'freebsd' ) {
     #    skip "This version of perl in this platform seems to have a bug in "
@@ -107,10 +107,11 @@ sub run {
            ok( $size == 0, "Cache size is zero after reset: $size" );
         }
     }
+    return;
 }
 
 sub template {
-<<'TEMPLATE';
+    return <<'TEMPLATE';
 Time now: <%=scalar localtime 1219952008 %>
 TEMPLATE
 }

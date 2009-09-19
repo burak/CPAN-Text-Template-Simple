@@ -1,5 +1,6 @@
 #!/usr/bin/env perl -w
 use strict;
+use warnings;
 use Test::More qw( no_plan );
 use File::Temp qw( tempdir );
 use constant PERL_55     =>              $] < 5.006;

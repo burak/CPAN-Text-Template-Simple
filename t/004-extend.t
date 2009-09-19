@@ -2,6 +2,7 @@
 # Extending Text::Template::Simple with functions and globals
 # SEE ALSO: t/lib/My.pm
 use strict;
+use warnings;
 use lib qw(t/lib lib);
 use Test::More qw( no_plan );
 use Text::Template::Simple; 

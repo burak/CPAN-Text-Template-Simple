@@ -1,5 +1,6 @@
 #!/usr/bin/env perl -w
 use strict;
+use warnings;
 use Test::More qw( no_plan );
 use Text::Template::Simple;
 
@@ -14,7 +15,7 @@ ok( $out           , "Interpolated dynamic & static include" );
 ok( $out eq $expect, "Interpolated include has correct data: '$out' eq '$expect'" );
 
 sub confirm {
-<<"CONFIRMED";
+    return <<"CONFIRMED";
 
 Test: $^O
 Test: <%= \$^O %>

@@ -1,12 +1,12 @@
 #!/usr/bin/env perl -w
 use strict;
+use warnings;
 use Test::More qw( no_plan );
 use Text::Template::Simple;
-use constant FILE => File::Spec->catfile( qw( t data ), '028-dynamic.tts' );
 
 my $t = Text::Template::Simple->new();
 
-my $got = $t->compile( FILE );
+my $got = $t->compile( File::Spec->catfile( qw( t data ), '028-dynamic.tts' ) );
 my $expect = 'Dynamic: KLF-->Perl ROCKS!<--MUMULAND';
 
 ok($got eq $expect, "Dynamic include got params");

@@ -2,6 +2,7 @@
 # Simple Subclassing
 package MyTTS;
 use strict;
+use warnings;
 use base qw(Text::Template::Simple);
 use Text::Template::Simple::Constants qw(:fields); # get the object fields 
 
@@ -9,7 +10,7 @@ sub new {
    my $class = shift;
    my $self  = $class->SUPER::new( @_ );
    print "Sub class defined the constructor!\n";
-   $self;
+   return $self;
 }
 
 sub compile {
