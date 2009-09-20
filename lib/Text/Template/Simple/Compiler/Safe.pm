@@ -7,7 +7,7 @@ use Text::Template::Simple::Dummy;
 
 $VERSION = '0.80';
 
-sub _compile { shift; return __PACKAGE__->_object->reval(shift) }
+sub compile { shift; return __PACKAGE__->_object->reval(shift) }
 
 sub _object {
    my $class = shift;
@@ -46,5 +46,9 @@ Private module.
 =head1 DESCRIPTION
 
 Safe template compiler.
+
+=head1 METHODS
+
+=head2 compile STRING
 
 =cut

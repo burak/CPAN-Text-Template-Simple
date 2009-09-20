@@ -7,7 +7,11 @@ use Text::Template::Simple::Dummy;
 
 $VERSION = '0.80';
 
-sub _compile { shift; return eval shift }
+sub compile {
+    shift;
+    my $code = eval shift;
+    return $code;
+}
 
 1;
 
@@ -20,6 +24,10 @@ Text::Template::Simple::Compiler - Compiler
 =head1 SYNOPSIS
 
 Private module.
+
+=head1 METHODS
+
+=head2 compile STRING
 
 =head1 DESCRIPTION
 

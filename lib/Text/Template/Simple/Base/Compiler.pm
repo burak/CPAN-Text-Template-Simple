@@ -7,8 +7,6 @@ use Text::Template::Simple::Constants qw(:all);
 
 $VERSION = '0.80';
 
-sub _compiler { return shift->[SAFE] ? COMPILER_SAFE : COMPILER }
-
 sub _compile {
    my $self  = shift;
    my $tmpx  = shift || fatal('tts.base.compiler._compile.notmp');
@@ -90,18 +88,18 @@ sub _compile {
       # we have a cache miss; parse and compile
       LOG( CACHE_MISS => $cache_id ) if DEBUG();
 
-      my $shared;
+      my $restore_header;
       if ( $shead ) {
          my $param_x = join q{,}, ('shift') x @sparam;
-         $shared = sprintf q~my(%s) = (%s);~, $shead, $param_x;
+         my $shared  = sprintf q~my(%s) = (%s);~, $shead, $param_x;
+         $restore_header = $self->[HEADER];
+         $self->[HEADER] = $shared . q{;} . ( $self->[HEADER] || EMPTY_STRING );
       }
-
-      local $self->[HEADER] = $shared . q{;} . ( $self->[HEADER] || EMPTY_STRING )
-         if $shared;
 
       my %popt   = ( %{ $opt }, cache_id => $cache_id, as_is => $as_is );
       my $parsed = $self->_parse( $tmp, \%popt );
       $CODE      = $self->cache->populate( $cache_id, $parsed, $opt->{chkmt} );
+      $self->[HEADER] = $restore_header if $shead;
    }
 
    my @args;
@@ -141,7 +139,9 @@ sub _wrap_compile {
    LOG( COMPILER => $self->[SAFE] ? 'Safe' : 'Normal' ) if DEBUG();
    my($CODE, $error);
 
-   $CODE = $self->_compiler->_compile($parsed);
+   my $compiler = $self->[SAFE] ? COMPILER_SAFE : COMPILER;
+
+   $CODE = $compiler->compile($parsed);
 
    if( $error = $@ ) {
       my $error2;

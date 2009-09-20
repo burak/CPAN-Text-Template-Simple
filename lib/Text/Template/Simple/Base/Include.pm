@@ -52,7 +52,7 @@ sub _include_dynamic {
    else {
       # local stuff is for file name access through $0 in templates
       $rv .= $self->[MONOLITH]
-           ? do { local $self->[FILENAME] = $file; $self->_parse( $text ) }
+           ? $self->_include_dynamic_monolith( $file, $text )
            : $self->_include_no_monolith( T_DYNAMIC, $file, $opt )
            ;
    }
@@ -61,6 +61,14 @@ sub _include_dynamic {
    return $rv;
 }
 
+sub _include_dynamic_monolith {
+   my($self,$file, $text) = @_;
+   my $old = $self->[FILENAME];
+   $self->[FILENAME] = $file;
+   my $result = $self->_parse( $text );
+   $self->[FILENAME] = $old;
+   return $result;
+}
 
 sub _include {
    my $self       = shift;

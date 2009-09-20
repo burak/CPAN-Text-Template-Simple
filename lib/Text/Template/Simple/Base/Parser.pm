@@ -421,9 +421,8 @@ and when it is placed to the right delimiter, it'll affect the next RAW token.
 If the previous or next is not raw, nothing will happen. You need to swap sides
 when handling the chomping. i.e.: left chomping affects the right side of the
 RAW, and right chomping affects the left side of the RAW. _chomp() method in
-the parser swaps sides to handle chomping.
-See Text::Template::Simple::Tokenizer to have an idea on how pre-parsing
-happens.
+the parser swaps sides to handle chomping. See Text::Template::Simple::Tokenizer
+to have an idea on how pre-parsing happens.
 
 =end CHOMPING
 

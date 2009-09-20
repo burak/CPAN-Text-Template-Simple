@@ -92,9 +92,25 @@ sub _html_table {
    my $self    = shift;
    my $opt     = shift;
    my $callers = shift;
-   my $rv      = q{
+   my $rv      = EMPTY_STRING;
+
+   foreach my $c ( reverse @{ $callers } ) {
+      $self->_html_table_blank_check( $c ); # modifies  in place
+      $rv .= $self->_html_table_row(  $c )
+   }
+
+   return $self->_html_table_wrap( $rv );
+}
+
+sub _html_table_wrap {
+   my($self, $content) = @_;
+   return <<"HTML";
    <div id="ttsc-wrapper">
-   <table border="1" cellpadding="1" cellspacing="2" id="ttsc-dump">
+   <table border      = "1"
+          cellpadding = "1"
+          cellspacing = "2"
+          id          = "ttsc-dump"
+      >
       <tr>
          <td class="ttsc-title">CONTEXT</td>
          <td class="ttsc-title">SUB</td>
@@ -106,26 +122,27 @@ sub _html_table {
          <td class="ttsc-title">HINTS</td>
          <td class="ttsc-title">BITMASK</td>
       </tr>
-   };
+      $content
+      </table>
+   </div>
+HTML
+}
 
-   foreach my $c ( reverse @{$callers} ) {
-      $self->_html_table_blank_check( $c ); # modifies  in place
-      $rv .= qq{
-      <tr>
-         <td class="ttsc-value">$c->{context}</td>
-         <td class="ttsc-value">$c->{sub}</td>
-         <td class="ttsc-value">$c->{line}</td>
-         <td class="ttsc-value">$c->{file}</td>
-         <td class="ttsc-value">$c->{hasargs}</td>
-         <td class="ttsc-value">$c->{isreq}</td>
-         <td class="ttsc-value">$c->{evaltext}</td>
-         <td class="ttsc-value">$c->{hints}</td>
-         <td class="ttsc-value">$c->{bitmask}</td>
-      </tr>
-      };
-   }
-
-   return $rv . q{</table></div>};
+sub _html_table_row {
+   my($self,$c) = @_;
+   return <<"HTML";
+   <tr>
+      <td class="ttsc-value">$c->{context}</td>
+      <td class="ttsc-value">$c->{sub}</td>
+      <td class="ttsc-value">$c->{line}</td>
+      <td class="ttsc-value">$c->{file}</td>
+      <td class="ttsc-value">$c->{hasargs}</td>
+      <td class="ttsc-value">$c->{isreq}</td>
+      <td class="ttsc-value">$c->{evaltext}</td>
+      <td class="ttsc-value">$c->{hints}</td>
+      <td class="ttsc-value">$c->{bitmask}</td>
+   </tr>
+HTML
 }
 
 sub _html_table_blank_check {
