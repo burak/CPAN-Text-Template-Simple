@@ -14,14 +14,14 @@ is($got, $expect, 'Dynamic include got params' );
 package Text::Template::Simple::Dummy;
 use strict;
 
-sub filter_FooBar {
+sub filter_foobar {
     my $self = shift;
     my $oref = shift;
     ${$oref} = sprintf '-->%s<--', ${$oref};
     return;
 }
 
-sub filter_Baz {
+sub filter_baz {
     my $self = shift;
     my $oref = shift;
     ${$oref} = sprintf 'KLF%sMUMULAND', ${$oref};

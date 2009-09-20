@@ -31,5 +31,5 @@ ok($t_got_2 eq 'test2.tts', 'Second test: Parameter interpreted as string');
 
 my $c = 'code died since file does not exists and include_paths unset';
 
-like($tf_got_1, qr/Error opening \'test1.tts\' for reading/, "First test: $c");
-like($tf_got_2, qr/Error opening \'test2.tts\' for reading/, "Second test: $c");
+like($tf_got_1, qr/ \QError opening 'test1.tts' for reading\E /xms, "First test: $c");
+like($tf_got_2, qr/ \QError opening 'test2.tts' for reading\E /xms, "Second test: $c");
