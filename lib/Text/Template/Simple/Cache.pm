@@ -42,13 +42,14 @@ sub reset {
    if ( $parent->[CACHE] && $parent->[CACHE_DIR] ) {
 
       my $cdir = $parent->[CACHE_DIR];
-      local  *CDIRH;
-      opendir CDIRH, $cdir or fatal( 'tts.cache.opendir' => $cdir, $! );
+      require Symbol;
+      my $CDIRH = Symbol::gensym();
+      opendir $CDIRH, $cdir or fatal( 'tts.cache.opendir' => $cdir, $! );
       require File::Spec;
       my $ext = quotemeta CACHE_EXT;
       my $file;
 
-      while ( defined( $file = readdir CDIRH ) ) {
+      while ( defined( $file = readdir $CDIRH ) ) {
          if ( $file =~ m{ ( .* $ext) \z}xmsi ) {
             $file = File::Spec->catfile( $parent->[CACHE_DIR], $1 );
             LOG( UNLINK => $file ) if DEBUG;
@@ -56,7 +57,7 @@ sub reset {
          }
       }
 
-      closedir CDIRH;
+      closedir $CDIRH;
    }
    return;
 }
