@@ -9,7 +9,7 @@ my $t = Text::Template::Simple->new();
 my $got = $t->compile( File::Spec->catfile( qw( t data ), '028-dynamic.tts' ) );
 my $expect = 'Dynamic: KLF-->Perl ROCKS!<--MUMULAND';
 
-ok($got eq $expect, "Dynamic include got params");
+is($got, $expect, 'Dynamic include got params' );
 
 package Text::Template::Simple::Dummy;
 use strict;
@@ -17,13 +17,13 @@ use strict;
 sub filter_FooBar {
     my $self = shift;
     my $oref = shift;
-    $$oref   = "-->$$oref<--";
+    ${$oref} = sprintf '-->%s<--', ${$oref};
     return;
 }
 
 sub filter_Baz {
     my $self = shift;
     my $oref = shift;
-    $$oref   = "KLF".$$oref."MUMULAND";
+    ${$oref} = sprintf 'KLF%sMUMULAND', ${$oref};
     return;
 }

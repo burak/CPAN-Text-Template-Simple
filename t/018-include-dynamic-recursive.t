@@ -7,6 +7,6 @@ use Text::Template::Simple;
 my $t   = Text::Template::Simple->new();
 my $out = $t->compile( 't/data/recursive.tts' );
 
-print $out, "\n";
+my $pok = print $out, "\n";
 
-ok( $out, "Nasty recursive test did not fail");
+ok( $out, 'Nasty recursive test did not fail' );

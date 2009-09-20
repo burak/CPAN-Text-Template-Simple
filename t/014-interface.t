@@ -25,7 +25,6 @@ can_ok( 'Text::Template::Simple',
             class_id
             _output_buffer_var
             _examine
-            _compiler
             _wrap_compile
             _tidy
             _parse
@@ -85,12 +84,12 @@ can_ok( 'Text::Template::Simple::Dummy',
     );
 can_ok( 'Text::Template::Simple::Compiler',
         qw/
-            _compile
+            compile
         /
     );
 can_ok( 'Text::Template::Simple::Compiler::Safe',
         qw/
-            _compile
+            compile
             _object
             _permit
         /

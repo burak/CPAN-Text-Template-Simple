@@ -11,9 +11,9 @@ my $t = Text::Template::Simple->new( safe => 1 );
 
 my $tmpl = q(<% my $name = shift %>Hello <%= $name %>, you are safe!);
 
-my $out = $t->compile( $tmpl, [ "Burak" ] );
+my $out = $t->compile( $tmpl, [ 'Burak' ] );
 
-ok( $out                                 , "Got compiled output" );
-ok( $out eq q{Hello Burak, you are safe!}, "Output is correct"   );
+ok( $out                                 , 'Got compiled output' );
+ok( $out eq q{Hello Burak, you are safe!}, 'Output is correct'   );
 
-print $out, "\n";
+my $pok = print $out, "\n";

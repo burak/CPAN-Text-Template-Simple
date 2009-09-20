@@ -7,9 +7,9 @@ use Text::Template::Simple;
 my $t   = Text::Template::Simple->new();
 my $out = $t->compile( 't/data/dynamic.tts' );
 
-print "OUTPUT: $out\n";
+my $pok = print "OUTPUT: $out\n";
 
-ok( $out eq confirm(), "Valid output from dynamic inclusion" );
+ok( $out eq confirm(), 'Valid output from dynamic inclusion' );
 
 sub confirm {
     return <<'CONFIRMED';

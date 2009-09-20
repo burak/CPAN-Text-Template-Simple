@@ -12,7 +12,7 @@ my $t = Text::Template::Simple->new(
 my $got      = trim $t->compile( 't/data/monolith.tts' );
 my $expected = trim expected();
 
-is( $got, $expected, "Testing Monolith");
+is( $got, $expected, 'Testing Monolith' );
 
 sub expected {
     return <<'EXPECT';

@@ -12,7 +12,7 @@ use warnings;
 # our() does not work for some reason
 use vars qw(%GLOBAL);
 
-%GLOBAL = ( X => "Y" );
+%GLOBAL = ( X => 'Y' );
 
 sub hello { return "Dear $_[0], this is a template function!" }
 
