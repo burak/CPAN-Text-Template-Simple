@@ -186,7 +186,7 @@ sub DIGEST {
       $file .= '.pm';
       my $ok = eval { require $file; };
       if ( ! $ok ) {
-         LOG( FAILED => "$mod - $file" ) if DEBUG();
+         LOG( FAILED => "$mod - $file" ) if DEBUG;
          next;
       }
       $DIGEST = $mod;
@@ -199,7 +199,7 @@ sub DIGEST {
       fatal( 'tts.util.digest' => join(', ', @report), $last_error, $@ );
    }
 
-   LOG( DIGESTER => $DIGEST . ' v' . $DIGEST->VERSION ) if DEBUG();
+   LOG( DIGESTER => $DIGEST . ' v' . $DIGEST->VERSION ) if DEBUG;
    return $DIGEST->new;
 }
 

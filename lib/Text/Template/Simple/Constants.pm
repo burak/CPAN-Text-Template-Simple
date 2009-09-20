@@ -96,40 +96,45 @@ use constant TAINT_CHECK_WINDOWS => 0x000004;
 use constant TAINT_CHECK_FH_READ => 0x000008;
 
 # first level directives
-use constant DIR_CAPTURE      => q{=};
-use constant DIR_DYNAMIC      => q{*};
-use constant DIR_STATIC       => q{+};
-use constant DIR_NOTADELIM    => q{!};
-use constant DIR_COMMENT      => q{#};
-use constant DIR_COMMAND      => q{|};
+use constant DIR_CAPTURE         => q{=};
+use constant DIR_DYNAMIC         => q{*};
+use constant DIR_STATIC          => q{+};
+use constant DIR_NOTADELIM       => q{!};
+use constant DIR_COMMENT         => q{#};
+use constant DIR_COMMAND         => q{|};
 # second level directives
-use constant DIR_CHOMP        => q{-};
-use constant DIR_COLLAPSE     => q{~};
-use constant DIR_CHOMP_NONE   => q{^};
+use constant DIR_CHOMP           => q{-};
+use constant DIR_COLLAPSE        => q{~};
+use constant DIR_CHOMP_NONE      => q{^};
 
 # token related indexes
-use constant TOKEN_STR        =>  0;
-use constant TOKEN_ID         =>  1;
-use constant TOKEN_CHOMP      =>  2;
-use constant TOKEN_TRIGGER    =>  3;
+use constant TOKEN_STR           =>  0;
+use constant TOKEN_ID            =>  1;
+use constant TOKEN_CHOMP         =>  2;
+use constant TOKEN_TRIGGER       =>  3;
 
-use constant TOKEN_CHOMP_NEXT =>  0; # sub-key for TOKEN_CHOMP
-use constant TOKEN_CHOMP_PREV =>  1; # sub-key for TOKEN_CHOMP
+use constant TOKEN_CHOMP_NEXT    =>  0; # sub-key for TOKEN_CHOMP
+use constant TOKEN_CHOMP_PREV    =>  1; # sub-key for TOKEN_CHOMP
 
-use constant LAST_TOKEN       => -1;
-use constant PREVIOUS_TOKEN   => -2;
+use constant LAST_TOKEN          => -1;
+use constant PREVIOUS_TOKEN      => -2;
 
-use constant CACHE_PARENT     => 0; # object id
-use constant CACHE_FMODE      => 0600;
+use constant CACHE_PARENT        => 0; # object id
+use constant CACHE_FMODE         => 0600;
 
-use constant EMPTY_STRING     => q{};
+use constant EMPTY_STRING        => q{};
 
-use constant FMODE_GO_WRITABLE => 022;
-use constant FMODE_GO_READABLE => 066;
-use constant FTYPE_MASK        => 07777;
+use constant FMODE_GO_WRITABLE   => 022;
+use constant FMODE_GO_READABLE   => 066;
+use constant FTYPE_MASK          => 07777;
 
-use constant MAX_PATH_LENGTH   => 255;
-use constant DEVEL_SIZE_VERSION => 0.72;
+use constant MAX_PATH_LENGTH     => 255;
+use constant DEVEL_SIZE_VERSION  => 0.72;
+
+use constant DEBUG_LEVEL_NORMAL  => 1;
+use constant DEBUG_LEVEL_VERBOSE => 2;
+use constant DEBUG_LEVEL_INSANE  => 3;
+
 
 # SHA seems to be more accurate, so we'll try them first.
 # Pure-Perl ones are slower, but they are fail-safes.
@@ -287,6 +292,11 @@ BEGIN {
                         FMODE_GO_WRITABLE
                         FMODE_GO_READABLE
                         FTYPE_MASK
+                     )],
+      debug     =>   [qw(
+                        DEBUG_LEVEL_NORMAL
+                        DEBUG_LEVEL_VERBOSE
+                        DEBUG_LEVEL_INSANE
                      )],
    );
 

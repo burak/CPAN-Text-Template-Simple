@@ -37,7 +37,7 @@ sub validate {
       if ( IS_WINDOWS ) {
          $wdir = Win32::GetFullPathName( $path );
          if( Win32::GetLastError() ) {
-            LOG( FAIL => "Win32::GetFullPathName( $path ): $^E" ) if DEBUG();
+            LOG( FAIL => "Win32::GetFullPathName( $path ): $^E" ) if DEBUG;
             $wdir = EMPTY_STRING; # die "Win32::GetFullPathName: $^E";
          }
          else {
@@ -70,7 +70,7 @@ sub slurp {
    my $self = shift;
    my $file = shift;
    my($fh, $seek);
-   LOG(IO_SLURP => $file) if DEBUG();
+   LOG(IO_SLURP => $file) if DEBUG;
 
    # perl 5.5.3 compat: we need to check if it's a ref first
    if ( ref $file && fileno $file ) {
@@ -177,7 +177,7 @@ sub _looks_like_file {
 
 sub DESTROY {
    my $self = shift;
-   LOG( DESTROY => ref $self ) if DEBUG();
+   LOG( DESTROY => ref $self ) if DEBUG;
    return;
 }
 

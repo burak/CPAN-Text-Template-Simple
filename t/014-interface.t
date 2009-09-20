@@ -29,7 +29,7 @@ can_ok( 'Text::Template::Simple',
             _tidy
             _parse
             _add_stack
-            _include
+            include
             DESTROY
         /
     );

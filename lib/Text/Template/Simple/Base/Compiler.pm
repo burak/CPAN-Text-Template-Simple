@@ -70,7 +70,7 @@ sub _compile {
       $cache_id .= '_1' if $as_is;
 
       if ( $CODE = $self->cache->hit( $cache_id, $opt->{chkmt} ) ) {
-         LOG( CACHE_HIT =>  $cache_id ) if DEBUG();
+         LOG( CACHE_HIT =>  $cache_id ) if DEBUG;
          $ok = 1;
       }
    }
@@ -86,7 +86,7 @@ sub _compile {
 
    if ( not $ok ) {
       # we have a cache miss; parse and compile
-      LOG( CACHE_MISS => $cache_id ) if DEBUG();
+      LOG( CACHE_MISS => $cache_id ) if DEBUG;
 
       my $restore_header;
       if ( $shead ) {
@@ -136,7 +136,7 @@ sub _wrap_compile {
    my $self   = shift;
    my $parsed = shift or fatal('tts.base.compiler._wrap_compile.parsed');
    LOG( CACHE_ID => $self->cache->id ) if $self->[WARN_IDS] && $self->cache->id;
-   LOG( COMPILER => $self->[SAFE] ? 'Safe' : 'Normal' ) if DEBUG();
+   LOG( COMPILER => $self->[SAFE] ? 'Safe' : 'Normal' ) if DEBUG;
    my($CODE, $error);
 
    my $compiler = $self->[SAFE] ? COMPILER_SAFE : COMPILER;

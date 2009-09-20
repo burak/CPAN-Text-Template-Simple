@@ -35,7 +35,7 @@ sub _examine {
       }
    }
 
-   LOG( EXAMINE => sprintf q{%s; LENGTH: %s}, $self->[TYPE], length $rv ) if DEBUG();
+   LOG( EXAMINE => sprintf q{%s; LENGTH: %s}, $self->[TYPE], length $rv ) if DEBUG;
    return $rv;
 }
 

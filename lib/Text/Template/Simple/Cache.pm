@@ -51,7 +51,7 @@ sub reset {
       while ( defined( $file = readdir CDIRH ) ) {
          if ( $file =~ m{ ( .* $ext) \z}xmsi ) {
             $file = File::Spec->catfile( $parent->[CACHE_DIR], $1 );
-            LOG( UNLINK => $file ) if DEBUG();
+            LOG( UNLINK => $file ) if DEBUG;
             unlink $file;
          }
       }
@@ -214,8 +214,7 @@ sub size {
       local $SIG{__DIE__};
       if ( eval { require Devel::Size; 1; } ) {
          my $dsv = Devel::Size->VERSION;
-         LOG( DEBUG => "Devel::Size v$dsv is loaded." )
-            if DEBUG();
+         LOG( DEBUG => "Devel::Size v$dsv is loaded." ) if DEBUG;
          fatal('tts.cache.develsize.buggy', $dsv) if $dsv < DEVEL_SIZE_VERSION;
          my $size = eval { Devel::Size::total_size( $CACHE ) };
          fatal('tts.cache.develsize.total', $@) if $@;
@@ -236,7 +235,7 @@ sub has {
    my $parent = $self->[CACHE_PARENT];
 
    if ( not $parent->[CACHE] ) {
-      LOG( DEBUG => 'Cache is disabled!') if DEBUG();
+      LOG( DEBUG => 'Cache is disabled!') if DEBUG;
       return;
    }
 
@@ -295,8 +294,7 @@ sub hit {
          }
          if ( my $mtime = $meta{CHKMT} ) {
             if ( $mtime != $chkmt ) {
-               LOG( MTIME_DIFF => "\tOLD: $mtime\n\t\tNEW: $chkmt")
-                  if DEBUG();
+               LOG( MTIME_DIFF => "\tOLD: $mtime\n\t\tNEW: $chkmt") if DEBUG;
                return; # i.e.: Update cache
             }
          }
@@ -306,7 +304,7 @@ sub hit {
          $parent->[FAKER_SELF]   = $meta{FAKER_SELF}   if $meta{FAKER_SELF};
 
          fatal('tts.cache.hit.cache', $error) if $error;
-         LOG( FILE_CACHE => EMPTY_STRING ) if DEBUG();
+         LOG( FILE_CACHE => EMPTY_STRING ) if DEBUG;
          #$parent->[COUNTER]++;
          return $CODE;
       }
@@ -317,12 +315,12 @@ sub hit {
          my $mtime = $CACHE->{$cache_id}{MTIME} || 0;
 
          if ( $mtime != $chkmt ) {
-            LOG( MTIME_DIFF => "\tOLD: $mtime\n\t\tNEW: $chkmt" ) if DEBUG();
+            LOG( MTIME_DIFF => "\tOLD: $mtime\n\t\tNEW: $chkmt" ) if DEBUG;
             return; # i.e.: Update cache
          }
 
       }
-      LOG( MEM_CACHE => EMPTY_STRING ) if DEBUG();
+      LOG( MEM_CACHE => EMPTY_STRING ) if DEBUG;
       return $CACHE->{$cache_id}->{CODE};
    }
    return;
@@ -367,7 +365,7 @@ sub populate {
          chmod(CACHE_FMODE, $cache) || fatal('tts.cache.populate.chmod');
 
          ($CODE, $error) = $parent->_wrap_compile($parsed);
-         LOG( DISK_POPUL => $cache_id ) if DEBUG() > 2;
+         LOG( DISK_POPUL => $cache_id ) if DEBUG >= DEBUG_LEVEL_INSANE;
       }
       else {
          $CACHE->{ $cache_id } = {}; # init
@@ -376,12 +374,12 @@ sub populate {
          $CACHE->{ $cache_id }->{MTIME}        = $chkmt if $chkmt;
          $CACHE->{ $cache_id }->{NEEDS_OBJECT} = $parent->[NEEDS_OBJECT];
          $CACHE->{ $cache_id }->{FAKER_SELF}   = $parent->[FAKER_SELF];
-         LOG( MEM_POPUL => $cache_id ) if DEBUG() > 2;
+         LOG( MEM_POPUL => $cache_id ) if DEBUG >= DEBUG_LEVEL_INSANE;
       }
    }
    else {
       ($CODE, $error) = $parent->_wrap_compile($parsed); # cache is disabled
-      LOG( NC_POPUL => $cache_id ) if DEBUG() > 2;
+      LOG( NC_POPUL => $cache_id ) if DEBUG >= DEBUG_LEVEL_INSANE;
    }
 
    if ( $error ) {
@@ -421,7 +419,7 @@ sub _set_meta {
 
 sub DESTROY {
    my $self = shift;
-   LOG( DESTROY => ref $self ) if DEBUG();
+   LOG( DESTROY => ref $self ) if DEBUG;
    $self->[CACHE_PARENT] = undef;
    @{$self} = ();
    return;

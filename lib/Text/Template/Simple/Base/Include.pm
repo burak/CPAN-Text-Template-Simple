@@ -70,7 +70,7 @@ sub _include_dynamic_monolith {
    return $result;
 }
 
-sub _include {
+sub include {
    my $self       = shift;
    my $type       = shift || 0;
    my $file       = shift;
@@ -102,7 +102,7 @@ sub _include {
    return "q~$err '" . escape(q{~} => $file) . q{' is a directory~}
       if $self->io->is_dir( $file );
 
-   if ( DEBUG() ) {
+   if ( DEBUG ) {
       require Text::Template::Simple::Tokenizer;
       my $toke =  Text::Template::Simple::Tokenizer->new(
                      @{ $self->[DELIMITERS] },
@@ -115,7 +115,7 @@ sub _include {
    if ( $interpolate ) {
       my $rv = $self->_interpolate( $file, $type );
       $self->[NEEDS_OBJECT]++;
-      LOG(INTERPOLATE_INC => "TYPE: $type; DATA: $file; RV: $rv") if DEBUG();
+      LOG(INTERPOLATE_INC => "TYPE: $type; DATA: $file; RV: $rv") if DEBUG;
       return $rv;
    }
 
@@ -206,6 +206,10 @@ Text::Template::Simple::Base::Include - Base class for Text::Template::Simple
 =head1 SYNOPSIS
 
 Private module.
+
+=head1 METHODS
+
+=head2 include
 
 =head1 DESCRIPTION
 
