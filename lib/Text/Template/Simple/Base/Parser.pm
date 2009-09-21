@@ -39,17 +39,9 @@ sub _parse {
                                           : $self->[FAKER]
                                           ;
    my $buf_hash = $self->[FAKER_HASH];
-   my $toke     = $self->connector('Tokenizer')->new(
-                     $ds, $de, $self->[PRE_CHOMP], $self->[POST_CHOMP]
-                  );
-   my $code     = EMPTY_STRING;
-   my $inside   = 0;
-
    my($mko, $mkc) = $self->_parse_mapkeys( $opt->{map_keys}, $faker, $buf_hash );
 
    LOG( RAW => $raw ) if DEBUG > DEBUG_LEVEL_INSANE;
-
-   my $uth = $self->[USER_THANDLER];
 
    my $h = {
       raw     => sub { ";$faker .= q~$_[0]~;" },
@@ -60,6 +52,30 @@ sub _parse {
    # little hack to convert delims into escaped delims for static inclusion
    $raw =~ s{\Q$ds}{$ds!}xmsg if $opt->{as_is};
 
+   my($code, $inside) = $self->_walk( $raw, $opt, $h, $mko, $mkc );
+
+   $self->[FILENAME] ||= '<ANON>';
+
+   fatal(
+      'tts.base.parser._parse.unbalanced',
+         abs($inside),
+         ($inside > 0 ? 'opening' : 'closing'),
+         $self->[FILENAME]
+   ) if $inside;
+
+   return $self->_wrapper( $code, $opt->{cache_id}, $faker, $opt->{map_keys}, $h );
+}
+
+sub _walk {
+   my($self, $raw, $opt, $h, $mko, $mkc) = @_;
+   my $toke = $self->connector('Tokenizer')->new(
+                  @{ $self->[DELIMITERS] },
+                  $self->[PRE_CHOMP],
+                  $self->[POST_CHOMP]
+               );
+   my $uth    = $self->[USER_THANDLER];
+   my $code   = EMPTY_STRING;
+   my $inside = 0;
    # fetch and walk the tree
    PARSER: foreach my $token ( @{ $toke->tokenize( $raw, $opt->{map_keys} ) } ) {
       my($str, $id, $chomp, undef) = @{ $token };
@@ -102,17 +118,7 @@ sub _parse {
       }
 
    }
-
-   $self->[FILENAME] ||= '<ANON>';
-
-   fatal(
-      'tts.base.parser._parse.unbalanced',
-         abs($inside),
-         ($inside > 0 ? 'opening' : 'closing'),
-         $self->[FILENAME]
-   ) if $inside;
-
-   return $self->_wrapper( $code, $opt->{cache_id}, $faker, $opt->{map_keys}, $h );
+   return $code, $inside;
 }
 
 sub _parse_command {
@@ -165,14 +171,8 @@ sub _chomp {
 
 sub _wrapper {
    # this'll be tricky to re-implement around a template
-   my $self     = shift;
-   my $code     = shift;
-   my $cache_id = shift;
-   my $faker    = shift;
-   my $map_keys = shift;
-   my $h        = shift;
-   my $buf_hash = $self->[FAKER_HASH];
-
+   my($self, $code, $cache_id, $faker, $map_keys, $h) = @_;
+   my $buf_hash   = $self->[FAKER_HASH];
    my $wrapper    = EMPTY_STRING;
    my $inside_inc = $self->[INSIDE_INCLUDE] != MINUS_ONE ? 1 : 0;
 
