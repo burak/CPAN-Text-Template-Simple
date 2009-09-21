@@ -5,7 +5,7 @@ use vars qw($VERSION $OID $DID @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 $VERSION = '0.80';
 
-use constant MINUS_ONE        => 0 - 1;
+use constant MINUS_ONE        => -1;
 
 # object fields
 BEGIN { $OID = MINUS_ONE } # init object field id counter
