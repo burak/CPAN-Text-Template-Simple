@@ -2,8 +2,17 @@ Revision history for Perl extension Text::Template::Simple.
 
 Time zone is UTC+2.
 
-0.82 Sat Sep 19 04:12:09 2009
+0.82 Mon Sep 21 22:38:16 2009
    => Now using warnings pragma. warnings::compat is required under $] < 5.006.
+   => Lots of internal fixes/re-organization to comply with Perl::Critic
+      policies.
+   => API changes:
+         o Rename (Text::Template::Simple::Cache):
+            - reset() -> reset_cache().
+         o Rename (Text::Template::Simple::Cache::ID)
+            - get() -> get_id()
+            - set() -> set_id()
+   => Bundle .perlcriticrc
 
 0.81 Sun Sep 13 08:34:21 2009
    => Legacy perl (5.6/5.5.3) fixes.

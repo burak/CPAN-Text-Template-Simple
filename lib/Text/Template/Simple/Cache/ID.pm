@@ -2,7 +2,7 @@ package Text::Template::Simple::Cache::ID;
 use strict;
 use warnings;
 use vars qw($VERSION);
-use overload q{""} => 'get';
+use overload q{""} => 'get_id';
 use Text::Template::Simple::Constants qw( MAX_FL RE_INVALID_CID );
 use Text::Template::Simple::Util      qw( LOG DEBUG DIGEST fatal );
 
@@ -14,12 +14,12 @@ sub new {
    return $self;
 }
 
-sub get {
+sub get_id {
    my $self = shift;
    return ${$self};
 }
 
-sub set {
+sub set_id {
    my $self = shift;
    my $val  = shift;
    ${$self} = $val if defined $val;
@@ -34,11 +34,12 @@ sub generate { # cache id generator
       LOG( IDGEN => 'Generating ID from empty data' ) if DEBUG;
    }
 
-   $self->set(
+   $self->set_id(
       $custom ? $self->_custom( $data, $regex )
               : $self->DIGEST->add( $data )->hexdigest
    );
-   return $self->get;
+
+   return $self->get_id;
 }
 
 sub _custom {
@@ -84,11 +85,11 @@ Constructor
 
 Generates an unique cache id for the supplied data.
 
-=head2 get
+=head2 get_id
 
 Returns the generated cache ID.
 
-=head2 set
+=head2 set_id
 
 Set the cache ID.
 

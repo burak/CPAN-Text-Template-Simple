@@ -92,7 +92,7 @@ sub run {
 
         ok( $size > 0, "We could call size( $size bytes )" );
 
-        $t->cache->reset;
+        $t->cache->reset_cache;
 
         my $before = $size;
         $size = $t->cache->size;

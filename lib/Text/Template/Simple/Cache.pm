@@ -34,7 +34,7 @@ sub type {
                            : 'OFF';
 }
 
-sub reset {
+sub reset_cache {
    my $self   = shift;
    my $parent = $self->[CACHE_PARENT];
    %{$CACHE}  = ();
@@ -467,7 +467,7 @@ Constructor. Accepts a C<Text::Template::Simple> object as the parameter.
 
 Returns the type of the cache.
 
-=head2 reset
+=head2 reset_cache
 
 Resets the in-memory cache and deletes all cache files, 
 if you are using a disk cache.
