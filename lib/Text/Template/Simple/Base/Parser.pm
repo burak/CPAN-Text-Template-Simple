@@ -68,14 +68,15 @@ sub _parse {
 
 sub _walk {
    my($self, $raw, $opt, $h, $mko, $mkc) = @_;
-   my $toke = $self->connector('Tokenizer')->new(
+   my $uth    = $self->[USER_THANDLER];
+   my $code   = EMPTY_STRING;
+   my $inside = 0;
+   my $toke   = $self->connector('Tokenizer')->new(
                   @{ $self->[DELIMITERS] },
                   $self->[PRE_CHOMP],
                   $self->[POST_CHOMP]
                );
-   my $uth    = $self->[USER_THANDLER];
-   my $code   = EMPTY_STRING;
-   my $inside = 0;
+
    # fetch and walk the tree
    PARSER: foreach my $token ( @{ $toke->tokenize( $raw, $opt->{map_keys} ) } ) {
       my($str, $id, $chomp, undef) = @{ $token };
@@ -87,35 +88,40 @@ sub _walk {
 
       if ( T_RAW == $id || T_NOTADELIM == $id ) {
          $code .= $h->{raw}->( $self->_chomp( $str, $chomp ) );
+         next PARSER;
       }
 
-      elsif ( T_CODE == $id ) {
+      if ( T_CODE == $id ) {
          $code .= $h->{code}->($str);
+         next PARSER;
       }
 
-      elsif ( T_CAPTURE == $id ) {
+      if ( T_CAPTURE == $id ) {
          $code .= $h->{capture}->( $str );
+         next PARSER;
       }
 
-      elsif ( T_DYNAMIC == $id || T_STATIC == $id ) {
+      if ( T_DYNAMIC == $id || T_STATIC == $id ) {
          $code .= $h->{capture}->( $self->_needs_object->include($id, $str, $opt) );
+         next PARSER;
       }
 
-      elsif ( T_MAPKEY == $id ) {
+      if ( T_MAPKEY == $id ) {
          $code .= sprintf $mko, $mkc ? ( ($str) x MAPKEY_NUM ) : $str;
+         next PARSER;
       }
 
-      elsif ( T_COMMAND == $id ) {
+      if ( T_COMMAND == $id ) {
          $code .= $h->{raw}->( $self->_parse_command( $str ) );
+         next PARSER;
       }
 
-      else {
-         LOG(
-            $uth  ? (USER_THANDLER => "$id")
-                  : (UNKNOWN_TOKEN => "Adding unknown token as RAW: $id($str)")
-         ) if DEBUG;
-         $code .= $uth ? $uth->( $self, $id ,$str, $h ) : $h->{raw}->( $str );
-      }
+      LOG(
+         $uth  ? (USER_THANDLER => "$id")
+               : (UNKNOWN_TOKEN => "Adding unknown token as RAW: $id($str)")
+      ) if DEBUG;
+
+      $code .= $uth ? $uth->( $self, $id ,$str, $h ) : $h->{raw}->( $str );
 
    }
    return $code, $inside;
