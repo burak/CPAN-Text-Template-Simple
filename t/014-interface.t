@@ -150,8 +150,8 @@ can_ok( 'Text::Template::Simple::Util',
 can_ok( 'Text::Template::Simple::Cache::ID',
         qw/
             new
-            get_id
-            set_id
+            get
+            set
             generate
             _custom
         /
@@ -161,7 +161,7 @@ can_ok( 'Text::Template::Simple::Cache',
             new
             id
             type
-            reset_cache
+            reset
             dumper
             _dump_ids
             _dump_structure

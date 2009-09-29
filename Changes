@@ -6,12 +6,6 @@ Time zone is UTC+2.
    => Now using warnings pragma. warnings::compat is required under $] < 5.006.
    => Lots of internal fixes/re-organization to comply with Perl::Critic
       policies.
-   => API changes:
-         o Rename (Text::Template::Simple::Cache):
-            - reset() -> reset_cache().
-         o Rename (Text::Template::Simple::Cache::ID)
-            - get() -> get_id()
-            - set() -> set_id()
    => Bundle .perlcriticrc
 
 0.81 Sun Sep 13 08:34:21 2009
