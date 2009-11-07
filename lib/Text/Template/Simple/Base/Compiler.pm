@@ -32,28 +32,29 @@ sub _init_compile_opts {
 
 sub _validate_chkmt {
    my($self, $chkmt_ref, $tmpx) = @_;
-   ${chkmt_ref} = $self->[TYPE] eq 'FILE' ? (stat $tmpx)[STAT_MTIME]
-                    : do {
-                        DEBUG && LOG(DISABLE_MT =>
-                                     'Disabling chkmt. Template is not a file');
-                        0;
-                     };
+   ${$chkmt_ref} = $self->[TYPE] eq 'FILE'
+                 ? (stat $tmpx)[STAT_MTIME]
+                 : do {
+                     DEBUG && LOG( DISABLE_MT =>
+                                    'Disabling chkmt. Template is not a file');
+                     0;
+                  };
    return;
 }
 
 sub _compile_cache {
    my($self, $tmp, $opt, $id_ref, $code_ref) = @_;
-   my $method = $opt->{id};
-   my @args   = (! $method || $method eq 'AUTO') ? ( $tmp              )
-              :                                    ( $method, 'custom' )
-              ;
-   ${$id_ref}  = $self->connector('Cache::ID')->new->generate( @args );
+   my $method   = $opt->{id};
+   my $auto_id  = ! $method || $method eq 'AUTO';
+   ${ $id_ref } = $self->connector('Cache::ID')->new->generate(
+                     $auto_id ? ( $tmp ) : ( $method, 'custom' )
+                  );
 
    # prevent overwriting the compiled version in cache
    # since we need the non-compiled version
-   ${$id_ref} .= '_1' if $opt->{as_is};
+   ${ $id_ref } .= '_1' if $opt->{as_is};
 
-   ${$code_ref} = $self->cache->hit( ${$id_ref}, $opt->{chkmt} );
+   ${ $code_ref } = $self->cache->hit( ${$id_ref}, $opt->{chkmt} );
    LOG( CACHE_HIT =>  ${$id_ref} ) if DEBUG && ${$code_ref};
    return;
 }
@@ -64,7 +65,7 @@ sub _compile {
    my $param = shift || [];
    my $opt   = $self->_init_compile_opts( shift );
 
-   fatal('tts.base.compiler._compile.param') if not isaref($param);
+   fatal('tts.base.compiler._compile.param') if ! isaref($param);
 
    my $tmp = $self->_examine( $tmpx );
    return $tmp if $self->[TYPE] eq 'ERROR';
@@ -87,9 +88,7 @@ sub _compile {
    my $cache_id = EMPTY_STRING;
 
    my($CODE);
-   if ( $self->[CACHE] ) {
-      $self->_compile_cache( $tmp, $opt, \$cache_id, \$CODE );
-   }
+   $self->_compile_cache( $tmp, $opt, \$cache_id, \$CODE ) if $self->[CACHE];
 
    $self->cache->id( $cache_id ); # if $cache_id;
    $self->[FILENAME] = $self->[TYPE] eq 'FILE' ? $tmpx : $self->cache->id;
@@ -161,7 +160,7 @@ sub _wrap_compile {
 
    my $compiler = $self->[SAFE] ? COMPILER_SAFE : COMPILER;
 
-   $CODE = $compiler->compile($parsed);
+   $CODE = $compiler->compile( $parsed );
 
    if( $error = $@ ) {
       my $error2;
@@ -193,6 +192,8 @@ sub _mini_compiler {
 1;
 
 __END__
+
+=pod
 
 =head1 NAME
 
