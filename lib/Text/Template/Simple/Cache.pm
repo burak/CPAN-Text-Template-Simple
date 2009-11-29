@@ -274,9 +274,8 @@ sub hit {
    my $cache_id = shift;
    my $chkmt    = shift || 0;
 
-   return  $self->[CACHE_PARENT][CACHE_DIR]
-         ? $self->_hit_disk(   $cache_id, $chkmt )
-         : $self->_hit_memory( $cache_id, $chkmt );
+   my $method = $self->[CACHE_PARENT][CACHE_DIR] ? '_hit_disk' : '_hit_memory';
+   return $self->$method( $cache_id, $chkmt );
 }
 
 sub _hit_memory {

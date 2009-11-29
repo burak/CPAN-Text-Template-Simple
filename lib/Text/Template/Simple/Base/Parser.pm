@@ -10,6 +10,7 @@ use Text::Template::Simple::Constants qw(:all);
 use constant MAPKEY_NUM => 5;
 
 my %INTERNAL = __PACKAGE__->_set_internal_templates;
+my %BLOCK; # block registry
 
 sub _needs_object {
    my $self = shift;

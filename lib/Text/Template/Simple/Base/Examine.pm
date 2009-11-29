@@ -40,12 +40,10 @@ sub _examine {
 }
 
 sub _examine_glob {
-   my $self = shift;
-   my $TMP  = shift;
-   my $ref  = ref $TMP;
-   fatal( 'tts.base.examine.notglob' => $ref ) if $ref ne 'GLOB';
-   fatal( 'tts.base.examine.notfh'           ) if not  fileno $TMP;
-   return $self->io->slurp( $TMP );
+   my($self, $thing) = @_;
+   fatal( 'tts.base.examine.notglob' => ref $thing ) if ref $thing ne 'GLOB';
+   fatal( 'tts.base.examine.notfh' ) if ! fileno $thing;
+   return $self->io->slurp( $thing );
 }
 
 sub _examine_type {
@@ -59,7 +57,7 @@ sub _examine_type {
    if ( isaref( $TMP ) ) {
       my $ftype  = shift @{ $TMP } || fatal('tts.base.examine._examine_type.ftype');
       my $fthing = shift @{ $TMP } || fatal('tts.base.examine._examine_type.fthing');
-      fatal('tts.base.examine._examine_type.extra') if @{ $TMP } > 0;
+      fatal('tts.base.examine._examine_type.extra') if @{ $TMP };
       return uc $ftype, $fthing;
    }
 

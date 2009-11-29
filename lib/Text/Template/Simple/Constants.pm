@@ -150,7 +150,7 @@ use constant DIGEST_MODS => qw(
    Digest::Perl::MD5
 );
 
-use constant RE_PIPE_SPLIT   => qr/ \| (?:\s+)? (PARAM|FILTER|SHARE) : /xms;
+use constant RE_PIPE_SPLIT   => qr/ \| (?:\s+)? (NAME|PARAM|FILTER|SHARE) : /xms;
 use constant RE_FILTER_SPLIT => qr/ \, (?:\s+)? /xms;
 use constant RE_INVALID_CID  => qr{[^A-Za-z_0-9]}xms;
 
