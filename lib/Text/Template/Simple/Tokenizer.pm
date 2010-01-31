@@ -17,7 +17,7 @@ use constant SUBSTR_OFFSET_SECOND =>  1;
 use constant SUBSTR_LENGTH        =>  1;
 
 use Text::Template::Simple::Util      qw( LOG DEBUG fatal );
-use Text::Template::Simple::Constants qw( :chomp :directive :token MINUS_ONE EMPTY_STRING );
+use Text::Template::Simple::Constants qw( :all );
 
 my @COMMANDS = ( # default command list
    # cmd            id
@@ -63,7 +63,9 @@ sub tokenize {
          if ( $j eq $de ) {
             my $last_token = $tokens[LAST_TOKEN];
             if ( T_NOTADELIM == $last_token->[TOKEN_ID] ) {
-               $last_token->[TOKEN_STR] = $self->tilde( $last_token->[TOKEN_STR] . $de );
+               $last_token->[TOKEN_STR] = $self->tilde(
+                                             $last_token->[TOKEN_STR] . $de
+                                          );
             }
             else {
                push @tokens, [ $j, T_DELIMEND, [], undef ];
@@ -285,10 +287,10 @@ sub _debug_tokens {
 
    foreach my $t ( @{ $tokens } ) {
       $buf .=  $self->_debug_tokens_row(
-                  $self->_visualize_tid( $t->[TOKEN_ID] ),
+                  $self->_visualize_tid( $t->[TOKEN_ID]  ),
                   $self->_visualize_ws(  $t->[TOKEN_STR] ),
-                  map { $_ eq 'undef' ? EMPTY_STRING : $_      }
-                  map { $self->_visualize_chomp( $_ ) }
+                  map { $_ eq 'undef' ? EMPTY_STRING : $_ }
+                  map { $self->_visualize_chomp( $_ )     }
                   $t->[TOKEN_CHOMP][TOKEN_CHOMP_NEXT],
                   $t->[TOKEN_CHOMP][TOKEN_CHOMP_PREV],
                   $t->[TOKEN_TRIGGER]

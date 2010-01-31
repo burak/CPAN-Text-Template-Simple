@@ -191,7 +191,7 @@ sub _include_error {
              : T_STATIC  == $type ? 'static'
              :                      'unknown'
              ;
-   my $title = '[ ' . $val . ' include error ]';
+   my $title = sprintf '[ %s include error ]', $val;
    return $title;
 }
 

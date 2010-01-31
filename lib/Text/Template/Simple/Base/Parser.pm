@@ -10,7 +10,6 @@ use Text::Template::Simple::Constants qw(:all);
 use constant MAPKEY_NUM => 5;
 
 my %INTERNAL = __PACKAGE__->_set_internal_templates;
-my %BLOCK; # block registry
 
 sub _needs_object {
    my $self = shift;
@@ -81,51 +80,50 @@ sub _walk {
    # fetch and walk the tree
    PARSER: foreach my $token ( @{ $toke->tokenize( $raw, $opt->{map_keys} ) } ) {
       my($str, $id, $chomp, undef) = @{ $token };
-      LOG( TOKEN => $toke->_visualize_tid($id) . " => $str" ) if DEBUG >= DEBUG_LEVEL_VERBOSE;
+
+      LOG( TOKEN => $toke->_visualize_tid($id) . " => $str" )
+         if DEBUG >= DEBUG_LEVEL_VERBOSE;
+
       next PARSER if T_DISCARD == $id || T_COMMENT == $id;
 
       if ( T_DELIMSTART == $id ) { $inside++; next PARSER; }
       if ( T_DELIMEND   == $id ) { $inside--; next PARSER; }
 
-      if ( T_RAW == $id || T_NOTADELIM == $id ) {
-         $code .= $h->{raw}->( $self->_chomp( $str, $chomp ) );
-         next PARSER;
-      }
+      my $is_raw = T_RAW     == $id || T_NOTADELIM == $id;
+      my $is_inc = T_DYNAMIC == $id || T_STATIC    == $id;
 
-      if ( T_CODE == $id ) {
-         $code .= $h->{code}->($str);
-         next PARSER;
-      }
-
-      if ( T_CAPTURE == $id ) {
-         $code .= $h->{capture}->( $str );
-         next PARSER;
-      }
-
-      if ( T_DYNAMIC == $id || T_STATIC == $id ) {
-         $code .= $h->{capture}->( $self->_needs_object->include($id, $str, $opt) );
-         next PARSER;
-      }
-
-      if ( T_MAPKEY == $id ) {
-         $code .= sprintf $mko, $mkc ? ( ($str) x MAPKEY_NUM ) : $str;
-         next PARSER;
-      }
-
-      if ( T_COMMAND == $id ) {
-         $code .= $h->{raw}->( $self->_parse_command( $str ) );
-         next PARSER;
-      }
-
-      LOG(
-         $uth  ? (USER_THANDLER => "$id")
-               : (UNKNOWN_TOKEN => "Adding unknown token as RAW: $id($str)")
-      ) if DEBUG;
-
-      $code .= $uth ? $uth->( $self, $id ,$str, $h ) : $h->{raw}->( $str );
-
+      $code .= $is_raw          ? $h->{raw    }->( $self->_chomp( $str, $chomp ) )
+             : T_COMMAND == $id ? $h->{raw    }->( $self->_parse_command( $str ) )
+             : T_CODE    == $id ? $h->{code   }->( $str                          )
+             : T_CAPTURE == $id ? $h->{capture}->( $str                          )
+             : $is_inc          ? $h->{capture}->( $self->_walk_inc( $opt, $id, $str) )
+             : T_MAPKEY  == $id ? $self->_walk_mapkey(  $mko, $mkc, $str         )
+             :                    $self->_walk_unknown( $h, $uth, $id, $str      )
+             ;
    }
    return $code, $inside;
+}
+
+sub _walk_mapkey {
+   my($self, $mko, $mkc, $str) = @_;
+   return sprintf $mko, $mkc ? ( ($str) x MAPKEY_NUM ) : $str;
+}
+
+sub _walk_inc {
+   my($self, $opt, $id, $str) = @_;
+   return $self->_needs_object->include($id, $str, $opt);
+}
+
+sub _walk_unknown {
+   my($self, $h, $uth, $id, $str) = @_;
+   if ( DEBUG ) {
+      LOG(
+         $uth  ? ( USER_THANDLER => "$id" )
+               : ( UNKNOWN_TOKEN => "Adding unknown token as RAW: $id($str)" )
+      );
+   }
+
+   return $uth ? $uth->( $self, $id ,$str, $h ) : $h->{raw}->( $str );
 }
 
 sub _parse_command {

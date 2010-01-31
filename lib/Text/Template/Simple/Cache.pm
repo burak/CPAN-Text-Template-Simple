@@ -85,17 +85,21 @@ sub _dump_ids {
       require File::Find;
       require File::Spec;
       my $ext = quotemeta CACHE_EXT;
+      my $re  = qr{ (.+?) $ext \z }xms;
       my($id, @list);
 
-      my $wanted = sub {
-         if ( $_ =~ m{ (.+?) $ext \z }xms ) {
-            $id = $1;
-            $id =~ s{.*[\\/]}{}xms;
-            push @list, $id;
-         }
-      };
-
-      File::Find::find({wanted => $wanted, no_chdir => 1}, $parent->[CACHE_DIR]);
+      File::Find::find(
+         {
+            no_chdir => 1,
+            wanted   => sub {
+                           if ( $_ =~ $re ) {
+                              ($id = $1) =~ s{.*[\\/]}{}xms;
+                              push @list, $id;
+                           }
+                        },
+         },
+         $parent->[CACHE_DIR]
+      );
 
       @rv = sort @list;
 
@@ -124,7 +128,8 @@ sub _dump_structure {
    else {
       $d = Data::Dumper->new( [ $CACHE ], [ $VAR ]);
       if ( $deparse ) {
-         fatal('tts.cache.dumper' => $Data::Dumper::VERSION) if !$d->can('Deparse');
+         fatal('tts.cache.dumper' => $Data::Dumper::VERSION)
+            if !$d->can('Deparse');
          $d->Deparse(1);
       }
    }
@@ -154,13 +159,16 @@ sub _dump_disk_cache {
    require File::Spec;
    my $self    = shift;
    my $parent  = $self->[CACHE_PARENT];
-   my $ext     = quotemeta CACHE_EXT;
    my $pattern = quotemeta DISK_CACHE_MARKER;
+   my $ext     = quotemeta CACHE_EXT;
+   my $re      = qr{(.+?) $ext \z}xms;
    my(%disk_cache);
 
    my $process = sub {
-      my($file, $id) = @_;
-      $id =~ s{.*[\\/]}{}xms;
+      my $file  = $_;
+      my @match = $file =~ $re;
+      return if ! @match;
+      (my $id = $match[0]) =~ s{.*[\\/]}{}xms;
       my $content = $parent->io->slurp( File::Spec->canonpath($file) );
       my $ok      = 0;  # reset
       my $_temp   = EMPTY_STRING; # reset
@@ -180,13 +188,13 @@ sub _dump_disk_cache {
       };
    };
 
-   my $wanted = sub {
-      if ( $_ =~ m{(.+?) $ext \z}xms ) {
-         $process->( $_, $1 );
-      }
-   };
-
-   File::Find::find({ wanted => $wanted, no_chdir => 1 }, $parent->[CACHE_DIR]);
+   File::Find::find(
+      {
+         no_chdir => 1,
+         wanted   => $process,
+      },
+      $parent->[CACHE_DIR]
+   );
    return \%disk_cache;
 }
 
@@ -408,7 +416,9 @@ sub _populate_disk {
                      DATE => scalar localtime time,
                   }
                );
-   my $ok = print { $fh } '#META:' . $self->_set_meta(\%meta) . "\n", $warn, $parsed;
+   my $ok = print { $fh } '#META:' . $self->_set_meta(\%meta) . "\n",
+                          $warn,
+                          $parsed;
    flock $fh, Fcntl::LOCK_UN() if IS_FLOCK;
    close $fh or croak "Unable to close filehandle: $!";
    chmod(CACHE_FMODE, $cache) || fatal('tts.cache.populate.chmod');
