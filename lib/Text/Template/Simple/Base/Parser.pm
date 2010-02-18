@@ -134,6 +134,20 @@ sub _parse_command {
    shift @buf;
    my %com  = map { trim $_ } @buf;
 
+   if ( DEBUG >= DEBUG_LEVEL_INSANE ) {
+      require Data::Dumper;
+      LOG(
+         PARSE_COMMAND => Data::Dumper::Dumper(
+                           {
+                              string  => $str,
+                              header  => $head,
+                              raw     => $raw_block,
+                              command => \%com,
+                           }
+                        )
+      );
+   }
+
    if ( $com{FILTER} ) {
       # embed into the template & NEEDS_OBJECT++ ???
       my $old = $self->[FILENAME];
