@@ -200,9 +200,12 @@ sub local_conf {
 
 sub usage {
     #require Config; $Config::Config{archname}
-    my $os = $^O;
-    printf <<'USAGE', basename($0), $VERSION, $os, $] or croak $!;
-Bah-weep-Graaaaagnah wheep ni ni bong. I am %s v%s running under %s with perl %s
+    my $info = eval { require Sys::Info; return Sys::Info->new; };
+    my $os   = $info ? $info->os->name( edition => 1 )  : $^O;
+    my $perl = $info ? $info->perl_long                 : $];
+    printf <<'USAGE', basename($0), $VERSION, $os, $perl or croak $!;
+Bah-weep-Graaaaagnah wheep ni ni bong!
+I am %s v%s running under %s with perl %s
 USAGE
     exit 0;
 }
