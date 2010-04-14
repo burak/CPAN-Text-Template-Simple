@@ -6,9 +6,9 @@ use File::Basename;
 use Getopt::Long;
 use Data::Dumper;
 use Scalar::Util qw( blessed );
-use Carp qw( croak );
+use Carp         qw( croak );
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 our %OPT;
 
 local $| = 1;
@@ -123,45 +123,54 @@ sub run {
 
 sub object {
     my($file, $p) = @_;
-    my $global = Text::Template::Simple->new( %{ $p->{new} } );
+    my $global    = Text::Template::Simple->new( %{ $p->{new} } );
+    my $path      = $global->io->file_exists( $file );
     my $t;
-    if ( my $path = $global->io->file_exists( $file ) ) {
-        my $dir  = dirname $path;
-        my $base = basename $path;
-        my $controller = File::Spec->catfile( $dir, $base . '.pl' );
-        #die Dumper [ $dir, $base ];
 
-        if ( exists $CONTROLLER{ $controller } ) {
-            $t = $CONTROLLER{ $controller }->{handler};
-        }
-        else {
-            if ( -e $controller )  {
-                my $f = $controller;
-                (my $pkg = 'TTS'.$controller) =~ s{[^a-zA-Z0-9_]}{_}xmsg;
-                (my $file3 = $controller) =~ s{"}{\\"}xmsg;
-                my $h = eval qq{package $pkg; require "$controller";};
-                croak "Error compiling controller: $@" if $@;
-                my $cref = $pkg->can('tts_controller');
-                croak 'Controller present but does not implement a tts_controller() function' if ! $cref;
-                my $o = $cref->( %{ $p->{new} } );
-                croak 'Controller returned non-object'                          if ! ref     $o;
-                croak 'Controller returned a non-blessed reference'             if ! blessed $o;
-                croak 'Controller returned a non-Text::Template::Simple object' if ! $o->isa('Text::Template::Simple');
-                $CONTROLLER{ $controller } = {
-                    handler => $o,
-                    package => $pkg,
-                    date    => time,
-                };
-                $t = $CONTROLLER{ $controller }->{handler};
-            }
-        }
+    if ( $path ) {
+        my $dir  = dirname  $path;
+        my $base = basename $path;
+        my $c    = File::Spec->catfile( $dir, $base . '.pl' );
+
+        $t = exists $CONTROLLER{ $c } ?       $CONTROLLER{     $c }->{handler}
+           :     -e $c                ? _object_from_file( $p, $c )
+           : undef;
     }
     return $t || $global;
 }
 
+sub _object_from_file {
+    my($p, $controller) = @_;
+    my $f = $controller;
+    (my $pkg   = 'TTS'.$controller) =~ s{[^a-zA-Z0-9_]}{_}xmsg;
+    (my $file3 = $controller      ) =~ s{ "           }{\\"}xmsg;
+
+    my $h = eval qq{package $pkg; require "$controller";};
+    croak "Error compiling controller: $@" if $@;
+
+    my $cref = $pkg->can('tts_controller')
+                    || croak 'Controller present but does not '
+                            .'implement a tts_controller() function';
+    my $o = $cref->( %{ $p->{new} } );
+
+    croak 'Controller returned non-object'
+        if ! ref $o;
+    croak 'Controller returned a non-blessed reference'
+        if ! blessed $o;
+    croak 'Controller returned a non-Text::Template::Simple object'
+        if ! $o->isa('Text::Template::Simple');
+
+    $CONTROLLER{ $controller } = {
+        handler => $o,
+        package => $pkg,
+        date    => time,
+    };
+    return $CONTROLLER{ $controller }->{handler};
+}
+
 sub parse_arg {
     my %original = @_;
-    my %param = ( new => {}, compile => {} );
+    my %param    = ( new => {}, compile => {} );
     foreach my $key ( keys %original ) {
         if ( $key =~ m{ \A (new|compile) \- (.*) \z }xms ) {
             my $id = $1;
@@ -192,9 +201,10 @@ sub local_conf {
 sub usage {
     #require Config; $Config::Config{archname}
     my $os = $^O;
-    croak sprintf <<'USAGE', basename($0), $VERSION, $os, $];
-Hello there. I am %s v%s running under %s with perl %s
+    printf <<'USAGE', basename($0), $VERSION, $os, $] or croak $!;
+Bah-weep-Graaaaagnah wheep ni ni bong. I am %s v%s running under %s with perl %s
 USAGE
+    exit 0;
 }
 
 1;
@@ -256,12 +266,12 @@ Burak GE<252>rsoy, E<lt>burakE<64>cpan.orgE<gt>
 
 =head1 COPYRIGHT
 
-Copyright 2004-2009 Burak GE<252>rsoy. All rights reserved.
+Copyright 2004-2010 Burak GE<252>rsoy. All rights reserved.
 
 =head1 LICENSE
 
 This library is free software; you can redistribute it and/or modify 
-it under the same terms as Perl itself, either Perl version 5.10.0 or, 
+it under the same terms as Perl itself, either Perl version 5.12.0 or, 
 at your option, any later version of Perl 5 you may have available.
 
 =cut
