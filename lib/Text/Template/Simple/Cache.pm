@@ -59,7 +59,7 @@ sub reset { ## no critic (ProhibitBuiltinHomonyms)
 
       closedir $CDIRH;
    }
-   return;
+   return 1;
 }
 
 sub dumper {
