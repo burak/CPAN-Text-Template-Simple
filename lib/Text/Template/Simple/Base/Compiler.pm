@@ -11,19 +11,20 @@ sub _init_compile_opts {
    my $self = shift;
    my $opt  = shift || {};
 
-   fatal('tts.base.compiler._compile.opt')   if not ishref($opt  );
+   fatal('tts.base.compiler._compile.opt') if ! ishref( $opt );
 
    # set defaults
    $opt->{id}       ||= EMPTY_STRING; # id is AUTO
-   $opt->{map_keys} ||= 0;  # use normal behavior
-   $opt->{chkmt}    ||= 0;  # check mtime of file template?
-   $opt->{_sub_inc} ||= 0;  # are we called from a dynamic include op?
+   $opt->{map_keys} ||= 0;            # use normal behavior
+   $opt->{chkmt}    ||= 0;            # check mtime of file template?
+   $opt->{_sub_inc} ||= 0;            # are we called from a dynamic include op?
    $opt->{_filter}  ||= EMPTY_STRING; # any filters?
 
    # first element is the shared names. if it's not defined, then there
    # are no shared variables from top level
-   delete $opt->{_share}
-      if isaref($opt->{_share}) && ! defined $opt->{_share}[0];
+   if ( isaref($opt->{_share}) && ! defined $opt->{_share}[0] ) {
+      delete $opt->{_share};
+   }
 
    $opt->{as_is} = $opt->{_sub_inc} && $opt->{_sub_inc} == T_STATIC;
 

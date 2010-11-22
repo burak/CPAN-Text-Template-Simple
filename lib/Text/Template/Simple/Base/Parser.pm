@@ -77,6 +77,9 @@ sub _walk {
                   $self->[POST_CHOMP]
                );
 
+   my $is_raw = sub { my($id) = @_; T_RAW     == $id || T_NOTADELIM == $id };
+   my $is_inc = sub { my($id) = @_; T_DYNAMIC == $id || T_STATIC    == $id };
+
    # fetch and walk the tree
    PARSER: foreach my $token ( @{ $toke->tokenize( $raw, $opt->{map_keys} ) } ) {
       my($str, $id, $chomp, undef) = @{ $token };
@@ -89,14 +92,11 @@ sub _walk {
       if ( T_DELIMSTART == $id ) { $inside++; next PARSER; }
       if ( T_DELIMEND   == $id ) { $inside--; next PARSER; }
 
-      my $is_raw = T_RAW     == $id || T_NOTADELIM == $id;
-      my $is_inc = T_DYNAMIC == $id || T_STATIC    == $id;
-
-      $code .= $is_raw          ? $h->{raw    }->( $self->_chomp( $str, $chomp ) )
+      $code .= $is_raw->($id)   ? $h->{raw    }->( $self->_chomp( $str, $chomp ) )
              : T_COMMAND == $id ? $h->{raw    }->( $self->_parse_command( $str ) )
              : T_CODE    == $id ? $h->{code   }->( $str                          )
              : T_CAPTURE == $id ? $h->{capture}->( $str                          )
-             : $is_inc          ? $h->{capture}->( $self->_walk_inc( $opt, $id, $str) )
+             : $is_inc->($id)   ? $h->{capture}->( $self->_walk_inc( $opt, $id, $str) )
              : T_MAPKEY  == $id ? $self->_walk_mapkey(  $mko, $mkc, $str         )
              :                    $self->_walk_unknown( $h, $uth, $id, $str      )
              ;

@@ -41,8 +41,9 @@ sub _examine {
 
 sub _examine_glob {
    my($self, $thing) = @_;
-   fatal( 'tts.base.examine.notglob' => ref $thing ) if ref $thing ne 'GLOB';
-   fatal( 'tts.base.examine.notfh' ) if ! fileno $thing;
+   my $type = ref $thing;
+   fatal( 'tts.base.examine.notglob' => $type ) if $type ne 'GLOB';
+   fatal( 'tts.base.examine.notfh'            ) if ! fileno $thing;
    return $self->io->slurp( $thing );
 }
 
