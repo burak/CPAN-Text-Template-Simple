@@ -201,6 +201,11 @@ sub local_conf {
 
 sub usage {
     #require Config; $Config::Config{archname}
+    local $SIG{__WARN__} = sub {
+        my $w = shift;
+        return if $w =~ m{Sys/Info}xms; # noise
+        warn $w;
+    };
     my $info = eval { require Sys::Info; return Sys::Info->new; };
     my $os   = $info ? $info->os->name( edition => 1 )  : $^O;
     my $perl = $info ? $info->perl_long                 : $];
