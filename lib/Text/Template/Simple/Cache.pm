@@ -1,3 +1,4 @@
+## no critic (ProhibitUnusedPrivateSubroutines)
 package Text::Template::Simple::Cache;
 use strict;
 use warnings;
@@ -431,7 +432,7 @@ sub _populate_disk {
 sub _get_meta {
    my $self = shift;
    my $raw  = shift;
-   my %meta = map { split m{:}xms, $_ } split m{\|}xms, $raw;
+   my %meta = map { split m{:}xms, $_ } split m{[|]}xms, $raw;
    return %meta;
 }
 

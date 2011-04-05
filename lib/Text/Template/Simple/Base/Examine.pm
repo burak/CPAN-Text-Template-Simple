@@ -1,3 +1,4 @@
+## no critic (ProhibitUnusedPrivateSubroutines)
 package Text::Template::Simple::Base::Examine;
 use strict;
 use warnings;

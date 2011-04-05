@@ -189,7 +189,7 @@ sub class_id {
    return sprintf q{%s v%s}, $class, $self->VERSION;
 }
 
-sub _tidy {
+sub _tidy { ## no critic (ProhibitUnusedPrivateSubroutines)
    my $self = shift;
    my $code = shift;
 
