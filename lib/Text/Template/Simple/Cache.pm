@@ -380,12 +380,12 @@ sub _populate_no_cache {
 sub _populate_memory {
    my($self, $parsed, $cache_id, $chkmt) = @_;
    my $parent = $self->[CACHE_PARENT];
-   $CACHE->{ $cache_id } = {}; # init
-   my($CODE, $error)                     = $parent->_wrap_compile($parsed);
-   $CACHE->{ $cache_id }->{CODE}         = $CODE;
-   $CACHE->{ $cache_id }->{MTIME}        = $chkmt if $chkmt;
-   $CACHE->{ $cache_id }->{NEEDS_OBJECT} = $parent->[NEEDS_OBJECT];
-   $CACHE->{ $cache_id }->{FAKER_SELF}   = $parent->[FAKER_SELF];
+   my $c = $CACHE->{ $cache_id } = {}; # init
+   my($CODE, $error)  = $parent->_wrap_compile($parsed);
+   $c->{CODE}         = $CODE;
+   $c->{MTIME}        = $chkmt if $chkmt;
+   $c->{NEEDS_OBJECT} = $parent->[NEEDS_OBJECT];
+   $c->{FAKER_SELF}   = $parent->[FAKER_SELF];
    LOG( MEM_POPUL => $cache_id ) if DEBUG >= DEBUG_LEVEL_INSANE;
    return $CODE, $error;
 }

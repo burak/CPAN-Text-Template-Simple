@@ -154,9 +154,7 @@ sub _init {
       if $self->[INCLUDE_PATHS] && ! isaref($self->[INCLUDE_PATHS]);
 
    $self->[IO_OBJECT] = $self->connector('IO')->new(
-                           $self->[IOLAYER],
-                           $self->[INCLUDE_PATHS],
-                           $self->[TAINT_MODE],
+                           @{ $self }[ IOLAYER, INCLUDE_PATHS, TAINT_MODE ],
                         );
 
    if ( $self->[CACHE_DIR] ) {
