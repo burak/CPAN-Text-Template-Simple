@@ -21,7 +21,7 @@
         'File::Temp'   => '0.12',
     },
     recommends     => {
-        'Devel::Size'  => '0.72',
+        'Devel::Size'  => '0.77',
         'Text::Table'  => '1.107',
         'Perl::Tidy'   => '0',
     },
