@@ -113,9 +113,13 @@ sub _handle_looks_safe {
 
    my $tmode = $self->[MY_TAINT_MODE];
 
-   # owner neither superuser nor "me", whose
-   # real uid is in the $< variable
-   return if $i->uid != 0 && $i->uid != $<;
+   # ignore this check if the user is root
+   # can happen with cpan clients
+   if ( $< != 0 ) {
+      # owner neither superuser nor "me", whose
+      # real uid is in the $< variable
+      return if $i->uid != 0 && $i->uid != $<;
+   }
 
    # Check whether group or other can write file.
    # Read check is disabled by default

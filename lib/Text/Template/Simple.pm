@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use vars qw( $VERSION );
 
-$VERSION = '0.84';
+$VERSION = '0.85';
 
 use File::Spec;
 use Text::Template::Simple::Constants qw(:all);
