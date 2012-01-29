@@ -2,9 +2,8 @@
 package Text::Template::Simple::Base::Parser;
 use strict;
 use warnings;
-use vars qw($VERSION);
 
-$VERSION = '0.80';
+our $VERSION = '0.85';
 
 use Text::Template::Simple::Util      qw(:all);
 use Text::Template::Simple::Constants qw(:all);
@@ -194,7 +193,7 @@ sub _wrapper {
    my($self, $code, $cache_id, $faker, $map_keys, $h) = @_;
    my $buf_hash   = $self->[FAKER_HASH];
    my $wrapper    = EMPTY_STRING;
-   my $inside_inc = $self->[INSIDE_INCLUDE] != MINUS_ONE ? 1 : 0;
+   my $inside_inc = $self->[INSIDE_INCLUDE] != RESET_FIELD ? 1 : 0;
 
    # build the anonymous sub
    if ( ! $inside_inc ) {

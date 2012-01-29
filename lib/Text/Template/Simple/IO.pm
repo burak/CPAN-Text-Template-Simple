@@ -1,15 +1,21 @@
 package Text::Template::Simple::IO;
 use strict;
 use warnings;
-use vars qw($VERSION);
-use File::Spec;
-use Text::Template::Simple::Constants qw(:all);
-use Text::Template::Simple::Util qw( DEBUG LOG ishref binary_mode fatal );
 use constant MY_IO_LAYER      => 0;
 use constant MY_INCLUDE_PATHS => 1;
 use constant MY_TAINT_MODE    => 2;
 
-$VERSION = '0.80';
+use File::Spec;
+use Text::Template::Simple::Constants qw(:all);
+use Text::Template::Simple::Util qw(
+   binary_mode
+   fatal
+   ishref
+   DEBUG
+   LOG
+);
+
+our $VERSION = '0.85';
 
 sub new {
    my $class = shift;

@@ -2,7 +2,7 @@
 package Text::Template::Simple::Caller;
 use strict;
 use warnings;
-use vars qw($VERSION);
+
 use constant PACKAGE    => 0;
 use constant FILENAME   => 1;
 use constant LINE       => 2;
@@ -13,10 +13,11 @@ use constant EVALTEXT   => 6;
 use constant IS_REQUIRE => 7;
 use constant HINTS      => 8;
 use constant BITMASK    => 9;
+
 use Text::Template::Simple::Util      qw( ishref fatal );
 use Text::Template::Simple::Constants qw( EMPTY_STRING );
 
-$VERSION = '0.80';
+our $VERSION = '0.85';
 
 sub stack {
    my $self    = shift;

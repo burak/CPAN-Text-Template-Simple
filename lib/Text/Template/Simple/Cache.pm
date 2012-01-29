@@ -2,12 +2,12 @@
 package Text::Template::Simple::Cache;
 use strict;
 use warnings;
-use vars qw($VERSION);
+
+use Carp qw( croak );
 use Text::Template::Simple::Constants qw(:all);
 use Text::Template::Simple::Util      qw( DEBUG LOG ishref fatal );
-use Carp qw( croak );
 
-$VERSION = '0.80';
+our $VERSION = '0.85';
 
 my $CACHE = {}; # in-memory template cache
 

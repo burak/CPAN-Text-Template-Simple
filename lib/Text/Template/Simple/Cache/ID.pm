@@ -1,12 +1,12 @@
 package Text::Template::Simple::Cache::ID;
 use strict;
 use warnings;
-use vars qw($VERSION);
 use overload q{""} => 'get';
+
 use Text::Template::Simple::Constants qw( MAX_FL RE_INVALID_CID );
 use Text::Template::Simple::Util      qw( LOG DEBUG DIGEST fatal );
 
-$VERSION = '0.80';
+our $VERSION = '0.85';
 
 sub new {
    my $class = shift;

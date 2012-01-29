@@ -7,11 +7,10 @@ package Text::Template::Simple::Dummy;
 # have problems though). See the Pod for more info.
 use strict;
 use warnings;
-use vars qw($VERSION);
 use Text::Template::Simple::Caller;
 use Text::Template::Simple::Util qw();
 
-$VERSION = '0.80';
+our $VERSION = '0.85';
 
 sub stack { # just a wrapper
    my $opt = shift || {};

@@ -2,12 +2,15 @@ package Text::Template::Simple::Compiler::Safe;
 # Safe compiler. Totally experimental
 use strict;
 use warnings;
-use vars qw($VERSION);
+
 use Text::Template::Simple::Dummy;
 
-$VERSION = '0.80';
+our $VERSION = '0.85';
 
-sub compile { shift; return __PACKAGE__->_object->reval(shift) }
+sub compile {
+   shift;
+   return __PACKAGE__->_object->reval(shift);
+}
 
 sub _object {
    my $class = shift;

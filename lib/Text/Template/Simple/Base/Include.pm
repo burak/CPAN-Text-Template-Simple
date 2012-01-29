@@ -2,7 +2,7 @@
 package Text::Template::Simple::Base::Include;
 use strict;
 use warnings;
-use vars qw($VERSION);
+
 use Text::Template::Simple::Util qw(:all);
 use Text::Template::Simple::Constants qw(:all);
 use constant E_IN_MONOLITH =>
@@ -18,7 +18,7 @@ use constant TYPE_MAP   => qw(
    \   REFERENCE
 );
 
-$VERSION = '0.80';
+our $VERSION = '0.85';
 
 sub _include_no_monolith {
    # no monolith eh?

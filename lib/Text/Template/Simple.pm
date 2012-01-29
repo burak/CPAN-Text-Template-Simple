@@ -1,9 +1,8 @@
 package Text::Template::Simple;
 use strict;
 use warnings;
-use vars qw( $VERSION );
 
-$VERSION = '0.85';
+our $VERSION = '0.85';
 
 use File::Spec;
 use Text::Template::Simple::Constants qw(:all);
@@ -143,7 +142,7 @@ sub _init {
    $self->[FAKER]          = $self->_output_buffer_var;
    $self->[FAKER_HASH]     = $self->_output_buffer_var('hash');
    $self->[FAKER_SELF]     = $self->_output_buffer_var('self');
-   $self->[INSIDE_INCLUDE] = MINUS_ONE; # must be -1 not 0
+   $self->[INSIDE_INCLUDE] = RESET_FIELD;
    $self->[NEEDS_OBJECT]   =  0; # the template needs $self ?
    $self->[DEEP_RECURSION] =  0; # recursion detector
 

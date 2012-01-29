@@ -1,14 +1,15 @@
 package Text::Template::Simple::Constants;
 use strict;
 use warnings;
-use vars qw($VERSION $OID $DID @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
-$VERSION = '0.80';
+our $VERSION = '0.85';
 
-use constant MINUS_ONE           => -1;
+my($OID, $DID);
+
+use constant RESET_FIELD         => -1;
 
 # object fields
-BEGIN { $OID = MINUS_ONE } # init object field id counter
+BEGIN { $OID = RESET_FIELD } # init object field id counter
 use constant DELIMITERS          => ++$OID;
 use constant AS_STRING           => ++$OID;
 use constant DELETE_WS           => ++$OID;
@@ -163,7 +164,7 @@ use base qw( Exporter );
 
 BEGIN {
 
-   %EXPORT_TAGS = (
+   our %EXPORT_TAGS = (
       info      =>   [qw(
                         IS_FLOCK
                         NEW_PERL
@@ -284,7 +285,7 @@ BEGIN {
                         MAX_RECURSION
                         CACHE_FMODE
                         CACHE_PARENT
-                        MINUS_ONE
+                        RESET_FIELD
                         EMPTY_STRING
                         MAX_PATH_LENGTH
                         DEVEL_SIZE_VERSION
@@ -301,9 +302,9 @@ BEGIN {
                      )],
    );
 
-   @EXPORT_OK        = map { @{ $EXPORT_TAGS{$_} } } keys %EXPORT_TAGS;
+   our @EXPORT_OK        = map { @{ $EXPORT_TAGS{$_} } } keys %EXPORT_TAGS;
    $EXPORT_TAGS{all} = \@EXPORT_OK;
-   @EXPORT           = @EXPORT_OK;
+   our @EXPORT           = @EXPORT_OK;
 
 }
 
