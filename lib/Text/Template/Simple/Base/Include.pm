@@ -193,6 +193,9 @@ sub _interpolate_share_setup {
          fatal('tts.base.include._interpolate.bogus_share', $type_name, $var);
       }
       $var =~ tr/;//d;
+      if ( $var =~ m{ [^a-zA-Z0-9_\$] }xms ) {
+         fatal('tts.base.include._interpolate.bogus_share_notbare', $var);
+      }
       push @buf, $var;
    }
    $inc->{SHARE} = join q{,}, @buf;

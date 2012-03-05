@@ -131,7 +131,7 @@ sub _cache_miss {
 
    my %popt   = ( %{ $opt }, cache_id => $cache_id, as_is => $opt->{as_is} );
    my $parsed = $self->_parse( $tmp, \%popt );
-   my $CODE      = $self->cache->populate( $cache_id, $parsed, $opt->{chkmt} );
+   my $CODE   = $self->cache->populate( $cache_id, $parsed, $opt->{chkmt} );
    $self->[HEADER] = $restore_header if $shead;
    return $CODE;
 }

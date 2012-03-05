@@ -353,7 +353,7 @@ sub populate {
 }
 
 sub _populate_error {
-   my($self, $parsed, $cache_id, $error);
+   my($self, $parsed, $cache_id, $error) = @_;
    my $parent   = $self->[CACHE_PARENT];
    croak $parent->[VERBOSE_ERRORS]
          ?  $parent->_mini_compiler(

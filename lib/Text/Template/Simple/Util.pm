@@ -98,6 +98,7 @@ my $lang = {
                                                     .q{type of %s named "%s". Consider converting it to a SCALAR or try }
                                                     .q{the monolith option to enable automatic variable sharing. }
                                                     .q{But please read the fine manual first},
+      q{tts.base.include._interpolate.bogus_share_notbare} => q{It looks like you've tried to share an expression (%s) instead of a simple variable.},
       q{tts.base.parser._internal.id}             => q{_internal(): id is missing},
       q{tts.base.parser._internal.rv}             => q{_internal(): id is invalid},
       q{tts.base.parser._parse.unbalanced}        => q{%d unbalanced %s delimiter(s) in template %s},
