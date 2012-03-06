@@ -340,8 +340,8 @@ Text::Template::Simple::Tokenizer - Tokenizer
    use strict;
    use constant TYPE => 0;
    use constant DATA => 1;
-   use Text::Template::Simple::Tokenize;
-   my $t = Text::Template::Simple::Tokenize->new( $start_delim, $end_delim );
+   use Text::Template::Simple::Tokenizer;
+   my $t = Text::Template::Simple::Tokenizer->new( $start_delim, $end_delim );
    my $tokens = $t->tokenize( $raw_data );
    foreach my $token ( @{ $tokens } ) {
       printf "Token type: %s\n", $token->[TYPE];
