@@ -317,7 +317,7 @@ sub _hit_disk {
    }
    if ( $self->_is_meta_version_old( $meta{VERSION} ) ) {
       my $id = $parent->[FILENAME] || $cache_id;
-      warn "(This messeage will only appear once) $id was compiled with"
+      warn "(This message will only appear once) $id was compiled with"
           .' an old version of ' . PARENT . ". Resetting cache.\n";
       return;
    }
