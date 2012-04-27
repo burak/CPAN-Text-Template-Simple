@@ -118,7 +118,7 @@ can_ok( 'Text::Template::Simple::Tokenizer',
         qw/
             CMD_CHAR
             CMD_ID
-            CMD_CB
+            CMD_CALLBACK
             TOKEN_ID
             TOKEN_STR
             LAST_TOKEN

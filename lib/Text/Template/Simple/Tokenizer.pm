@@ -6,11 +6,13 @@ our $VERSION = '0.85';
 
 use constant CMD_CHAR             => 0;
 use constant CMD_ID               => 1;
-use constant CMD_CB               => 2; # callbacks
+use constant CMD_CALLBACK         => 2;
+
 use constant ID_DS                => 0;
 use constant ID_DE                => 1;
 use constant ID_PRE_CHOMP         => 2;
 use constant ID_POST_CHOMP        => 3;
+
 use constant SUBSTR_OFFSET_FIRST  => 0;
 use constant SUBSTR_OFFSET_SECOND => 1;
 use constant SUBSTR_LENGTH        => 1;
@@ -19,7 +21,7 @@ use Text::Template::Simple::Util      qw( LOG DEBUG fatal );
 use Text::Template::Simple::Constants qw( :all );
 
 my @COMMANDS = ( # default command list
-   # cmd            id
+   # command        id
    [ DIR_CAPTURE  , T_CAPTURE   ],
    [ DIR_DYNAMIC  , T_DYNAMIC,  ],
    [ DIR_STATIC   , T_STATIC,   ],
@@ -27,6 +29,8 @@ my @COMMANDS = ( # default command list
    [ DIR_COMMENT  , T_COMMENT   ],
    [ DIR_COMMAND  , T_COMMAND   ],
 );
+
+my @WHITESPACE_SYMBOLS = map { '\\' . $_ } qw( r n f s );
 
 sub new {
    my $class = shift;
@@ -45,7 +49,7 @@ sub tokenize {
 
    return $self->_empty_token( $tmp ) if ! $tmp;
 
-   my($ds, $de)   = ($self->[ID_DS], $self->[ID_DE]);
+   my($ds,  $de)  = @{ $self }[ ID_DS, ID_DE ];
    my($qds, $qde) = map { quotemeta $_ } $ds, $de;
 
    my(@tokens, $inside);
@@ -88,7 +92,7 @@ sub tilde {
 
 sub quote {
    my(undef, @args) = @_;
-   return Text::Template::Simple::Util::escape( q{"} => @args )
+   return Text::Template::Simple::Util::escape( q{"} => @args );
 }
 
 sub _empty_token {
@@ -125,7 +129,7 @@ sub _token_for_command {
    my($self, $tree, $map_keys, $str, $last_cmd, $second_cmd, $cmd, $inside) = @_;
    my($copen, $cclose, $ctoken) = $self->_chomp_token( $second_cmd, $last_cmd );
    my $len  = length $str;
-   my $cb   = $map_keys ? 'quote' : $cmd->[CMD_CB];
+   my $cb   = $map_keys ? 'quote' : $cmd->[CMD_CALLBACK];
    my $soff = $copen ? 2 : 1;
    my $slen = $len - ($cclose ? $soff+1 : 1);
    my $buf  = substr $str, $soff, $slen;
@@ -144,7 +148,7 @@ sub _token_for_command {
    return [
             $val,
             $id,
-            [CHOMP_NONE, CHOMP_NONE],
+            [ (CHOMP_NONE) x 2 ],
             $needs_chomp ? $ctoken : undef # trigger
           ];
 }
@@ -162,7 +166,7 @@ sub _token_for_code {
    return   [
                substr($str, $soff, $slen),
                $map_keys ? T_MAPKEY : T_CODE,
-               [ CHOMP_NONE, CHOMP_NONE ],
+               [ (CHOMP_NONE) x 2 ],
                $needs_chomp ? $ctoken : undef # trigger
             ];
 }
@@ -213,8 +217,8 @@ sub _chomp_token {
 
    my $cboth  = $copen > 0 && $cclose > 0;
 
-   $c |= COLLAPSE_ALL if( ($c & COLLAPSE_LEFT) && ($c & COLLAPSE_RIGHT) );
-   $c |= CHOMP_ALL    if( ($c & CHOMP_LEFT   ) && ($c & CHOMP_RIGHT   ) );
+   $c |= COLLAPSE_ALL if ( ( $c & COLLAPSE_LEFT ) && ( $c & COLLAPSE_RIGHT ) );
+   $c |= CHOMP_ALL    if ( ( $c & CHOMP_LEFT    ) && ( $c & CHOMP_RIGHT    ) );
 
    return $copen, $cclose, $c || CHOMP_NONE;
 }
@@ -270,12 +274,8 @@ sub _visualize_tid {
 }
 
 sub _visualize_ws {
-   my $self = shift;
-   my $str  = shift;
-      $str =~ s{\r}{\\r}xmsg;
-      $str =~ s{\n}{\\n}xmsg;
-      $str =~ s{\f}{\\f}xmsg;
-      $str =~ s{\s}{\\s}xmsg;
+   my($self, $str) = @_;
+   $str =~ s<[$_]><$_>xmsg for @WHITESPACE_SYMBOLS;
    return $str;
 }
 
@@ -338,14 +338,13 @@ Text::Template::Simple::Tokenizer - Tokenizer
 =head1 SYNOPSIS
 
    use strict;
-   use constant TYPE => 0;
-   use constant DATA => 1;
+   use warnings;
+   use Text::Template::Simple::Constants qw( :token );
    use Text::Template::Simple::Tokenizer;
    my $t = Text::Template::Simple::Tokenizer->new( $start_delim, $end_delim );
-   my $tokens = $t->tokenize( $raw_data );
-   foreach my $token ( @{ $tokens } ) {
-      printf "Token type: %s\n", $token->[TYPE];
-      printf "Token data: %s\n", $token->[DATA];
+   foreach my $token ( @{ $t->tokenize( $raw_data ) } ) {
+      printf "Token type: %s\n", $token->[TOKEN_ID];
+      printf "Token data: %s\n", $token->[TOKEN_STR];
    }
 
 =head1 DESCRIPTION
