@@ -256,7 +256,7 @@ language. Instead, it uses Perl as the template language. Templates
 can be cached on disk or inside the memory via the internal cache 
 manager. It is also possible to use static/dynamic includes,
 pass parameters to includes and apply filters on them.
-Also see L<Text::Template::Simple::API> for the full API definiton.
+Also see L<Text::Template::Simple::API> for the full C<API> reference.
 
 =head1 SYNTAX
 
@@ -337,7 +337,7 @@ If you put a space before the pound sign, the block will be a code block:
       my $foo = 42;
    %>
 
-If you want to include a text or html file, you can use the
+If you want to include a text or I<HTML> file, you can use the
 static include directive:
 
    <%+ my_other.html %>
@@ -357,10 +357,10 @@ is valid code:
 
 =head2 Chomping
 
-Chomping is the removal of whitespace before and after your directives. This
-can be useful if you're generating plain text (instead of HTML which'll ignore
+Chomping is the removal of white space before and after your directives. This
+can be useful if you're generating plain text (instead of HTML which will ignore
 spaces most of the time). You can either remove all space or replace multiple
-whitespace with a single space (collapse). Chomping can be enabled per
+white space with a single space (collapse). Chomping can be enabled per
 directive or globally via options to the constructor.
 See L<Text::Template::Simple::API/pre_chomp> and
 L<Text::Template::Simple::API/post_chomp> options to
@@ -436,7 +436,7 @@ Will become:
    Foo Bar
 
 Chomping is inspired by Template Toolkit (mostly the same functionality,
-although TT seems to miss collapse/no-chomp per directive option).
+although C<TT> seems to miss collapse/no-chomp per directive option).
 
 =head2 Accessing Template Names
 
@@ -472,7 +472,7 @@ do this.
 
 =head2 Template Parameters
 
-You can fetch parameters (passed to compile) in the usual perl way:
+You can fetch parameters (passed to compile) in the usual C<perl> way:
 
    <%
       my $foo = shift;
@@ -487,26 +487,20 @@ Currently supported parameters are:
 
 =over 4
 
-=item *
+=item C<PARAM>
 
-PARAM
+=item FILTER
 
-=item *
-
-FILTER
-
-=item *
-
-SHARE
+=item SHARE
 
 =back
 
    <%+ /path/to/static.tts  | FILTER: MyFilter %>
    <%* /path/to/dynamic.tts | FILTER: MyFilter | PARAM: test => 123 %>
 
-C<PARAM:> defines the parameter list to pass to the included file.
-C<FILTER:> defines the list of filters to apply to the output of the include.
-C<SHARE:> used to list the variables to share with the included template when
+C<PARAM> defines the parameter list to pass to the included file.
+C<FILTER> defines the list of filters to apply to the output of the include.
+C<SHARE> used to list the variables to share with the included template when
 the monolith option is disabled.
 
 =head3 INCLUDE FILTERS
@@ -559,7 +553,7 @@ in the below template:
    <%* dyna.inc | SHARE: $foo, $bar %>
 
 And then you can access C<$foo> and C<$bar> inside C<dyna.inc>. There is one
-drawback by shared variables: only SCALARs can be shared. You can not share
+drawback by shared variables: only C<SCALARs> can be shared. You can not share
 anything else. If you want to share an array, use an array reference instead:
 
    <%
@@ -604,15 +598,15 @@ Note that you can not use any variables in these blocks. They are static.
 
 =head2 connector
 
-=head2 io
+=head2 C<io>
 
-=head2 tts
+=head2 C<tts>
 
 See L<Text::Template::Simple::API> for the technical/gory details.
 
 =head1 EXAMPLES
 
-TODO
+   TODO
 
 =head1 ERROR HANDLING
 
@@ -628,17 +622,17 @@ Contact the author if you find any bugs.
 
 =head2 No mini language
 
-There is no mini-language. Only perl is used as the template
+There is no mini-language. Only C<perl> is used as the template
 language. So, this may or may not be I<safe> from your point
 of view. If this is a problem for you, just don't use this 
 module. There are plenty of template modules with mini-languages
-inside I<CPAN>.
+inside C<CPAN>.
 
 =head2 Speed
 
-There is an initialization cost and this'll show itself after
+There is an initialization cost and this will show itself after
 the first compilation process. The second and any following compilations
-will be much faster. Using cache can also improve speed, since this'll
+will be much faster. Using cache can also improve speed, since this will
 eliminate the parsing phase. Also, using memory cache will make
 the program run more faster under persistent environments. But the 
 overall speed really depends on your environment.

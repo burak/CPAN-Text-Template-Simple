@@ -111,7 +111,7 @@ my $lang = {
    }
 };
 
-my @WHITESPACE_SYMBOLS = map { '\\' . $_ } qw( r n f s );
+my @WHITESPACE_SYMBOLS = map { q{\\} . $_ } qw( r n f s );
 
 my $DEBUG = 0; # Disabled by default
 my $DIGEST;    # Will hold digester class name.
@@ -245,7 +245,7 @@ Text::Template::Simple::Util - Utility functions
 
 =head1 SYNOPSIS
 
-TODO
+   TODO
 
 =head1 DESCRIPTION
 
@@ -259,53 +259,54 @@ Returns the debug status.
 
 =head2 DIGEST
 
-Returns the digester object.
+Returns the C<digester> object.
 
-=head2 binary_mode FH, LAYER
+=head2 binary_mode FILE_HANDLE, LAYER
 
-Sets the I/O layer of FH in modern perls, only sets binmode on FH otherwise.
+Sets the I/O layer of C<FILE_HANDLE> in modern C<perls>, only sets C<binmode>
+on C<FILE_HANDLE> otherwise.
 
-=head2 L TYPE, ID [, PARAMS]
-
-Internal method.
-
-=head2 fatal ID [, PARAMS]
+=head2 L TYPE, ID [, PARAMETERS]
 
 Internal method.
 
-=head2 isaref THING
+=head2 fatal ID [, PARAMETERS]
+
+Internal method.
+
+=head2 C<isaref THING>
 
 Returns true if C<THING> is an ARRAY.
 
-=head2 ishref THING
+=head2 C<ishref THING>
 
 Returns true if C<THING> is a HASH.
 
-=head2 iscref THING
+=head2 C<iscref THING>
 
 Returns true if C<THING> is a CODE.
 
-=head2 trim STRING
+=head2 C<trim STRING>
 
 Returns the trimmed version of the C<STRING>.
 
-=head2 ltrim STRING
+=head2 C<ltrim STRING>
 
 Returns the left trimmed version of the C<STRING>.
 
-=head2 rtrim STRING
+=head2 C<rtrim STRING>
 
 Returns the right trimmed version of the C<STRING>.
 
 =head2 escape CHAR, STRING
 
-Escapes all occurrances of C<CHAR> in C<STRING> with backslashes.
+Escapes all occurrences of C<CHAR> in C<STRING> with backslashes.
 
 =head2 visualize_whitespace STRING
 
-Replaces the whitespace in C<STRING> with visual representations.
+Replaces the white space in C<STRING> with visual representations.
 
-=head1 OVERRIDABLE FUNCTIONS
+=head1 C<OVERRIDABLE FUNCTIONS>
 
 =head2 LOG
 

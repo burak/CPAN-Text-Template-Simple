@@ -204,7 +204,7 @@ sub usage {
     local $SIG{__WARN__} = sub {
         my $w = shift;
         return if $w =~ m{Sys/Info}xms; # noise
-        warn $w;
+        warn "$w\n";
     };
     my $info = eval { require Sys::Info; return Sys::Info->new; };
     my $os   = $info ? $info->os->name( edition => 1 )  : $^O;
@@ -224,7 +224,7 @@ __END__
 
 =head1 NAME
 
-tts - Commandline interface to Text::Template::Simple
+C<tts> - Command line interface to Text::Template::Simple
 
 =head1 SYNOPSIS
 
@@ -267,15 +267,15 @@ You have to either pass a file name or pass C<-e> with a template string.
 
 =head1 DESCRIPTION
 
-This a commandline front end to L<Text::Template::Simple>.
+This a command line front end to L<Text::Template::Simple>.
 
 =head1 AUTHOR
 
-Burak GE<252>rsoy, E<lt>burakE<64>cpan.orgE<gt>
+C<Burak Gursoy>, E<lt>burakE<64>cpan.orgE<gt>
 
 =head1 COPYRIGHT
 
-Copyright 2004-2010 Burak GE<252>rsoy. All rights reserved.
+Copyright 2004-2012 C<Burak Gursoy>. All rights reserved.
 
 =head1 LICENSE
 

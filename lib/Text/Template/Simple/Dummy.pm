@@ -30,7 +30,7 @@ Text::Template::Simple::Dummy - Container class
 
 =head1 SYNOPSIS
 
-TODO
+   TODO
 
 =head1 DESCRIPTION
 
@@ -44,7 +44,7 @@ that are accessible by all templates.
 =head2 stack
 
 Issues a full stack trace and returns the output as string dump. Accepts
-options as a hashref:
+options as a hash reference:
 
    stack({ opt => $option, frame => $backtrace_level });
 

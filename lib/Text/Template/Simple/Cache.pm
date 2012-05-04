@@ -461,7 +461,7 @@ Text::Template::Simple::Cache - Cache manager
 
 =head1 SYNOPSIS
 
-TODO
+   TODO
 
 =head1 DESCRIPTION
 
@@ -487,23 +487,19 @@ if you are using a disk cache.
    $template->cache->dumper( $type, \%opt );
 
 C<TYPE> can either be C<structure> or C<ids>.
-C<dumper> accepts some arguments as a hashref:
+C<dumper> accepts some arguments as a hash reference:
 
    $template->cache->dumper( $type, \%opt );
 
 =over 4
 
-=item *
-
-varname
+=item C<varname>
 
 Controls the name of the dumped structure.
 
-=item *
+=item no_deparse
 
-no_deparse
-
-If you set this to a true value, deparsing will be disabled
+If you set this to a true value, C<deparsing> will be disabled
 
 =back
 
@@ -515,7 +511,7 @@ for in-memory cache.
 
 Early versions of C<Data::Dumper> don' t have a C<Deparse>
 method, so you may need to upgrade your C<Data::Dumper> or
-disable deparse-ing if you want to use this method.
+disable C<deparsing> if you want to use this method.
 
 =head3 ids
 
@@ -551,10 +547,10 @@ or
 
 =head2 hit
 
-TODO
+   TODO
 
 =head2 populate
 
-TODO
+   TODO
 
 =cut

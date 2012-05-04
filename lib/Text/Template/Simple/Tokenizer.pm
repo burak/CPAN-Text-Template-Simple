@@ -327,7 +327,7 @@ __END__
 
 =head1 NAME
 
-Text::Template::Simple::Tokenizer - Tokenizer
+Text::Template::Simple::Tokenizer - C<Tokenizer>
 
 =head1 SYNOPSIS
 
@@ -343,7 +343,7 @@ Text::Template::Simple::Tokenizer - Tokenizer
 
 =head1 DESCRIPTION
 
-Tokenizes the input with the defined delimiter pair.
+Splits the input into tokens with the defined delimiter pair.
 
 =head1 METHODS
 
@@ -352,9 +352,9 @@ Tokenizes the input with the defined delimiter pair.
 The object constructor. Accepts two parameters in this order:
 C<start_delimiter> and C<end_delimiter>.
 
-=head2 tokenize
+=head2 C<tokenize>
 
-Tokenizes the input with the supplied delimiter pair. Accepts a single
+Splits the input into tokens with the supplied delimiter pair. Accepts a single
 parameter: the raw template string.
 
 =head2 ESCAPE METHODS

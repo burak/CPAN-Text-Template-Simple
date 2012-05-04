@@ -201,11 +201,11 @@ Text::Template::Simple::IO - I/O methods
 
 =head1 SYNOPSIS
 
-TODO
+   TODO
 
 =head1 DESCRIPTION
 
-TODO
+   TODO
 
 =head1 METHODS
 
@@ -213,9 +213,9 @@ TODO
 
 Constructor. Accepts an I/O layer name as the parameter.
 
-=head2 layer FH
+=head2 layer FILE_HANDLE
 
-Sets the I/O layer of the supplied filehandle if there is a layer and perl
+Sets the I/O layer of the supplied file handle if there is a layer and C<perl>
 version is greater or equal to C<5.8>.
 
 =head2 slurp FILE_PATH

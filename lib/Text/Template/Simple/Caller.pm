@@ -226,7 +226,7 @@ instead. See L<Text::Template::Simple::Dummy> for usage from the templates.
 
 =head2 stack
 
-Class method. Accepts parameters as a single hashref:
+Class method. Accepts parameters as a single hash reference:
 
    my $dump = Text::Template::Simple::Caller->stack(\%opts);
 

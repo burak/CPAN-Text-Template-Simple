@@ -70,7 +70,9 @@ use constant IS_WINDOWS          => $^O eq 'MSWin32';
 use constant DELIM_START         => 0; # field id
 use constant DELIM_END           => 1; # field id
 use constant RE_NONFILE          => qr{ [ \n \r < > * ? ] }xmso;
-use constant RE_DUMP_ERROR       => qr{Can\'t \s locate \s object \s method \s "first" \s via \s package \s "B::SVOP"}xms;
+use constant RE_DUMP_ERROR       => qr{
+    \QCan't locate object method "first" via package "B::SVOP"\E
+}xms;
 use constant COMPILER            => PARENT   . '::Compiler';
 use constant COMPILER_SAFE       => COMPILER . '::Safe';
 use constant DUMMY_CLASS         => PARENT   . '::Dummy';
@@ -315,7 +317,7 @@ Text::Template::Simple::Constants - Constants
 
 =head1 SYNOPSIS
 
-TODO
+   TODO
 
 =head1 DESCRIPTION
 
