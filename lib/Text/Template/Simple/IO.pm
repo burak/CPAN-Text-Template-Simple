@@ -62,7 +62,7 @@ sub validate {
 }
 
 sub layer {
-   return if ! NEW_PERL;
+   return if ! UNICODE_PERL;
    my $self   = shift;
    my $fh     = shift || fatal('tts.io.layer.fh');
    my $layer  = $self->[MY_IO_LAYER];
@@ -76,9 +76,9 @@ sub slurp {
    my $self = shift;
    my $file = shift;
    my($fh, $seek);
+
    LOG(IO_SLURP => $file) if DEBUG;
 
-   # perl 5.5.3 compat: we need to check if it's a ref first
    if ( ref $file && fileno $file ) {
       $fh   = $file;
       $seek = 1;
@@ -88,8 +88,8 @@ sub slurp {
       $fh->open($file, 'r') or fatal('tts.io.slurp.open', $file, $!);
    }
 
-   flock $fh,    Fcntl::LOCK_SH()  if IS_FLOCK;
-   seek  $fh, 0, Fcntl::SEEK_SET() if IS_FLOCK && $seek;
+   flock $fh,    Fcntl::LOCK_SH();
+   seek  $fh, 0, Fcntl::SEEK_SET() if $seek;
    $self->layer( $fh ) if ! $seek; # apply the layer only if we opened this
 
    if ( $self->_handle_looks_safe( $fh ) ) {
@@ -99,7 +99,7 @@ sub slurp {
    }
 
    my $tmp = do { local $/; my $rv = <$fh>; $rv };
-   flock $fh, Fcntl::LOCK_UN() if IS_FLOCK;
+   flock $fh, Fcntl::LOCK_UN();
    if ( ! $seek ) {
       # close only if we opened this
       close $fh or die "Unable to close filehandle: $!\n";

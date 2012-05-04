@@ -3,8 +3,16 @@ use strict;
 use warnings;
 use overload q{""} => 'get';
 
-use Text::Template::Simple::Constants qw( MAX_FL RE_INVALID_CID );
-use Text::Template::Simple::Util      qw( LOG DEBUG DIGEST fatal );
+use Text::Template::Simple::Constants qw(
+   MAX_FILENAME_LENGTH
+   RE_INVALID_CID
+);
+use Text::Template::Simple::Util qw(
+   LOG
+   DEBUG
+   DIGEST
+   fatal
+);
 
 our $VERSION = '0.85';
 
@@ -48,8 +56,14 @@ sub _custom {
    my $regex = shift || RE_INVALID_CID;
       $data  =~ s{$regex}{_}xmsg; # remove bogus characters
    my $len   = length $data;
+
    # limit file name length
-   $data = substr $data, $len - MAX_FL, MAX_FL if $len > MAX_FL;
+   if ( $len > MAX_FILENAME_LENGTH ) {
+      $data = substr $data,
+                     $len - MAX_FILENAME_LENGTH,
+                     MAX_FILENAME_LENGTH;
+   }
+
    return $data;
 }
 

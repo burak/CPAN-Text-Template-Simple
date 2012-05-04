@@ -30,8 +30,6 @@ my @COMMANDS = ( # default command list
    [ DIR_COMMAND  , T_COMMAND   ],
 );
 
-my @WHITESPACE_SYMBOLS = map { '\\' . $_ } qw( r n f s );
-
 sub new {
    my $class = shift;
    my $self  = [];
@@ -273,12 +271,6 @@ sub _visualize_tid {
    return $rv;
 }
 
-sub _visualize_ws {
-   my($self, $str) = @_;
-   $str =~ s<[$_]><$_>xmsg for @WHITESPACE_SYMBOLS;
-   return $str;
-}
-
 sub _debug_tokens {
    my $self   = shift;
    my $tokens = shift;
@@ -287,7 +279,9 @@ sub _debug_tokens {
    foreach my $t ( @{ $tokens } ) {
       $buf .=  $self->_debug_tokens_row(
                   $self->_visualize_tid( $t->[TOKEN_ID]  ),
-                  $self->_visualize_ws(  $t->[TOKEN_STR] ),
+                  Text::Template::Simple::Util::visualize_whitespace(
+                     $t->[TOKEN_STR]
+                  ),
                   map { $_ eq 'undef' ? EMPTY_STRING : $_ }
                   map { $self->_visualize_chomp( $_ )     }
                   $t->[TOKEN_CHOMP][TOKEN_CHOMP_NEXT],

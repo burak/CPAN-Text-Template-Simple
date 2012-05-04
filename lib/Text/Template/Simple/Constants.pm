@@ -4,83 +4,82 @@ use warnings;
 
 our $VERSION = '0.85';
 
-my($OID, $DID);
+my($FIELD_ID);
 
 use constant RESET_FIELD         => -1;
 
 # object fields
-BEGIN { $OID = RESET_FIELD } # init object field id counter
-use constant DELIMITERS          => ++$OID;
-use constant AS_STRING           => ++$OID;
-use constant DELETE_WS           => ++$OID;
-use constant FAKER               => ++$OID;
-use constant FAKER_HASH          => ++$OID;
-use constant FAKER_SELF          => ++$OID;
-use constant FAKER_WARN          => ++$OID;
-use constant MONOLITH            => ++$OID;
-use constant CACHE               => ++$OID;
-use constant CACHE_DIR           => ++$OID;
-use constant CACHE_OBJECT        => ++$OID;
-use constant IO_OBJECT           => ++$OID;
-use constant STRICT              => ++$OID;
-use constant SAFE                => ++$OID;
-use constant HEADER              => ++$OID;
-use constant ADD_ARGS            => ++$OID;
-use constant CAPTURE_WARNINGS    => ++$OID;
-use constant WARN_IDS            => ++$OID;
-use constant TYPE                => ++$OID;
-use constant TYPE_FILE           => ++$OID;
-use constant COUNTER             => ++$OID;
-use constant COUNTER_INCLUDE     => ++$OID;
-use constant INSIDE_INCLUDE      => ++$OID;
-use constant NEEDS_OBJECT        => ++$OID;
-use constant CID                 => ++$OID;
-use constant FILENAME            => ++$OID;
-use constant IOLAYER             => ++$OID;
-use constant STACK               => ++$OID;
-use constant USER_THANDLER       => ++$OID;
-use constant DEEP_RECURSION      => ++$OID;
-use constant INCLUDE_PATHS       => ++$OID;
-use constant PRE_CHOMP           => ++$OID;
-use constant POST_CHOMP          => ++$OID;
-use constant VERBOSE_ERRORS      => ++$OID;
-use constant TAINT_MODE          => ++$OID;
-use constant MAXOBJFIELD         =>   $OID; # number of the last object field
+BEGIN { $FIELD_ID = RESET_FIELD } # init object field id counter
+use constant DELIMITERS          => ++$FIELD_ID;
+use constant AS_STRING           => ++$FIELD_ID;
+use constant DELETE_WS           => ++$FIELD_ID;
+use constant FAKER               => ++$FIELD_ID;
+use constant FAKER_HASH          => ++$FIELD_ID;
+use constant FAKER_SELF          => ++$FIELD_ID;
+use constant FAKER_WARN          => ++$FIELD_ID;
+use constant MONOLITH            => ++$FIELD_ID;
+use constant CACHE               => ++$FIELD_ID;
+use constant CACHE_DIR           => ++$FIELD_ID;
+use constant CACHE_OBJECT        => ++$FIELD_ID;
+use constant IO_OBJECT           => ++$FIELD_ID;
+use constant STRICT              => ++$FIELD_ID;
+use constant SAFE                => ++$FIELD_ID;
+use constant HEADER              => ++$FIELD_ID;
+use constant ADD_ARGS            => ++$FIELD_ID;
+use constant CAPTURE_WARNINGS    => ++$FIELD_ID;
+use constant WARN_IDS            => ++$FIELD_ID;
+use constant TYPE                => ++$FIELD_ID;
+use constant TYPE_FILE           => ++$FIELD_ID;
+use constant COUNTER             => ++$FIELD_ID;
+use constant COUNTER_INCLUDE     => ++$FIELD_ID;
+use constant INSIDE_INCLUDE      => ++$FIELD_ID;
+use constant NEEDS_OBJECT        => ++$FIELD_ID;
+use constant CID                 => ++$FIELD_ID;
+use constant FILENAME            => ++$FIELD_ID;
+use constant IOLAYER             => ++$FIELD_ID;
+use constant STACK               => ++$FIELD_ID;
+use constant USER_THANDLER       => ++$FIELD_ID;
+use constant DEEP_RECURSION      => ++$FIELD_ID;
+use constant INCLUDE_PATHS       => ++$FIELD_ID;
+use constant PRE_CHOMP           => ++$FIELD_ID;
+use constant POST_CHOMP          => ++$FIELD_ID;
+use constant VERBOSE_ERRORS      => ++$FIELD_ID;
+use constant TAINT_MODE          => ++$FIELD_ID;
+use constant MAXOBJFIELD         =>   $FIELD_ID;
 
 # token type ids
-BEGIN { $DID = 0 }
-use constant T_DELIMSTART        => ++$DID;
-use constant T_DELIMEND          => ++$DID;
-use constant T_DISCARD           => ++$DID;
-use constant T_COMMENT           => ++$DID;
-use constant T_RAW               => ++$DID;
-use constant T_NOTADELIM         => ++$DID;
-use constant T_CODE              => ++$DID;
-use constant T_CAPTURE           => ++$DID;
-use constant T_DYNAMIC           => ++$DID;
-use constant T_STATIC            => ++$DID;
-use constant T_MAPKEY            => ++$DID;
-use constant T_COMMAND           => ++$DID;
-use constant T_MAXID             =>   $DID;
+BEGIN { $FIELD_ID = 0 }
+use constant T_DELIMSTART        => ++$FIELD_ID;
+use constant T_DELIMEND          => ++$FIELD_ID;
+use constant T_DISCARD           => ++$FIELD_ID;
+use constant T_COMMENT           => ++$FIELD_ID;
+use constant T_RAW               => ++$FIELD_ID;
+use constant T_NOTADELIM         => ++$FIELD_ID;
+use constant T_CODE              => ++$FIELD_ID;
+use constant T_CAPTURE           => ++$FIELD_ID;
+use constant T_DYNAMIC           => ++$FIELD_ID;
+use constant T_STATIC            => ++$FIELD_ID;
+use constant T_MAPKEY            => ++$FIELD_ID;
+use constant T_COMMAND           => ++$FIELD_ID;
+use constant T_MAXID             =>   $FIELD_ID;
 
 # settings
 use constant MAX_RECURSION       => 50; # recursion limit for dynamic includes
 use constant PARENT              => ( __PACKAGE__ =~ m{ (.+?) ::Constants }xms );
-use constant IS_WINDOWS          => $^O eq 'MSWin32' || $^O eq 'MSWin64';
+use constant IS_WINDOWS          => $^O eq 'MSWin32';
 use constant DELIM_START         => 0; # field id
 use constant DELIM_END           => 1; # field id
 use constant RE_NONFILE          => qr{ [ \n \r < > * ? ] }xmso;
 use constant RE_DUMP_ERROR       => qr{Can\'t \s locate \s object \s method \s "first" \s via \s package \s "B::SVOP"}xms;
-use constant COMPILER            => PARENT.'::Compiler'; # The compiler
-use constant COMPILER_SAFE       => COMPILER.'::Safe';   # Safe compiler
-use constant DUMMY_CLASS         => PARENT.'::Dummy';    # Dummy class
-use constant MAX_FL              => 120;                 # Maximum file name length
-use constant CACHE_EXT           => '.tts.cache';        # disk cache extension
-use constant STAT_SIZE           => 7;                   # for stat()
-use constant STAT_MTIME          => 9;                   # for stat()
-use constant DELIMS              => qw( <% %> );         # default delimiter pair
-use constant NEW_PERL            => $] >= 5.008;         # for I/O layer
-use constant IS_FLOCK            => IS_WINDOWS ? ( Win32::IsWin95() ? 0 : 1 ) : 1;
+use constant COMPILER            => PARENT   . '::Compiler';
+use constant COMPILER_SAFE       => COMPILER . '::Safe';
+use constant DUMMY_CLASS         => PARENT   . '::Dummy';
+use constant MAX_FILENAME_LENGTH => 120;
+use constant CACHE_EXT           => '.tts.cache';
+use constant STAT_SIZE           => 7;
+use constant STAT_MTIME          => 9;
+use constant DELIMS              => qw( <% %> );
+use constant UNICODE_PERL        => $] >= 5.008;
 
 use constant CHOMP_NONE          => 0x000000;
 use constant COLLAPSE_NONE       => 0x000000;
@@ -166,13 +165,12 @@ BEGIN {
 
    our %EXPORT_TAGS = (
       info      =>   [qw(
-                        IS_FLOCK
-                        NEW_PERL
+                        UNICODE_PERL
                         IS_WINDOWS
                         COMPILER
                         COMPILER_SAFE
                         DUMMY_CLASS
-                        MAX_FL
+                        MAX_FILENAME_LENGTH
                         CACHE_EXT
                         PARENT
                      )],
@@ -302,10 +300,9 @@ BEGIN {
                      )],
    );
 
-   our @EXPORT_OK        = map { @{ $EXPORT_TAGS{$_} } } keys %EXPORT_TAGS;
+   our @EXPORT_OK    = map { @{ $EXPORT_TAGS{$_} } } keys %EXPORT_TAGS;
+   our @EXPORT       = @EXPORT_OK;
    $EXPORT_TAGS{all} = \@EXPORT_OK;
-   our @EXPORT           = @EXPORT_OK;
-
 }
 
 1;

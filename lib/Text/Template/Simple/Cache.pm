@@ -408,7 +408,7 @@ sub _populate_disk {
    my $cache = File::Spec->catfile( $parent->[CACHE_DIR], $cache_id . CACHE_EXT);
    my $fh    = IO::File->new;
    $fh->open($cache, '>') or fatal('tts.cache.populate.write', $cache, $!);
-   flock $fh, Fcntl::LOCK_EX() if IS_FLOCK;
+   flock $fh, Fcntl::LOCK_EX();
    $parent->io->layer($fh);
    my $warn =  $parent->_mini_compiler(
                   $parent->_internal('disk_cache_comment'),
@@ -420,7 +420,7 @@ sub _populate_disk {
    my $ok = print { $fh } '#META:' . $self->_set_meta(\%meta) . "\n",
                           $warn,
                           $parsed;
-   flock $fh, Fcntl::LOCK_UN() if IS_FLOCK;
+   flock $fh, Fcntl::LOCK_UN();
    close $fh or croak "Unable to close filehandle: $!";
    chmod(CACHE_FMODE, $cache) || fatal('tts.cache.populate.chmod');
 

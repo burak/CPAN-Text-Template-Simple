@@ -13,7 +13,7 @@ our $VERSION = '0.85';
 
 BEGIN {
    # create a wrapper for binmode() 
-   if ( NEW_PERL ) {
+   if ( UNICODE_PERL ) {
       # older perl binmode() does not accept a second param
       *binary_mode = sub {
          my($fh, $layer) = @_;
@@ -27,6 +27,7 @@ BEGIN {
       macro => [qw( isaref      ishref iscref                  )],
       util  => [qw( binary_mode DIGEST trim rtrim ltrim escape )],
       debug => [qw( fatal       DEBUG  LOG  L                  )],
+      misc  => [qw( visualize_whitespace                       )],
    );
    our @EXPORT_OK    = map { @{ $EXPORT_TAGS{$_} } } keys %EXPORT_TAGS;
    $EXPORT_TAGS{all} = \@EXPORT_OK;
@@ -110,6 +111,8 @@ my $lang = {
    }
 };
 
+my @WHITESPACE_SYMBOLS = map { '\\' . $_ } qw( r n f s );
+
 my $DEBUG = 0; # Disabled by default
 my $DIGEST;    # Will hold digester class name.
 
@@ -163,6 +166,12 @@ sub rtrim {
    my $extra = shift || EMPTY_STRING;
       $s =~ s{ \s+ \z}{$extra}xms;
    return $s;
+}
+
+sub visualize_whitespace {
+   my($str) = @_;
+   $str =~ s<[$_]><$_>xmsg for @WHITESPACE_SYMBOLS;
+   return $str;
 }
 
 sub DEBUG {
@@ -291,6 +300,10 @@ Returns the right trimmed version of the C<STRING>.
 =head2 escape CHAR, STRING
 
 Escapes all occurrances of C<CHAR> in C<STRING> with backslashes.
+
+=head2 visualize_whitespace STRING
+
+Replaces the whitespace in C<STRING> with visual representations.
 
 =head1 OVERRIDABLE FUNCTIONS
 

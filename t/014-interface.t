@@ -35,13 +35,12 @@ can_ok( 'Text::Template::Simple',
     );
 can_ok( 'Text::Template::Simple::Constants',
         qw/
-            IS_FLOCK
-            NEW_PERL
+            UNICODE_PERL
             IS_WINDOWS
             COMPILER
             COMPILER_SAFE
             DUMMY_CLASS
-            MAX_FL
+            MAX_FILENAME_LENGTH
             CACHE_EXT
             PARENT
             DISK_CACHE_MARKER

@@ -2,7 +2,7 @@ package Text::Template::Simple;
 use strict;
 use warnings;
 
-our $VERSION = '0.86';
+our $VERSION = '0.87';
 
 use File::Spec;
 use Text::Template::Simple::Constants qw(:all);
@@ -32,20 +32,20 @@ my %CONNECTOR = ( # Default classes list
 
 my %DEFAULT = ( # default object attributes
    delimiters       => [ DELIMS ],   # default delimiters
-   cache            =>  0,           # use cache or not
+   cache            => 0,            # use cache or not
    cache_dir        => EMPTY_STRING, # will use hdd intead of memory for caching...
-   strict           =>  1,           # set to false for toleration to un-declared vars
-   safe             =>  0,           # use safe compartment?
-   header           =>  0,           # template header. i.e. global codes.
+   strict           => 1,            # set to false for toleration to un-declared vars
+   safe             => 0,            # use safe compartment?
+   header           => 0,            # template header. i.e. global codes.
    add_args         => EMPTY_STRING, # will unshift template argument list. ARRAYref.
-   warn_ids         =>  0,           # warn template ids?
-   capture_warnings =>  0,           # bool
+   warn_ids         => 0,            # warn template ids?
+   capture_warnings => 0,            # bool
    iolayer          => EMPTY_STRING, # I/O layer for filehandles
    stack            => EMPTY_STRING, # dump caller stack?
    user_thandler    => undef,        # user token handler callback
-   monolith         =>  0,           # use monolithic template & cache ?
+   monolith         => 0,            # use monolithic template & cache ?
    include_paths    => [],           # list of template dirs
-   verbose_errors   =>  0,           # bool
+   verbose_errors   => 0,            # bool
    pre_chomp        => CHOMP_NONE,
    post_chomp       => CHOMP_NONE,
    taint_mode       => TAINT_CHECK_NORMAL,

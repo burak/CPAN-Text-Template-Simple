@@ -75,10 +75,7 @@ sub _string {
 
    foreach my $c ( reverse @{$callers} ) {
       $rv .= sprintf qq{%s %s() at %s line %s\n},
-                     $c->{context},
-                     $c->{sub},
-                     $c->{file},
-                     $c->{line};
+                     @{ $c }{ qw/ context sub file line / }
    }
 
    $rv = "<!-- $rv -->" if $is_html;
