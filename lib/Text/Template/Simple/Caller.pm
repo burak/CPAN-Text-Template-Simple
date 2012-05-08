@@ -14,7 +14,7 @@ use constant IS_REQUIRE => 7;
 use constant HINTS      => 8;
 use constant BITMASK    => 9;
 
-use Text::Template::Simple::Util      qw( ishref fatal );
+use Text::Template::Simple::Util      qw( fatal );
 use Text::Template::Simple::Constants qw( EMPTY_STRING );
 
 our $VERSION = '0.85';
@@ -22,7 +22,7 @@ our $VERSION = '0.85';
 sub stack {
    my $self    = shift;
    my $opt     = shift || {};
-   fatal('tts.caller.stack.hash') if ! ishref($opt);
+   fatal('tts.caller.stack.hash') if ref $opt ne 'HASH';
    my $frame   = $opt->{frame} || 0;
    my $type    = $opt->{type}  || EMPTY_STRING;
    my(@callers, $context);

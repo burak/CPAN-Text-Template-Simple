@@ -12,7 +12,7 @@ sub _init_compile_opts {
    my $self = shift;
    my $opt  = shift || {};
 
-   fatal('tts.base.compiler._compile.opt') if ! ishref( $opt );
+   fatal('tts.base.compiler._compile.opt') if ref $opt ne 'HASH';
 
    # set defaults
    $opt->{id}       ||= EMPTY_STRING; # id is AUTO
@@ -23,7 +23,7 @@ sub _init_compile_opts {
 
    # first element is the shared names. if it's not defined, then there
    # are no shared variables from top level
-   if ( isaref($opt->{_share}) && ! defined $opt->{_share}[0] ) {
+   if ( ref $opt->{_share} eq 'ARRAY' && ! defined $opt->{_share}[0] ) {
       delete $opt->{_share};
    }
 
@@ -67,7 +67,7 @@ sub _compile {
    my $param = shift || [];
    my $opt   = $self->_init_compile_opts( shift );
 
-   fatal('tts.base.compiler._compile.param') if ! isaref($param);
+   fatal('tts.base.compiler._compile.param') if ref $param ne 'ARRAY';
 
    my $tmp = $self->_examine( $tmpx );
    return $tmp if $self->[TYPE] eq 'ERROR';
@@ -179,8 +179,8 @@ sub _mini_compiler {
    my $param    = shift || fatal('tts.base.compiler._mini_compiler.noparam');
    my $opt      = shift || {};
 
-   fatal('tts.base.compiler._mini_compiler.opt')   if ! ishref($opt  );
-   fatal('tts.base.compiler._mini_compiler.param') if ! ishref($param);
+   fatal('tts.base.compiler._mini_compiler.opt')   if ref $opt   ne 'HASH';
+   fatal('tts.base.compiler._mini_compiler.param') if ref $param ne 'HASH';
 
    foreach my $var ( keys %{ $param } ) {
       my $str = $param->{$var};

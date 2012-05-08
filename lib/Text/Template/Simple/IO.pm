@@ -10,7 +10,6 @@ use Text::Template::Simple::Constants qw(:all);
 use Text::Template::Simple::Util qw(
    binary_mode
    fatal
-   ishref
    DEBUG
    LOG
 );

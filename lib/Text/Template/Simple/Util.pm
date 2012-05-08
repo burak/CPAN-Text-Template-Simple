@@ -12,7 +12,6 @@ use Text::Template::Simple::Constants qw(
 our $VERSION = '0.85';
 
 BEGIN {
-   # create a wrapper for binmode() 
    if ( UNICODE_PERL ) {
       # older perl binmode() does not accept a second param
       *binary_mode = sub {
@@ -24,7 +23,6 @@ BEGIN {
       *binary_mode = sub { binmode $_[0] };
    }
    our %EXPORT_TAGS = (
-      macro => [qw( isaref      ishref iscref                  )],
       util  => [qw( binary_mode DIGEST trim rtrim ltrim escape )],
       debug => [qw( fatal       DEBUG  LOG  L                  )],
       misc  => [qw( visualize_whitespace                       )],
@@ -116,10 +114,6 @@ my @WHITESPACE_SYMBOLS = map { q{\\} . $_ } qw( r n f s );
 my $DEBUG = 0; # Disabled by default
 my $DIGEST;    # Will hold digester class name.
 
-sub isaref { my $x = shift; return ref($x) eq 'ARRAY' };
-sub ishref { my $x = shift; return ref($x) eq 'HASH'  };
-sub iscref { my $x = shift; return ref($x) eq 'CODE'  };
-
 sub L {
    my($type, $id, @param) = @_;
    croak q{Type parameter to L() is missing} if ! $type;
@@ -174,6 +168,19 @@ sub visualize_whitespace {
    return $str;
 }
 
+*LOG = __PACKAGE__->can('MYLOG') || sub {
+   my @args = @_;
+   my $self    = ref $args[0] ? shift @args : undef;
+   my $id      = shift @args;
+   my $message = shift @args;
+      $id      = 'DEBUG'        if not defined $id;
+      $message = '<NO MESSAGE>' if not defined $message;
+      $id      =~ s{_}{ }xmsg;
+   $message = sprintf q{[ % 15s ] %s}, $id, $message;
+   warn "$message\n";
+   return;
+};
+
 sub DEBUG {
    my $thing = shift;
 
@@ -209,20 +216,6 @@ sub DIGEST {
 
    LOG( DIGESTER => $DIGEST . ' v' . $DIGEST->VERSION ) if DEBUG;
    return $DIGEST->new;
-}
-
-sub LOG {
-   my @args = @_;
-   return MYLOG( @args ) if defined &MYLOG;
-   my $self    = ref $args[0] ? shift @args : undef;
-   my $id      = shift @args;
-   my $message = shift @args;
-      $id      = 'DEBUG'        if not defined $id;
-      $message = '<NO MESSAGE>' if not defined $message;
-      $id      =~ s{_}{ }xmsg;
-   $message = sprintf q{[ % 15s ] %s}, $id, $message;
-   warn "$message\n";
-   return;
 }
 
 sub _is_parent_object {
@@ -273,18 +266,6 @@ Internal method.
 =head2 fatal ID [, PARAMETERS]
 
 Internal method.
-
-=head2 C<isaref THING>
-
-Returns true if C<THING> is an ARRAY.
-
-=head2 C<ishref THING>
-
-Returns true if C<THING> is a HASH.
-
-=head2 C<iscref THING>
-
-Returns true if C<THING> is a CODE.
 
 =head2 C<trim STRING>
 

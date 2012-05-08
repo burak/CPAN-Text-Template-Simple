@@ -56,7 +56,7 @@ sub _examine_type {
    return EMPTY_STRING ,  $TMP if ! $ref;
    return GLOB         => $TMP if   $ref eq 'GLOB';
 
-   if ( isaref( $TMP ) ) {
+   if ( ref $TMP eq 'ARRAY' ) {
       my $ftype  = shift @{ $TMP } || fatal('tts.base.examine._examine_type.ftype');
       my $fthing = shift @{ $TMP } || fatal('tts.base.examine._examine_type.fthing');
       fatal('tts.base.examine._examine_type.extra') if @{ $TMP };

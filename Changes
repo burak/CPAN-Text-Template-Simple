@@ -4,6 +4,8 @@ Revision history for Perl extension Text::Template::Simple.
    => Get rid of IS_FLOCK as Win9x is dead and irrelevant.
    => Renamed some constants.
    => visualize_whitespace() is now in ::Util.
+   => Removed ref type checking functions.
+   => Removed interface test.
 
 0.86 Mon Mar  5 22:10:12 2012
    => Fixed a stupid error where I forgot to unpack @_.

@@ -25,7 +25,6 @@ t/010-subclass-define-bufvar.t
 t/011-cache-mem.t
 t/012-cache-disk.t
 t/013-cache-other.t
-t/014-interface.t
 t/015-connector.t
 t/016-include-static.t
 t/017-include-dynamic.t

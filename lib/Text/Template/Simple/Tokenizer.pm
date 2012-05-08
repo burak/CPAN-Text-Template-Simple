@@ -107,14 +107,14 @@ sub _empty_token {
 
 sub _get_command_chars {
    my($self, $str) = @_;
-   my($first_cmd, $second_cmd, $last_cmd);
-   # $first is the left-cmd, $last is the right-cmd. $second is the extra
-   $first_cmd  = substr $str, SUBSTR_OFFSET_FIRST , SUBSTR_LENGTH if $str ne EMPTY_STRING;
-   $second_cmd = substr $str, SUBSTR_OFFSET_SECOND, SUBSTR_LENGTH if $str ne EMPTY_STRING;
-   $last_cmd   = substr $str, length($str) - 1    , SUBSTR_LENGTH if $str ne EMPTY_STRING;
-   return $first_cmd  || EMPTY_STRING,
-          $second_cmd || EMPTY_STRING,
-          $last_cmd   || EMPTY_STRING;
+   return
+      $str ne EMPTY_STRING # left
+         ? substr $str, SUBSTR_OFFSET_FIRST , SUBSTR_LENGTH : EMPTY_STRING,
+      $str ne EMPTY_STRING # extra
+         ? substr $str, SUBSTR_OFFSET_SECOND, SUBSTR_LENGTH : EMPTY_STRING,
+      $str ne EMPTY_STRING # right
+         ? substr $str, length($str) - 1    , SUBSTR_LENGTH : EMPTY_STRING,
+   ;
 }
 
 sub _user_commands {

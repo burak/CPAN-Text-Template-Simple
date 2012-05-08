@@ -5,7 +5,7 @@ use warnings;
 
 use Carp qw( croak );
 use Text::Template::Simple::Constants qw(:all);
-use Text::Template::Simple::Util      qw( DEBUG LOG ishref fatal );
+use Text::Template::Simple::Util      qw( DEBUG LOG fatal );
 
 our $VERSION = '0.85';
 
@@ -67,7 +67,7 @@ sub dumper {
    my $self  = shift;
    my $type  = shift || 'structure';
    my $param = shift || {};
-   fatal('tts.cache.dumper.hash')        if not ishref $param;
+   fatal('tts.cache.dumper.hash')        if ref $param ne 'HASH';
    my %valid = map { ($_, $_) } qw( ids structure );
    fatal('tts.cache.dumper.type', $type) if not $valid{ $type };
    my $method = '_dump_' . $type;

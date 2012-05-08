@@ -5,16 +5,17 @@ use warnings;
 our $VERSION = '0.87';
 
 use File::Spec;
-use Text::Template::Simple::Constants qw(:all);
-use Text::Template::Simple::Dummy;
+
+use Text::Template::Simple::Cache;
+use Text::Template::Simple::Cache::ID;
+use Text::Template::Simple::Caller;
 use Text::Template::Simple::Compiler;
 use Text::Template::Simple::Compiler::Safe;
-use Text::Template::Simple::Caller;
-use Text::Template::Simple::Tokenizer;
-use Text::Template::Simple::Util qw(:all);
-use Text::Template::Simple::Cache::ID;
-use Text::Template::Simple::Cache;
+use Text::Template::Simple::Constants qw(:all);
+use Text::Template::Simple::Dummy;
 use Text::Template::Simple::IO;
+use Text::Template::Simple::Tokenizer;
+use Text::Template::Simple::Util      qw(:all);
 
 use base qw(
    Text::Template::Simple::Base::Compiler
@@ -23,11 +24,11 @@ use base qw(
    Text::Template::Simple::Base::Parser
 );
 
-my %CONNECTOR = ( # Default classes list
-   'Cache'     => 'Text::Template::Simple::Cache',
-   'Cache::ID' => 'Text::Template::Simple::Cache::ID',
-   'IO'        => 'Text::Template::Simple::IO',
-   'Tokenizer' => 'Text::Template::Simple::Tokenizer',
+my %CONNECTOR = qw(
+   Cache       Text::Template::Simple::Cache
+   Cache::ID   Text::Template::Simple::Cache::ID
+   IO          Text::Template::Simple::IO
+   Tokenizer   Text::Template::Simple::Tokenizer
 );
 
 my %DEFAULT = ( # default object attributes
@@ -74,7 +75,7 @@ sub import {
 sub tts {
    my @args = @_;
    fatal('tts.main.tts.args') if ! @args;
-   my @new  = ishref($args[0]) ? %{ shift @args } : ();
+   my @new  = ref $args[0] eq 'HASH' ? %{ shift @args } : ();
    return __PACKAGE__->new( @new )->compile( @args );
 }
 
@@ -115,7 +116,7 @@ sub io    { return shift->[IO_OBJECT]    }
 
 sub compile {
    my($self, @args) = @_;
-   my $rv    = $self->_compile( @args );
+   my $rv = $self->_compile( @args );
    # we need to reset this to prevent false positives
    # the trick is: this is set in _compile() and sub includes call _compile()
    # instead of compile(), so it will only be reset here
@@ -128,10 +129,10 @@ sub compile {
 sub _init {
    my $self = shift;
    my $d    = $self->[DELIMITERS];
-   my $bogus_args = $self->[ADD_ARGS] && ! isaref($self->[ADD_ARGS]);
+   my $bogus_args = $self->[ADD_ARGS] && ref $self->[ADD_ARGS] ne 'ARRAY';
 
    fatal('tts.main.bogus_args')   if $bogus_args;
-   fatal('tts.main.bogus_delims') if ! isaref( $d ) || $#{ $d } != 1;
+   fatal('tts.main.bogus_delims') if ref $d ne 'ARRAY' || $#{ $d } != 1;
    fatal('tts.main.dslen')        if length($d->[DELIM_START]) < 2;
    fatal('tts.main.delen')        if length($d->[DELIM_END])   < 2;
    fatal('tts.main.dsws')         if $d->[DELIM_START] =~ m{\s}xms;
@@ -143,14 +144,14 @@ sub _init {
    $self->[FAKER_HASH]     = $self->_output_buffer_var('hash');
    $self->[FAKER_SELF]     = $self->_output_buffer_var('self');
    $self->[INSIDE_INCLUDE] = RESET_FIELD;
-   $self->[NEEDS_OBJECT]   =  0; # the template needs $self ?
-   $self->[DEEP_RECURSION] =  0; # recursion detector
+   $self->[NEEDS_OBJECT]   = 0; # the template needs $self ?
+   $self->[DEEP_RECURSION] = 0; # recursion detector
 
    fatal('tts.main.init.thandler')
-      if $self->[USER_THANDLER] && ! iscref($self->[USER_THANDLER]);
+      if $self->[USER_THANDLER] && ref $self->[USER_THANDLER] ne 'CODE';
 
    fatal('tts.main.init.include')
-      if $self->[INCLUDE_PATHS] && ! isaref($self->[INCLUDE_PATHS]);
+      if $self->[INCLUDE_PATHS] && ref $self->[INCLUDE_PATHS] ne 'ARRAY';
 
    $self->[IO_OBJECT] = $self->connector('IO')->new(
                            @{ $self }[ IOLAYER, INCLUDE_PATHS, TAINT_MODE ],

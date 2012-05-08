@@ -15,7 +15,7 @@ our $VERSION = '0.85';
 sub stack { # just a wrapper
    my $opt = shift || {};
    Text::Template::Simple::Util::fatal('tts.caller.stack.hash')
-      if ! Text::Template::Simple::Util::ishref($opt);
+      if ref $opt ne 'HASH';
    $opt->{frame} = 1;
    return Text::Template::Simple::Caller->stack( $opt );
 }
