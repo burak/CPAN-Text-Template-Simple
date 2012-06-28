@@ -74,10 +74,8 @@ t/data/028-dynamic.tts
 t/lib/My.pm
 t/lib/MyUtil.pm
 t/lib/TTSConnector.pm
-builder/Build.pm
 eg/precompile.pl
 etc/flowchart.txt
-Build.PL
 Changes
 MANIFEST
 SPEC
