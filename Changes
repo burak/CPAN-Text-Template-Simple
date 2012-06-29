@@ -22,7 +22,6 @@ Revision history for Perl extension Text::Template::Simple.
    => Overhaul the test suite.
 
 0.82 Mon Sep 21 22:38:16 2009
-   => Now using warnings pragma. warnings::compat is required under $] < 5.006.
    => Lots of internal fixes/re-organization to comply with Perl::Critic
       policies.
    => Bundle .perlcriticrc
