@@ -2,7 +2,7 @@ package Text::Template::Simple;
 use strict;
 use warnings;
 
-our $VERSION = '0.87';
+our $VERSION = '0.88';
 
 use File::Spec;
 
