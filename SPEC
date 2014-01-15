@@ -13,7 +13,7 @@
     },
     meta_merge     => {
         resources => {
-            repository => 'http://bitbucket.org/burak/cpan-text-template-simple/',
+            repository => 'http://github.com/burak/cpan-text-template-simple/',
         },
     },
     BUILDER => {
