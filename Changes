@@ -1,5 +1,8 @@
 Revision history for Perl extension Text::Template::Simple.
 
+0.90 Tue Jul  5 01:00:35 2016
+    => Bump version.
+
 0.88 Sun Jul  8 01:50:04 2012
     => Bump version.
 
