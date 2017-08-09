@@ -1,5 +1,6 @@
 ## no critic (ProhibitUnusedPrivateSubroutines)
 package Text::Template::Simple::Base::Include;
+
 use strict;
 use warnings;
 
@@ -17,8 +18,6 @@ use constant TYPE_MAP   => qw(
    *   GLOB
    \   REFERENCE
 );
-
-our $VERSION = '0.85';
 
 sub _include_no_monolith {
    # no monolith eh?

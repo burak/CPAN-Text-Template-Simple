@@ -1,13 +1,12 @@
 ## no critic (ProhibitUnusedPrivateSubroutines)
 package Text::Template::Simple::Cache;
+
 use strict;
 use warnings;
 
 use Carp qw( croak );
 use Text::Template::Simple::Constants qw(:all);
 use Text::Template::Simple::Util      qw( DEBUG LOG fatal );
-
-our $VERSION = '0.85';
 
 my $CACHE = {}; # in-memory template cache
 

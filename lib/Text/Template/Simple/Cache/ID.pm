@@ -1,4 +1,5 @@
 package Text::Template::Simple::Cache::ID;
+
 use strict;
 use warnings;
 use overload q{""} => 'get';
@@ -13,8 +14,6 @@ use Text::Template::Simple::Util qw(
    DIGEST
    fatal
 );
-
-our $VERSION = '0.85';
 
 sub new {
    my $class = shift;

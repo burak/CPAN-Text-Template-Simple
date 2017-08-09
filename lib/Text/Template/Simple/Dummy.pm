@@ -1,4 +1,5 @@
 package Text::Template::Simple::Dummy;
+
 # Dummy Plug provided by the nice guy Mr. Ikari from NERV :p
 # All templates are compiled into this package.
 # You can define subs/methods here and then access
@@ -9,8 +10,6 @@ use strict;
 use warnings;
 use Text::Template::Simple::Caller;
 use Text::Template::Simple::Util qw();
-
-our $VERSION = '0.85';
 
 sub stack { # just a wrapper
    my $opt = shift || {};

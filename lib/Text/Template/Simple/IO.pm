@@ -1,4 +1,5 @@
 package Text::Template::Simple::IO;
+
 use strict;
 use warnings;
 use constant MY_IO_LAYER      => 0;
@@ -13,8 +14,6 @@ use Text::Template::Simple::Util qw(
    DEBUG
    LOG
 );
-
-our $VERSION = '0.85';
 
 sub new {
    my $class = shift;

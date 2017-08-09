@@ -1,5 +1,6 @@
 ## no critic (ProhibitUnusedPrivateSubroutines)
 package Text::Template::Simple::Caller;
+
 use strict;
 use warnings;
 
@@ -16,8 +17,6 @@ use constant BITMASK    => 9;
 
 use Text::Template::Simple::Util      qw( fatal );
 use Text::Template::Simple::Constants qw( EMPTY_STRING );
-
-our $VERSION = '0.85';
 
 sub stack {
    my $self    = shift;

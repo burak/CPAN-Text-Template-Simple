@@ -1,8 +1,7 @@
 package Text::Template::Simple;
+
 use strict;
 use warnings;
-
-our $VERSION = '0.90';
 
 use File::Spec;
 

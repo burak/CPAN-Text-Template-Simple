@@ -1,3 +1,5 @@
+# PODNAME: Text::Template::Simple::API
+
 =pod
 
 =head1 NAME

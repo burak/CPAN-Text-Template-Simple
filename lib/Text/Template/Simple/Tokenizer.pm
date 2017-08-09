@@ -1,8 +1,7 @@
 package Text::Template::Simple::Tokenizer;
+
 use strict;
 use warnings;
-
-our $VERSION = '0.85';
 
 use constant CMD_CHAR             => 0;
 use constant CMD_ID               => 1;

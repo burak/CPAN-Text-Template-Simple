@@ -1,8 +1,7 @@
 package Text::Template::Simple::Constants;
+
 use strict;
 use warnings;
-
-our $VERSION = '0.85';
 
 my($FIELD_ID);
 

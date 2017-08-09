@@ -1,9 +1,8 @@
 ## no critic (ProhibitUnusedPrivateSubroutines)
 package Text::Template::Simple::Base::Parser;
+
 use strict;
 use warnings;
-
-our $VERSION = '0.85';
 
 use Text::Template::Simple::Util      qw(:all);
 use Text::Template::Simple::Constants qw(:all);

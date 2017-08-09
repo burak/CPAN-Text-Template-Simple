@@ -1,4 +1,5 @@
 package Text::Template::Simple::Util;
+
 use strict;
 use warnings;
 use base qw( Exporter );
@@ -8,8 +9,6 @@ use Text::Template::Simple::Constants qw(
    DIGEST_MODS
    EMPTY_STRING
 );
-
-our $VERSION = '0.85';
 
 BEGIN {
    if ( UNICODE_PERL ) {

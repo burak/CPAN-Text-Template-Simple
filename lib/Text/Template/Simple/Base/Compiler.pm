@@ -1,12 +1,11 @@
 ## no critic (ProhibitUnusedPrivateSubroutines)
 package Text::Template::Simple::Base::Compiler;
+
 use strict;
 use warnings;
 
 use Text::Template::Simple::Util qw(:all);
 use Text::Template::Simple::Constants qw(:all);
-
-our $VERSION = '0.85';
 
 sub _init_compile_opts {
    my $self = shift;
