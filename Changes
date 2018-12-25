@@ -1,6 +1,8 @@
 Revision history for Perl extension Text::Template::Simple.
 
 {{$NEXT}}
+
+0.91 2018-12-25 BURAK
      - Migrate to dzil.
 
 0.90 Tue Jul  5 01:00:35 2016
