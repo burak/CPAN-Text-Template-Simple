@@ -2,7 +2,7 @@ package Text::Template::Simple::Util;
 
 use strict;
 use warnings;
-use base qw( Exporter );
+use parent qw( Exporter );
 use Carp qw( croak );
 use Text::Template::Simple::Constants qw(
    :info

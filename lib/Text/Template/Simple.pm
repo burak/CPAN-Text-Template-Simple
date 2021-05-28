@@ -16,7 +16,7 @@ use Text::Template::Simple::IO;
 use Text::Template::Simple::Tokenizer;
 use Text::Template::Simple::Util      qw(:all);
 
-use base qw(
+use parent qw(
    Text::Template::Simple::Base::Compiler
    Text::Template::Simple::Base::Examine
    Text::Template::Simple::Base::Include

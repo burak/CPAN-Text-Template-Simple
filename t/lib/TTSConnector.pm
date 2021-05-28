@@ -1,7 +1,7 @@
 package TTSConnector;
 use strict;
 use warnings;
-use base qw(Text::Template::Simple);
+use parent qw(Text::Template::Simple);
 
 my %CONNECTOR = ( # Default classes list
    'Cache'     => 'TTS::Cache',
@@ -17,16 +17,16 @@ sub connector {
 }
 
 package TTS::Cache;
-use base qw(Text::Template::Simple::Cache);
+use parent qw(Text::Template::Simple::Cache);
 
 package TTS::Cache::ID;
-use base qw(Text::Template::Simple::Cache::ID);
+use parent qw(Text::Template::Simple::Cache::ID);
 
 package TTS::IO;
-use base qw(Text::Template::Simple::IO);
+use parent qw(Text::Template::Simple::IO);
 
 package TTS::Tokenizer;
-use base qw(Text::Template::Simple::Tokenizer);
+use parent qw(Text::Template::Simple::Tokenizer);
 
 1;
 

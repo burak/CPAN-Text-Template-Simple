@@ -4,7 +4,7 @@ package MyTTS;
 use strict;
 use warnings;
 use lib qw(t/lib lib);
-use base qw(Text::Template::Simple);
+use parent qw(Text::Template::Simple);
 use Text::Template::Simple::Constants qw(:fields); # get the object fields 
 use MyUtil;
 

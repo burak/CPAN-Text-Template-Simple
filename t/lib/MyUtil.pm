@@ -1,7 +1,7 @@
 package MyUtil;
 use strict;
 use warnings;
-use base qw( Exporter );
+use parent qw( Exporter );
 
 our $VERSION = '0.10';
 our @EXPORT  = qw( _p );

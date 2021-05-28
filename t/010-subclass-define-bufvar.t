@@ -10,7 +10,7 @@ $t->DEBUG(0);
 ok( $t->compile(q/Just a test/), 'Define output buffer variables');
 
 package MyTTS;
-use base qw(Text::Template::Simple);
+use parent qw(Text::Template::Simple);
 
 # if you relied on the old interface or relied on the buffer var being $OUT,
 # then you have to subclass the module to restore that behaviour.
