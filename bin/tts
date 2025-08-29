@@ -274,11 +274,11 @@ This a command line front end to L<Text::Template::Simple>.
 
 =head1 AUTHOR
 
-C<Burak Gursoy>, E<lt>burakE<64>cpan.orgE<gt>
+C<Burak Gursoy>
 
 =head1 COPYRIGHT
 
-Copyright 2004-2017 C<Burak Gursoy>. All rights reserved.
+Copyright 2004-2025 C<Burak Gursoy>. All rights reserved.
 
 =head1 LICENSE
 
